@@ -7,6 +7,10 @@ public class GUI extends JFrame {
     private JPanel pnlCenter;
     private CardLayout mainCardLayout;
 
+    private Color bgLight = new Color(253, 240, 255);
+    private Color primaryColor = new Color(180, 60, 200);
+    private Color hoverColor = new Color(150, 40, 170);
+
     public GUI() {
         setTitle("Phần Mềm Quản Lý Cửa Hàng Giày Dép - Nhóm 10");
         setSize(1200, 750);
@@ -14,50 +18,32 @@ public class GUI extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        JPanel pnlNorth = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(new Color(255, 255, 255, 220));
-                g2.fillRect(0, 0, getWidth(), getHeight());
-                g2.dispose();
-                super.paintComponent(g);
-            }
-        };
+        JPanel pnlNorth = new JPanel();
         pnlNorth.setLayout(new BoxLayout(pnlNorth, BoxLayout.Y_AXIS));
-        pnlNorth.setOpaque(false);
+        pnlNorth.setBackground(Color.WHITE);
 
         JPanel pnlHeader = new JPanel(new BorderLayout());
         pnlHeader.setBackground(Color.WHITE);
-        pnlHeader.setPreferredSize(new Dimension(1200, 90));
-        pnlHeader.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+        pnlHeader.setPreferredSize(new Dimension(1200, 100));
+        pnlHeader.setBorder(BorderFactory.createEmptyBorder(5, 20, 5, 20));
 
         JLabel lblAddress = new JLabel(" 12 Nguyễn Văn Bảo, Gò Vấp, TP.HCM");
         lblAddress.setFont(new Font("Arial", Font.PLAIN, 12));
         try {
             ImageIcon originalIcon = new ImageIcon(getClass().getResource("/img/map.png"));
-            int targetHeight = 30;
-            int targetWidth = (originalIcon.getIconWidth() * targetHeight) / originalIcon.getIconHeight();
-            Image scaledImage = originalIcon.getImage().getScaledInstance(targetWidth, targetHeight, Image.SCALE_SMOOTH);
+            Image scaledImage = originalIcon.getImage().getScaledInstance(25, 25, Image.SCALE_SMOOTH);
             lblAddress.setIcon(new ImageIcon(scaledImage));
-        } catch (Exception e) {
-            System.err.println("Không tìm thấy map.png");
-        }
+        } catch (Exception e) {}
         lblAddress.setForeground(Color.DARK_GRAY);
         pnlHeader.add(lblAddress, BorderLayout.WEST);
 
         JLabel lblLogo = new JLabel("SHOE STORE");
-        lblLogo.setFont(new Font("Arial", Font.BOLD, 16));
+        lblLogo.setFont(new Font("Arial", Font.BOLD, 18));
         try {
             ImageIcon originalIcon = new ImageIcon(getClass().getResource("/img/logo.png"));
-            int targetHeight = 55;
-            int targetWidth = (originalIcon.getIconWidth() * targetHeight) / originalIcon.getIconHeight();
-            Image scaledImage = originalIcon.getImage().getScaledInstance(targetWidth, targetHeight, Image.SCALE_SMOOTH);
+            Image scaledImage = originalIcon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
             lblLogo.setIcon(new ImageIcon(scaledImage));
-        } catch (Exception e) {
-            System.err.println("Không tìm thấy logo.png");
-        }
+        } catch (Exception e) {}
         lblLogo.setHorizontalTextPosition(SwingConstants.CENTER);
         lblLogo.setVerticalTextPosition(SwingConstants.BOTTOM);
         lblLogo.setHorizontalAlignment(SwingConstants.CENTER);
@@ -73,10 +59,7 @@ public class GUI extends JFrame {
             if (empUrl != null) {
                 btnChuaDangNhap.setIcon(new ImageIcon(new ImageIcon(empUrl).getImage().getScaledInstance(35, 35, Image.SCALE_SMOOTH)));
             }
-        } catch (Exception e) {
-            System.err.println("Không tìm thấy employee.png");
-        }
-        btnChuaDangNhap.setToolTipText("Đăng nhập");
+        } catch (Exception e) {}
         btnChuaDangNhap.setContentAreaFilled(false);
         btnChuaDangNhap.setBorderPainted(false);
         btnChuaDangNhap.setFocusPainted(false);
@@ -86,38 +69,12 @@ public class GUI extends JFrame {
         pnlDaDangNhap.setOpaque(false);
 
         JButton btnAvatar = new JButton();
-        try {
-            java.net.URL maleUrl = getClass().getResource("/img/employee_male.png");
-            if (maleUrl != null) {
-                btnAvatar.setIcon(new ImageIcon(new ImageIcon(maleUrl).getImage().getScaledInstance(35, 35, Image.SCALE_SMOOTH)));
-            }
-        } catch (Exception e) {
-            System.err.println("Không tìm thấy employee_male.png");
-        }
-        btnAvatar.setToolTipText("Trương Minh Nhật (Thu ngân)");
         btnAvatar.setContentAreaFilled(false);
         btnAvatar.setBorderPainted(false);
         btnAvatar.setFocusPainted(false);
         btnAvatar.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-        JButton btnLogout = new JButton();
-        try {
-            java.net.URL logoutUrl = getClass().getResource("/img/logout.png");
-            if (logoutUrl != null) {
-                btnLogout.setIcon(new ImageIcon(new ImageIcon(logoutUrl).getImage().getScaledInstance(28, 28, Image.SCALE_SMOOTH)));
-            } else {
-                btnLogout.setText("Đăng xuất");
-            }
-        } catch (Exception e) {
-            btnLogout.setText("Đăng xuất");
-        }
-        btnLogout.setContentAreaFilled(false);
-        btnLogout.setBorderPainted(false);
-        btnLogout.setFocusPainted(false);
-        btnLogout.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
         pnlDaDangNhap.add(btnAvatar);
-        pnlDaDangNhap.add(btnLogout);
 
         pnlRight.add(btnChuaDangNhap, "ChuaDangNhap");
         pnlRight.add(pnlDaDangNhap, "DaDangNhap");
@@ -126,27 +83,40 @@ public class GUI extends JFrame {
         pnlHeader.add(pnlRight, BorderLayout.EAST);
 
         btnChuaDangNhap.addActionListener(e -> {
-            new FrmLogin().setVisible(true);
-            loginCardLayout.show(pnlRight, "DaDangNhap");
+            new FrmLogin(nv -> {
+                String iconPath = nv.isGioiTinh() ? "/img/employee_male.png" : "/img/employee_female.png";
+                java.net.URL avatarUrl = getClass().getResource(iconPath);
+                if (avatarUrl != null) {
+                    btnAvatar.setIcon(new ImageIcon(new ImageIcon(avatarUrl).getImage().getScaledInstance(35, 35, Image.SCALE_SMOOTH)));
+                }
+                
+                String gioiTinh = nv.isGioiTinh() ? "Nam" : "Nữ";
+                String tooltipText = "<html><b>Họ tên:</b> " + nv.getHoTen() + "<br><b>Mã NV:</b> " + nv.getMaNV() + "<br><b>Chức vụ:</b> " + nv.getChucVu() + "<br><b>Giới tính:</b> " + gioiTinh + "</html>";
+                btnAvatar.setToolTipText(tooltipText);
+                
+                loginCardLayout.show(pnlRight, "DaDangNhap");
+            }).setVisible(true);
         });
 
-        btnLogout.addActionListener(e -> {
-            int confirm = JOptionPane.showConfirmDialog(this, "Bạn muốn đăng xuất?", "Xác nhận", JOptionPane.YES_NO_OPTION);
-            if (confirm == JOptionPane.YES_OPTION) {
-                loginCardLayout.show(pnlRight, "ChuaDangNhap");
-            }
-        });
+        JPanel pnlMenu = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 12));
+        pnlMenu.setBackground(bgLight);
+        pnlMenu.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, new Color(230, 200, 240)));
 
-        JPanel pnlMenu = new JPanel(new FlowLayout(FlowLayout.CENTER, 40, 10));
-        pnlMenu.setBackground(new Color(245, 245, 245)); 
-        
         JButton btnHome = createMenuButton("TRANG CHỦ");
-        JButton btnProduct = createMenuButton("QUẢN LÝ SẢN PHẨM");
-        JButton btnPOS = createMenuButton("LẬP HÓA ĐƠN");
-        JButton btnReport = createMenuButton("THỐNG KÊ");
+        JButton btnSupplier = createMenuButton("NHÀ CUNG CẤP");
+        JButton btnProduct = createMenuButton("SẢN PHẨM");
+        JButton btnEmployee = createMenuButton("NHÂN VIÊN");
+        JButton btnCustomer = createMenuButton("KHÁCH HÀNG");
+        JButton btnImport = createMenuButton("NHẬP HÀNG");
+        JButton btnPOS = createMenuButton("BÁN HÀNG");
+        JButton btnReport = createMenuButton("BÁO CÁO");
 
         pnlMenu.add(btnHome);
+        pnlMenu.add(btnSupplier);
         pnlMenu.add(btnProduct);
+        pnlMenu.add(btnEmployee);
+        pnlMenu.add(btnCustomer);
+        pnlMenu.add(btnImport);
         pnlMenu.add(btnPOS);
         pnlMenu.add(btnReport);
 
@@ -161,46 +131,63 @@ public class GUI extends JFrame {
         pnlDefaultHome.setBackground(Color.WHITE);
         JLabel lblBanner = new JLabel("WELCOME TO SHOE STORE SYSTEM", SwingConstants.CENTER);
         lblBanner.setFont(new Font("Arial", Font.BOLD, 40));
-        lblBanner.setForeground(Color.LIGHT_GRAY);
+        lblBanner.setForeground(new Color(220, 180, 230));
         pnlDefaultHome.add(lblBanner, BorderLayout.CENTER);
 
-        JPanel pnlProductHolder = new JPanel(); pnlProductHolder.setBackground(Color.CYAN);
-        JPanel pnlPOSHolder = new JPanel(); pnlPOSHolder.setBackground(Color.ORANGE);
-        JPanel pnlReportHolder = new JPanel(); pnlReportHolder.setBackground(Color.GREEN);
-
         pnlCenter.add(pnlDefaultHome, "HOME");
-        pnlCenter.add(pnlProductHolder, "PRODUCT");
-        pnlCenter.add(pnlPOSHolder, "POS");
-        pnlCenter.add(pnlReportHolder, "REPORT");
+        pnlCenter.add(createDummyPanel(Color.CYAN, "Giao Diện Nhà Cung Cấp"), "SUPPLIER");
+        pnlCenter.add(createDummyPanel(Color.ORANGE, "Giao Diện Sản Phẩm"), "PRODUCT");
+        pnlCenter.add(createDummyPanel(Color.LIGHT_GRAY, "Giao Diện Nhân Viên"), "EMPLOYEE");
+        pnlCenter.add(createDummyPanel(Color.PINK, "Giao Diện Khách Hàng"), "CUSTOMER");
+        pnlCenter.add(createDummyPanel(Color.YELLOW, "Giao Diện Nhập Hàng"), "IMPORT");
+        pnlCenter.add(createDummyPanel(Color.GREEN, "Giao Diện Bán Hàng"), "POS");
+        pnlCenter.add(createDummyPanel(Color.MAGENTA, "Giao Diện Báo Cáo"), "REPORT");
 
         add(pnlCenter, BorderLayout.CENTER);
 
         btnHome.addActionListener(e -> mainCardLayout.show(pnlCenter, "HOME"));
+        btnSupplier.addActionListener(e -> mainCardLayout.show(pnlCenter, "SUPPLIER"));
         btnProduct.addActionListener(e -> mainCardLayout.show(pnlCenter, "PRODUCT"));
+        btnEmployee.addActionListener(e -> mainCardLayout.show(pnlCenter, "EMPLOYEE"));
+        btnCustomer.addActionListener(e -> mainCardLayout.show(pnlCenter, "CUSTOMER"));
+        btnImport.addActionListener(e -> mainCardLayout.show(pnlCenter, "IMPORT"));
         btnPOS.addActionListener(e -> mainCardLayout.show(pnlCenter, "POS"));
         btnReport.addActionListener(e -> mainCardLayout.show(pnlCenter, "REPORT"));
     }
 
     private JButton createMenuButton(String text) {
         JButton btn = new JButton(text);
-        btn.setFont(new Font("Arial", Font.BOLD, 14));
-        btn.setForeground(Color.DARK_GRAY);
-        btn.setContentAreaFilled(false); 
-        btn.setBorderPainted(false);    
-        btn.setFocusPainted(false);     
-        btn.setCursor(new Cursor(Cursor.HAND_CURSOR)); 
+        btn.setFont(new Font("Arial", Font.BOLD, 13));
+        btn.setForeground(primaryColor);
+        btn.setContentAreaFilled(false);
+        btn.setBorderPainted(false);
+        btn.setFocusPainted(false);
+        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        btn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                btn.setForeground(hoverColor);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                btn.setForeground(primaryColor);
+            }
+        });
         return btn;
+    }
+
+    private JPanel createDummyPanel(Color bgColor, String text) {
+        JPanel pnl = new JPanel(new BorderLayout());
+        pnl.setBackground(bgColor);
+        JLabel lbl = new JLabel(text, SwingConstants.CENTER);
+        lbl.setFont(new Font("Arial", Font.BOLD, 24));
+        pnl.add(lbl, BorderLayout.CENTER);
+        return pnl;
     }
 
     public static void main(String[] args) {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        SwingUtilities.invokeLater(() -> {
-            new GUI().setVisible(true);
-        });
+        } catch (Exception e) {}
+        SwingUtilities.invokeLater(() -> new GUI().setVisible(true));
     }
-}
+}	

@@ -5,28 +5,30 @@ import javax.swing.*;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
-
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 public class FrmSubscribe extends JFrame {
-	private JTextField txtMaNV;
+
+    private JTextField txtMaNV;
     private JTextField txtHoTen;
     private JTextField txtChucVu;
     private JPasswordField txtMatKhau;
     private JRadioButton radNam;
     private JRadioButton radNu;
     private JButton btnLuu;
-    
+
     private Color bgLight = new Color(253, 240, 255);
     private Color primaryColor = new Color(180, 60, 200);
     private Color hoverColor = new Color(150, 40, 170);
     private Color textDark = new Color(70, 20, 80);
+
     public FrmSubscribe() {
-    		setTitle("Hệ Thống - Thêm Nhân Viên");
-        setSize(450, 420);
+        setTitle("Hệ Thống - Đăng Ký");
+        setSize(450, 470);
         setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setResizable(false);
 
         JPanel pnlMain = new JPanel(new BorderLayout());
@@ -42,7 +44,7 @@ public class FrmSubscribe extends JFrame {
         JPanel pnlForm = new JPanel(new GridBagLayout());
         pnlForm.setBackground(bgLight);
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 15, 10, 15);
+        gbc.insets = new Insets(8, 15, 8, 15);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         txtMaNV = new JTextField();
@@ -99,9 +101,13 @@ public class FrmSubscribe extends JFrame {
 
         pnlMain.add(pnlForm, BorderLayout.CENTER);
 
-        JPanel pnlBottom = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JPanel pnlBottom = new JPanel();
+        pnlBottom.setLayout(new BoxLayout(pnlBottom, BoxLayout.Y_AXIS));
         pnlBottom.setBackground(bgLight);
-        pnlBottom.setBorder(BorderFactory.createEmptyBorder(10, 0, 20, 0));
+        pnlBottom.setBorder(BorderFactory.createEmptyBorder(10, 0, 15, 0));
+
+        JPanel pnlBtn = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        pnlBtn.setBackground(bgLight);
 
         btnLuu = new JButton("ĐĂNG KÝ");
         btnLuu.setFont(new Font("Arial", Font.BOLD, 14));
@@ -120,8 +126,33 @@ public class FrmSubscribe extends JFrame {
                 btnLuu.setBackground(primaryColor);
             }
         });
+        pnlBtn.add(btnLuu);
 
-        pnlBottom.add(btnLuu);
+        JPanel pnlLink = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 0));
+        pnlLink.setBackground(bgLight);
+        
+        JLabel lblDaCoTaiKhoan = new JLabel("Đã có tài khoản?");
+        lblDaCoTaiKhoan.setFont(new Font("Arial", Font.PLAIN, 13));
+        lblDaCoTaiKhoan.setForeground(textDark);
+        
+        JLabel lblDangNhap = new JLabel("Đăng nhập");
+        lblDangNhap.setFont(new Font("Arial", Font.BOLD, 13));
+        lblDangNhap.setForeground(primaryColor);
+        lblDangNhap.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        
+        lblDangNhap.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                new FrmLogin().setVisible(true);
+                dispose();
+            }
+        });
+
+        pnlLink.add(lblDaCoTaiKhoan);
+        pnlLink.add(lblDangNhap);
+
+        pnlBottom.add(pnlBtn);
+        pnlBottom.add(pnlLink);
+
         pnlMain.add(pnlBottom, BorderLayout.SOUTH);
 
         btnLuu.addActionListener(e -> {
@@ -140,13 +171,11 @@ public class FrmSubscribe extends JFrame {
             NhanVienDao dao = new NhanVienDao();
 
             if (dao.themNhanVien(nv)) {
-                JOptionPane.showMessageDialog(this, "Thêm nhân viên thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-                txtMaNV.setText("");
-                txtHoTen.setText("");
-                txtChucVu.setText("");
-                txtMatKhau.setText("");
+                JOptionPane.showMessageDialog(this, "Đăng ký thành công! Vui lòng đăng nhập.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                new FrmLogin().setVisible(true);
+                dispose();
             } else {
-                JOptionPane.showMessageDialog(this, "Thêm thất bại! Vui lòng kiểm tra lại.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Đăng ký thất bại! Trùng mã nhân viên.", "Lỗi", JOptionPane.ERROR_MESSAGE);
             }
         });
     }
@@ -166,6 +195,7 @@ public class FrmSubscribe extends JFrame {
                 new EmptyBorder(3, 8, 3, 8)
         ));
     }
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             new FrmSubscribe().setVisible(true);

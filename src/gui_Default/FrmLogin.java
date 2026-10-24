@@ -4,15 +4,21 @@ import javax.swing.*;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+
+import HSK.gui_Default.entity.NhanVien;
+
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class FrmLogin extends JFrame {
 
+public class FrmLogin extends JFrame {
+	
     private JTextField txtMaNV;
     private JPasswordField txtMatKhau;
     private JButton btnDangNhap;
+    
+    private java.util.function.Consumer<NhanVien> onLoginSuccess;
 
     private Color bgLight = new Color(253, 240, 255);
     private Color primaryColor = new Color(180, 60, 200);
@@ -20,10 +26,16 @@ public class FrmLogin extends JFrame {
     private Color textDark = new Color(70, 20, 80);
 
     public FrmLogin() {
+        this(null);
+    }
+
+    public FrmLogin(java.util.function.Consumer<NhanVien> onLoginSuccess) {
+        this.onLoginSuccess = onLoginSuccess;
+        
         setTitle("Hệ Thống - Đăng Nhập");
-        setSize(400, 300);
+        setSize(400, 330);
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setResizable(false);
 
         JPanel pnlMain = new JPanel(new BorderLayout());
@@ -60,10 +72,14 @@ public class FrmLogin extends JFrame {
 
         pnlMain.add(pnlForm, BorderLayout.CENTER);
 
-        JPanel pnlBottom = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JPanel pnlBottom = new JPanel();
+        pnlBottom.setLayout(new BoxLayout(pnlBottom, BoxLayout.Y_AXIS));
         pnlBottom.setBackground(bgLight);
-        pnlBottom.setBorder(BorderFactory.createEmptyBorder(10, 0, 25, 0));
+        pnlBottom.setBorder(BorderFactory.createEmptyBorder(10, 0, 15, 0));
 
+        JPanel pnlBtn = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        pnlBtn.setBackground(bgLight);
+        
         btnDangNhap = new JButton("ĐĂNG NHẬP");
         btnDangNhap.setFont(new Font("Arial", Font.BOLD, 14));
         btnDangNhap.setBackground(primaryColor);
@@ -81,8 +97,33 @@ public class FrmLogin extends JFrame {
                 btnDangNhap.setBackground(primaryColor);
             }
         });
+        pnlBtn.add(btnDangNhap);
 
-        pnlBottom.add(btnDangNhap);
+        JPanel pnlLink = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 0));
+        pnlLink.setBackground(bgLight);
+        
+        JLabel lblChuaCoTaiKhoan = new JLabel("Chưa có tài khoản?");
+        lblChuaCoTaiKhoan.setFont(new Font("Arial", Font.PLAIN, 13));
+        lblChuaCoTaiKhoan.setForeground(textDark);
+        
+        JLabel lblDangKy = new JLabel("Đăng ký ngay");
+        lblDangKy.setFont(new Font("Arial", Font.BOLD, 13));
+        lblDangKy.setForeground(primaryColor);
+        lblDangKy.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        
+        lblDangKy.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                new FrmSubscribe().setVisible(true);
+                dispose();
+            }
+        });
+        
+        pnlLink.add(lblChuaCoTaiKhoan);
+        pnlLink.add(lblDangKy);
+
+        pnlBottom.add(pnlBtn);
+        pnlBottom.add(pnlLink);
+        
         pnlMain.add(pnlBottom, BorderLayout.SOUTH);
 
         btnDangNhap.addActionListener(e -> {
@@ -95,8 +136,14 @@ public class FrmLogin extends JFrame {
             }
 
             NhanVienDao dao = new NhanVienDao();
-            if (dao.dangNhap(ma, pass)) {
+            NhanVien nv = dao.dangNhap(ma, pass);
+
+            if (nv != null) {
                 JOptionPane.showMessageDialog(this, "Đăng nhập thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                if (this.onLoginSuccess != null) {
+                    this.onLoginSuccess.accept(nv); // Truyền đối tượng NhanVien về GUI
+                }
+                dispose();
             } else {
                 JOptionPane.showMessageDialog(this, "Sai mã nhân viên hoặc mật khẩu!", "Lỗi đăng nhập", JOptionPane.ERROR_MESSAGE);
             }
@@ -117,11 +164,5 @@ public class FrmLogin extends JFrame {
                 new LineBorder(new Color(220, 190, 230), 1, true),
                 new EmptyBorder(3, 8, 3, 8)
         ));
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            new FrmLogin().setVisible(true);
-        });
     }
 }

@@ -18,7 +18,7 @@ public class NhanVienDao {
             pst.setString(2, nv.getHoTen());
             pst.setBoolean(3, nv.isGioiTinh());
             pst.setString(4, nv.getChucVu());
-            pst.setString(5, nv.getMatKhau());
+            pst.setString(5, nv.getMatKhau());			
             
             return pst.executeUpdate() > 0;
         } catch (Exception e) {
@@ -26,7 +26,7 @@ public class NhanVienDao {
         }
         return false;
     }
-	public boolean dangNhap(String maNV, String matKhau) {
+	public NhanVien dangNhap(String maNV, String matKhau) {
 	    String sql = "SELECT * FROM NhanVien WHERE MaNV = ? AND MatKhau = ?";
 	    try (Connection con = connectDB.getConnection();
 	         PreparedStatement pst = con.prepareStatement(sql)) {
@@ -35,10 +35,18 @@ public class NhanVienDao {
 	        pst.setString(2, matKhau);
 	        ResultSet rs = pst.executeQuery();
 	        
-	        return rs.next(); // Trả về true nếu tìm thấy khớp thông tin
+	        if (rs.next()) {
+	            return new NhanVien(
+	                rs.getString("MaNV"), 
+	                rs.getString("HoTen"), 
+	                rs.getBoolean("GioiTinh"), 
+	                rs.getString("ChucVu"), 
+	                rs.getString("MatKhau")
+	            );
+	        }
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	    }
-	    return false;
-	}
+	    return null;
+	}		
 }
