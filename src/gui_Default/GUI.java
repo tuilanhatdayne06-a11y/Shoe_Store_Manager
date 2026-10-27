@@ -84,14 +84,14 @@ public class GUI extends JFrame {
 
         btnChuaDangNhap.addActionListener(e -> {
             new FrmLogin(nv -> {
-                String iconPath = nv.isGioiTinh() ? "/img/employee_male.png" : "/img/employee_female.png";
+                String iconPath = nv.isGender() ? "/img/employee_male.png" : "/img/employee_female.png";
                 java.net.URL avatarUrl = getClass().getResource(iconPath);
                 if (avatarUrl != null) {
                     btnAvatar.setIcon(new ImageIcon(new ImageIcon(avatarUrl).getImage().getScaledInstance(35, 35, Image.SCALE_SMOOTH)));
                 }
                 
-                String gioiTinh = nv.isGioiTinh() ? "Nam" : "Nữ";
-                String tooltipText = "<html><b>Họ tên:</b> " + nv.getHoTen() + "<br><b>Mã NV:</b> " + nv.getMaNV() + "<br><b>Chức vụ:</b> " + nv.getChucVu() + "<br><b>Giới tính:</b> " + gioiTinh + "</html>";
+                String gioiTinh = nv.isGender() ? "Nam" : "Nữ";
+                String tooltipText = "<html><b>Họ tên:</b> " + nv.getEmployeeName() + "<br><b>Mã NV:</b> " + nv.getEmployeeId() + "<br><b>Chức vụ:</b> " + nv.getPosition() + "<br><b>Giới tính:</b> " + gioiTinh + "</html>";
                 btnAvatar.setToolTipText(tooltipText);
                 
                 loginCardLayout.show(pnlRight, "DaDangNhap");

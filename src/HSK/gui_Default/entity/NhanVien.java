@@ -1,30 +1,72 @@
 package HSK.gui_Default.entity;
 
 public class NhanVien {
+	private String employeeId;
+	private String employeeName;
+	private boolean gender;
+	private String phoneNumber;
+	private String position;
+	private String pass;
+	
+	public NhanVien() {
+		
+	}
 
-	private String maNV;
-    private String hoTen;
-    private boolean gioiTinh;
-    private String chucVu;
-    private String matKhau;
+	public NhanVien(String employeeId, String employeeName, boolean gender, String phoneNumber, String position,
+			String pass) {
+		setEmployeeId(employeeId);
+		setEmployeeName(employeeName);
+		setGender(gender);
+		setPhoneNumber(phoneNumber);
+		setPosition(position);
+		setPass(pass);
+	}
 
-    public NhanVien(String maNV, String hoTen, boolean gioiTinh, String chucVu, String matKhau) {
-        this.maNV = maNV;
-        this.hoTen = hoTen;
-        this.gioiTinh = gioiTinh;
-        this.chucVu = chucVu;
-        this.matKhau = matKhau;
-    }
+	public String getEmployeeId() {
+		return employeeId;
+	}
 
-    public String getMaNV() { return maNV; }
-    public void setMaNV(String maNV) { this.maNV = maNV; }
-    public String getHoTen() { return hoTen; }
-    public void setHoTen(String hoTen) { this.hoTen = hoTen; }
-    public boolean isGioiTinh() { return gioiTinh; }
-    public void setGioiTinh(boolean gioiTinh) { this.gioiTinh = gioiTinh; }
-    public String getChucVu() { return chucVu; }
-    public void setChucVu(String chucVu) { this.chucVu = chucVu; }
-    public String getMatKhau() { return matKhau; }
-    public void setMatKhau(String matKhau) { this.matKhau = matKhau; }
+	public void setEmployeeId(String employeeId) {
+		this.employeeId = employeeId;
+	}
 
+	public String getEmployeeName() {
+		return employeeName;
+	}
+
+	public void setEmployeeName(String employeeName) {
+		this.employeeName = employeeName;
+	}
+
+	public boolean isGender() {
+		return gender;
+	}
+
+	public void setGender(boolean gender) {
+		this.gender = gender;
+	}
+
+	public String getPhoneNumber() {
+		return phoneNumber;
+	}
+
+	public void setPhoneNumber(String phoneNumber) {
+		this.phoneNumber = phoneNumber;
+	}
+
+	public String getPosition() {
+		return position;
+	}
+
+	public void setPosition(String position) {
+		this.position = position;
+	}
+
+	public String getPass() {
+		return pass;
+	}
+
+	public void setPass(String pass) {
+		this.pass = pass;
+	}
 }

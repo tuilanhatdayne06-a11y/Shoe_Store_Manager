@@ -23,10 +23,12 @@ public class connectDB {
         return instance;
     }
 
-    public static Connection getConnection() {
-        if (con == null) {
-            new connectDB();
-        }
-        return con;
+    public static Connection getConnection() throws SQLException {
+    	String url = "jdbc:sqlserver://localhost:1433;"
+                + "databaseName=ShoeStore;"
+                + "encrypt=false;"
+                + "trustServerCertificate=true;";
+
+     return DriverManager.getConnection(url, "sa", "sapassword");
     }
 }
