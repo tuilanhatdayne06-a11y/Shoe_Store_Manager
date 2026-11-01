@@ -14,7 +14,9 @@ public class connectDB {
         String password = "sapassword";
         try {
             con = DriverManager.getConnection(url, user, password);
+            System.out.println("Kết nối SQL Server thành công!");
         } catch (SQLException e) {
+            System.err.println("Kết nối SQL Server thất bại: " + e.getMessage());
             e.printStackTrace();
         }
     }
