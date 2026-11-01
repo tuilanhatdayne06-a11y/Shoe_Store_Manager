@@ -1,10 +1,13 @@
 package gui_Default;
 
-import HSK.gui_Default.entity.NhanVien;
+import entity.NhanVien;
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+
+import dao.NhanVienDao;
+
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;

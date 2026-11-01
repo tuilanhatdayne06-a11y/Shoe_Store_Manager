@@ -5,12 +5,12 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
-import HSK.gui_Default.entity.NhanVien;
+import dao.NhanVienDao;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
+import entity.NhanVien;
 
 public class FrmLogin extends JFrame {
 	
@@ -141,7 +141,7 @@ public class FrmLogin extends JFrame {
             if (nv != null) {
                 JOptionPane.showMessageDialog(this, "Đăng nhập thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
                 if (this.onLoginSuccess != null) {
-                    this.onLoginSuccess.accept(nv); // Truyền đối tượng NhanVien về GUI
+                    this.onLoginSuccess.accept(nv);
                 }
                 dispose();
             } else {

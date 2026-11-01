@@ -1,7 +1,7 @@
-package gui_Default;
+package dao;
 
-import HSK.gui_Default.entity.NhanVien;
 import connectDB.connectDB;
+import entity.NhanVien;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
