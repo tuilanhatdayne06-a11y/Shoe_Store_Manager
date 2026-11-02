@@ -1,6 +1,7 @@
 package utils;
 
 import java.io.File;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -8,7 +9,7 @@ import java.nio.file.Paths;
 import javax.swing.JFileChooser;
 
 public class ImageUtil {
-	
+
 	/**
 	 * 
 	 * @return ảnh đã chọn
@@ -32,16 +33,19 @@ public class ImageUtil {
 	 * cuối cùng là thực hiện sao chép ảnh gốc vào đường dẫn đã tạo
 	 * @param image
 	 * ảnh đầu vào
-	 * 
+	 * @param typeImg 
+	 * phân loại thư mục để lưu ảnh
 	 * 
 	 * @return đường dẫn của ảnh vừa thêm
 	 */
-	public static String saveImg(File image)
+	public static String saveImg(File image, String typeImg)
 	{
 		if(image == null) return null;
+		final String PATH = "src/img/" + typeImg;
+		
 		String pathImg = null;
 		try {
-			Path path = Paths.get("src/img/product");
+			Path path = Paths.get(PATH);
 			Files.createDirectories(path);
 			
 			Path destination = path.resolve(image.getName());
