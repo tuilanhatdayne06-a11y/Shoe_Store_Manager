@@ -1,13 +1,12 @@
 
 package dao;
 
-import HSK.gui_Default.entity.NhanVien;
+import entity.NhanVien;
 import connectDB.connectDB;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
 public class NhanVienDao {
 
 	public boolean themNhanVien(NhanVien nv) {
