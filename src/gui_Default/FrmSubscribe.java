@@ -1,13 +1,12 @@
 package gui_Default;
 
 import entity.NhanVien;
+import dao.NhanVienDao;
+
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
-
-import dao.NhanVienDao;
-
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -26,6 +25,14 @@ public class FrmSubscribe extends JFrame {
     private Color primaryColor = new Color(180, 60, 200);
     private Color hoverColor = new Color(150, 40, 170);
     private Color textDark = new Color(70, 20, 80);
+    private JTextField txtPhone;
+    
+    private FrmLogin loginForm;
+    
+    public FrmSubscribe(FrmLogin loginForm) {
+        this();
+        this.loginForm = loginForm;
+    }
 
     public FrmSubscribe() {
         setTitle("Hệ Thống - Đăng Ký");
@@ -54,11 +61,13 @@ public class FrmSubscribe extends JFrame {
         txtHoTen = new JTextField();
         txtChucVu = new JTextField();
         txtMatKhau = new JPasswordField();
+        txtPhone = new JTextField();
 
         styleField(txtMaNV);
         styleField(txtHoTen);
         styleField(txtChucVu);
         styleField(txtMatKhau);
+        styleField(txtPhone);
 
         JPanel pnlGioiTinh = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
         pnlGioiTinh.setBackground(bgLight);
@@ -91,13 +100,18 @@ public class FrmSubscribe extends JFrame {
         pnlForm.add(taoLabel("Giới tính:"), gbc);
         gbc.gridx = 1; gbc.weightx = 0.7;
         pnlForm.add(pnlGioiTinh, gbc);
-
+        
         gbc.gridx = 0; gbc.gridy = 3; gbc.weightx = 0.3;
+        pnlForm.add(taoLabel("Số điện thoại:"), gbc);
+        gbc.gridx = 1; gbc.weightx = 0.7;
+        pnlForm.add(txtPhone, gbc);
+
+        gbc.gridx = 0; gbc.gridy = 4; gbc.weightx = 0.3;
         pnlForm.add(taoLabel("Chức vụ:"), gbc);
         gbc.gridx = 1; gbc.weightx = 0.7;
         pnlForm.add(txtChucVu, gbc);
 
-        gbc.gridx = 0; gbc.gridy = 4; gbc.weightx = 0.3;
+        gbc.gridx = 0; gbc.gridy = 5; gbc.weightx = 0.3;
         pnlForm.add(taoLabel("Mật khẩu:"), gbc);
         gbc.gridx = 1; gbc.weightx = 0.7;
         pnlForm.add(txtMatKhau, gbc);
@@ -145,7 +159,10 @@ public class FrmSubscribe extends JFrame {
         
         lblDangNhap.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
-                new FrmLogin().setVisible(true);
+                if(loginForm != null)
+                    loginForm.setVisible(true);
+                else
+                    new FrmLogin().setVisible(true);
                 dispose();
             }
         });
@@ -162,23 +179,56 @@ public class FrmSubscribe extends JFrame {
             String ma = txtMaNV.getText().trim();
             String ten = txtHoTen.getText().trim();
             boolean isNam = radNam.isSelected();
+            String phone = txtPhone.getText().trim();
             String chucVu = txtChucVu.getText().trim();
             String pass = new String(txtMatKhau.getPassword()).trim();
 
-            if (ma.isEmpty() || ten.isEmpty() || chucVu.isEmpty() || pass.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+            if (!ma.matches("^NV\\d{3,}$")) {
+                JOptionPane.showMessageDialog(this, "Mã nhân viên không hợp lệ!\nĐịnh dạng đúng: Bắt đầu bằng 'NV' "
+                		+ "và theo sau ít nhất 3 chữ số (VD: NV001).", "Lỗi nhập liệu", JOptionPane.ERROR_MESSAGE);
+                txtMaNV.requestFocus();
                 return;
             }
 
-            NhanVien nv = new NhanVien(ma, ten, isNam, chucVu, pass);
+            if (!ten.matches("^[\\p{L}\\s]+$")) {
+                JOptionPane.showMessageDialog(this, "Họ tên không hợp lệ!\nChỉ được chứa chữ cái "
+                		+ "và khoảng trắng.", "Lỗi nhập liệu", JOptionPane.ERROR_MESSAGE);
+                txtHoTen.requestFocus();
+                return;
+            }
+
+            if (!phone.matches("^0\\d{9}$")) {
+                JOptionPane.showMessageDialog(this, "Số điện thoại không hợp lệ!\nPhải gồm đúng 10 chữ số "
+                		+ "và bắt đầu bằng số 0.", "Lỗi nhập liệu", JOptionPane.ERROR_MESSAGE);
+                txtPhone.requestFocus();
+                return;
+            }
+
+            if (chucVu.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Vui lòng nhập chức vụ!", "Lỗi nhập liệu", JOptionPane.ERROR_MESSAGE);
+                txtChucVu.requestFocus();
+                return;
+            }
+
+            if (!pass.matches("^.{6,}$")) {
+                JOptionPane.showMessageDialog(this, "Mật khẩu quá ngắn!\n"
+                		+ "Vui lòng nhập ít nhất 6 ký tự.", "Lỗi nhập liệu", JOptionPane.ERROR_MESSAGE);
+                txtMatKhau.requestFocus();
+                return;
+            }
+
+            NhanVien nv = new NhanVien(ma, ten, isNam, phone, chucVu, pass);
             NhanVienDao dao = new NhanVienDao();
 
             if (dao.themNhanVien(nv)) {
-                JOptionPane.showMessageDialog(this, "Đăng ký thành công! Vui lòng đăng nhập.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-                new FrmLogin().setVisible(true);
+                JOptionPane.showMessageDialog(this, "Đăng ký thành công!"
+                		+ " Vui lòng đăng nhập.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                if(loginForm != null)
+                    loginForm.setVisible(true);
                 dispose();
             } else {
-                JOptionPane.showMessageDialog(this, "Đăng ký thất bại! Trùng mã nhân viên.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Đăng ký thất bại!"
+                		+ " Trùng mã nhân viên hoặc lỗi CSDL.", "Lỗi", JOptionPane.ERROR_MESSAGE);
             }
         });
     }
@@ -197,11 +247,5 @@ public class FrmSubscribe extends JFrame {
                 new LineBorder(new Color(220, 190, 230), 1, true),
                 new EmptyBorder(3, 8, 3, 8)
         ));
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            new FrmSubscribe().setVisible(true);
-        });
     }
 }

@@ -4,77 +4,60 @@ import java.util.Objects;
 
 public class NhanVien {
 
-	private String maNV;
-    private String hoTen;
-    private boolean gioiTinh;
-    private String chucVu;
-    private String matKhau;
-
-    public NhanVien(String maNV, String hoTen, boolean gioiTinh, String chucVu, String matKhau) {
-        this.maNV = maNV;
-        this.hoTen = hoTen;
-        this.gioiTinh = gioiTinh;
-        this.chucVu = chucVu;
-        this.matKhau = matKhau;
+	private String EmployeeId;
+    private String EmployeeName;
+    private boolean isGender;
+    private String position;
+    private String pass;
+    private String phoneNumber;
+    public NhanVien(String employeeID, String employeeName, boolean isGender, String phoneNumber, String position, String pass) {
+        this.EmployeeId = employeeID;
+        this.EmployeeName = employeeName;
+        this.isGender = isGender;
+        this.phoneNumber = phoneNumber;
+        this.position = position;
+        this.pass = pass;
     }
-
-	public String getMaNV() {
-		return maNV;
+	public String getEmployeeId() {
+		return EmployeeId;
 	}
-
-	public void setMaNV(String maNV) {
-		this.maNV = maNV;
+	public void setEmployeeID(String employeeID) {
+		EmployeeId = employeeID;
 	}
-
-	public String getHoTen() {
-		return hoTen;
+	public String getEmployeeName() {
+		return EmployeeName;
 	}
-
-	public void setHoTen(String hoTen) {
-		this.hoTen = hoTen;
+	public void setEmployeeName(String employeeName) {
+		EmployeeName = employeeName;
 	}
-
-	public boolean isGioiTinh() {
-		return gioiTinh;
+	public boolean isGender() {
+		return isGender;
 	}
-
-	public void setGioiTinh(boolean gioiTinh) {
-		this.gioiTinh = gioiTinh;
+	public void setGender(boolean isGender) {
+		this.isGender = isGender;
 	}
-
-	public String getChucVu() {
-		return chucVu;
+	public String getPosition() {
+		return position;
 	}
-
-	public void setChucVu(String chucVu) {
-		this.chucVu = chucVu;
+	public void setPosition(String position) {
+		this.position = position;
 	}
-
-	public String getMatKhau() {
-		return matKhau;
+	public String getPass() {
+		return pass;
 	}
-
-	public void setMatKhau(String matKhau) {
-		this.matKhau = matKhau;
+	public void setPass(String pass) {
+		this.pass = pass;
 	}
-
+	public String getPhoneNumber() {
+		return phoneNumber;
+	}
+	public void setPhoneNumber(String phoneNumber) {
+		this.phoneNumber = phoneNumber;
+	}
 	@Override
-	public int hashCode() {
-		return Objects.hash(maNV);
+	public String toString() {
+		return "NhanVien [EmployeeId=" + EmployeeId + ", EmployeeName=" + EmployeeName + ", isGender=" + isGender
+				+ ", position=" + position + ", pass=" + pass + ", phoneNumber=" + phoneNumber + "]";
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		NhanVien other = (NhanVien) obj;
-		return Objects.equals(maNV, other.maNV);
-	}
-
- 
-    
 }

@@ -26,9 +26,7 @@ public class Employee extends JPanel implements ActionListener {
         setBackground(Color.WHITE);
         setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
-        // ==========================================
-        // KHU VỰC PHÍA TRÊN: TIÊU ĐỀ + FORM + NÚT
-        // ==========================================
+       
         JPanel pnlTop = new JPanel(new BorderLayout(0, 15));
         pnlTop.setBackground(Color.WHITE);
 
@@ -116,16 +114,14 @@ public class Employee extends JPanel implements ActionListener {
 
         pnlTop.add(pnlAction, BorderLayout.SOUTH);
         
-        // Đặt cả cụm Form lên phía trên cùng của Panel chính
+
         add(pnlTop, BorderLayout.NORTH);
 
-        // ==========================================
-        // KHU VỰC PHÍA DƯỚI: BẢNG HIỂN THỊ
-        // ==========================================
+
         String[] columns = {"Mã NV", "Họ Tên", "Giới Tính", "Số Điện Thoại", "Email", "Chức Vụ"};
         modelNhanVien = new DefaultTableModel(columns, 0);
         tblNhanVien = new JTable(modelNhanVien);
-        tblNhanVien.setRowHeight(28); // Tăng chiều cao dòng cho dễ nhìn
+        tblNhanVien.setRowHeight(28); 
         tblNhanVien.getTableHeader().setFont(new Font("Arial", Font.BOLD, 13));
         tblNhanVien.getTableHeader().setBackground(primaryColor);
         tblNhanVien.getTableHeader().setForeground(Color.WHITE);
@@ -137,24 +133,23 @@ public class Employee extends JPanel implements ActionListener {
         tableBorder.setTitleFont(new Font("Arial", Font.BOLD, 14));
         scrollPane.setBorder(tableBorder);
 
-        // Đặt Bảng vào CENTER để tự động chiếm hết khoảng trống còn lại
+
         add(scrollPane, BorderLayout.CENTER);
 
-        // Nạp dữ liệu mẫu để test
+
         modelNhanVien.addRow(new Object[]{"NV001", "Trương Minh Nhật", "Nam", "0989202998", "nhat@gmail.com", "Quản lý cửa hàng"});
         modelNhanVien.addRow(new Object[]{"NV002", "Nguyễn Thị Mai", "Nữ", "0912345678", "mai@gmail.com", "Nhân viên bán hàng"});
     }
 
-    // Hàm tạo nút (Thêm màu nền tường minh cho Windows)
     private JButton createButton(String text) {
         JButton btn = new JButton(text);
         btn.setFont(new Font("Arial", Font.BOLD, 13));
         btn.setBackground(primaryColor);
         btn.setForeground(Color.WHITE);
         btn.setFocusPainted(false);
-        btn.setOpaque(true); // Ép hiển thị màu nền
-        btn.setBorderPainted(false); // Bỏ viền mặc định của Windows
-        btn.setPreferredSize(new Dimension(100, 32)); // Set cứng chiều cao nút
+        btn.setOpaque(true); 
+        btn.setBorderPainted(false); 
+        btn.setPreferredSize(new Dimension(100, 32)); 
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btn.addActionListener(this);
         return btn;

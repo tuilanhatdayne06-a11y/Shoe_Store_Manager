@@ -5,6 +5,8 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
+
+import entity.NhanVien;
 import dao.NhanVienDao;
 
 import java.awt.*;
@@ -113,8 +115,8 @@ public class FrmLogin extends JFrame {
         
         lblDangKy.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
-                new FrmSubscribe().setVisible(true);
-                dispose();
+                new FrmSubscribe(FrmLogin.this).setVisible(true);
+                FrmLogin.this.setVisible(false);
             }
         });
         

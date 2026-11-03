@@ -127,6 +127,24 @@ public class GUI extends JFrame implements ActionListener {
 
         pnlHeader.add(pnlRight, BorderLayout.EAST);
 
+
+        btnChuaDangNhap.addActionListener(e -> {
+            new FrmLogin(nv -> {
+                String iconPath = nv.isGender() ? "/img/employee_male.png" : "/img/employee_female.png";
+                java.net.URL avatarUrl = getClass().getResource(iconPath);
+                if (avatarUrl != null) {
+                    btnAvatar.setIcon(new ImageIcon(new ImageIcon(avatarUrl).getImage().getScaledInstance(35, 35, Image.SCALE_SMOOTH)));
+                }
+                
+                String gioiTinh = nv.isGender() ? "Nam" : "Nữ";
+                String tooltipText = "<html><b>Họ tên:</b> " + nv.getEmployeeName() + "<br><b>Mã NV:</b> " + nv.getEmployeeId() + "<br><b>Chức vụ:</b> " + nv.getPosition() + "<br><b>Giới tính:</b> " + gioiTinh + "</html>";
+                btnAvatar.setToolTipText(tooltipText);
+                
+                loginCardLayout.show(pnlRight, "DaDangNhap");
+            }).setVisible(true);
+        });
+
+
         JPanel pnlMenu = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 12));
         pnlMenu.setBackground(bgLight);
         pnlMenu.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, new Color(230, 200, 240)));
@@ -229,20 +247,20 @@ public class GUI extends JFrame implements ActionListener {
         }
         else if (o == btnChuaDangNhap) {
             new FrmLogin(nv -> {
-                String iconPath = nv.isGioiTinh() ? "/img/employee_male.png" : "/img/employee_female.png";
+                String iconPath = nv.isGender() ? "/img/employee_male.png" : "/img/employee_female.png";
                 java.net.URL avatarUrl = getClass().getResource(iconPath);
                 if (avatarUrl != null) {
                     btnAvatar.setIcon(new ImageIcon(new ImageIcon(avatarUrl).getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH)));
                 }
                 
-                String gioiTinh = nv.isGioiTinh() ? "Nam" : "Nữ";
-                btnAvatar.setText(nv.getHoTen());
-                btnAvatar.setToolTipText("<html><b>Họ tên:</b> " + nv.getHoTen() + "<br><b>Chức vụ:</b> " + nv.getChucVu() + "</html>");
+                String gioiTinh = nv.isGender() ? "Nam" : "Nữ";
+                btnAvatar.setText(nv.getEmployeeName());
+                btnAvatar.setToolTipText("<html><b>Họ tên:</b> " + nv.getEmployeeName() + "<br><b>Chức vụ:</b> " + nv.getPosition() + "</html>");
                 
                 currentNhanVienInfo = "BẢNG THÔNG TIN \n\n"
-                                    + "Họ và tên: " + nv.getHoTen() + "\n"
-                                    + "Mã nhân viên: " + nv.getMaNV() + "\n"
-                                    + "Chức vụ: " + nv.getChucVu() + "\n"
+                                    + "Họ và tên: " + nv.getEmployeeName() + "\n"
+                                    + "Mã nhân viên: " + nv.getEmployeeId() + "\n"
+                                    + "Chức vụ: " + nv.getPosition() + "\n"
                                     + "Giới tính: " + gioiTinh;
                 
                 loginCardLayout.show(pnlRight, "DaDangNhap");
