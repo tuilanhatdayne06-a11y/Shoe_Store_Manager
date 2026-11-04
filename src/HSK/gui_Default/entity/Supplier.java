@@ -1,6 +1,6 @@
 package HSK.gui_Default.entity;
 
-public class NhaCungCap {
+public class Supplier {
     private String supplierId;
     private String supplierName;
     private String address;
@@ -8,11 +8,11 @@ public class NhaCungCap {
     private String email;
     private String logo;
 
-    public NhaCungCap() {
+    public Supplier() {
     }
 
-    public NhaCungCap(String supplierId, String supplierName, String address,
-                      String phoneNumber, String email, String logo) {
+    public Supplier(String supplierId, String supplierName, String address,
+                    String phoneNumber, String email, String logo) {
         this.supplierId = supplierId;
         this.supplierName = supplierName;
         this.address = address;

@@ -135,7 +135,7 @@ public class GUI extends JFrame {
         pnlDefaultHome.add(lblBanner, BorderLayout.CENTER);
 
         pnlCenter.add(pnlDefaultHome, "HOME");
-        pnlCenter.add(new NhaCungCapUI(), "SUPPLIER");
+        pnlCenter.add(new SupplierUI(), "SUPPLIER");
         pnlCenter.add(createDummyPanel(Color.ORANGE, "Giao Diện Sản Phẩm"), "PRODUCT");
         pnlCenter.add(createDummyPanel(Color.LIGHT_GRAY, "Giao Diện Nhân Viên"), "EMPLOYEE");
         pnlCenter.add(createDummyPanel(Color.PINK, "Giao Diện Khách Hàng"), "CUSTOMER");
