@@ -14,9 +14,7 @@ public class connectDB {
         String password = "sapassword";
         try {
             con = DriverManager.getConnection(url, user, password);
-            System.out.println("Kết nối SQL Server thành công!");
         } catch (SQLException e) {
-            System.err.println("Kết nối SQL Server thất bại: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -25,12 +23,10 @@ public class connectDB {
         return instance;
     }
 
-    public static Connection getConnection() throws SQLException {
-    	String url = "jdbc:sqlserver://localhost:1433;"
-                + "databaseName=ShoeStore;"
-                + "encrypt=false;"
-                + "trustServerCertificate=true;";
-
-     return DriverManager.getConnection(url, "sa", "sapassword");
+    public static Connection getConnection() {
+        if (con == null) {
+            new connectDB();
+        }
+        return con;
     }
 }

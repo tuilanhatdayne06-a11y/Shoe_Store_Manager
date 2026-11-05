@@ -1,4 +1,4 @@
-package HSK.gui_Default.entity;
+package entity;
 
 public class Supplier {
     private String supplierId;

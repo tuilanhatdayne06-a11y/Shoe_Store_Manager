@@ -1,7 +1,13 @@
 package gui_Default;
 
+<<<<<<< HEAD:src/gui_Default/SupplierUI.java
 import HSK.gui_Default.entity.Supplier;
 import dao.SupplierDAO;
+=======
+import dao.NhaCungCapDao;
+import entity.NhaCungCap;
+
+>>>>>>> 647a787a6839a61506152c753f9d7c96df4540b0:src/gui_Default/NhaCungCapUI.java
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
