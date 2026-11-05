@@ -1,101 +1,128 @@
 package dao;
 
-import HSK.gui_Default.entity.Supplier;
 import connectDB.connectDB;
+import entity.Supplier;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class SupplierDAO {
-    public List<Supplier> getAll() throws SQLException {
+    public List<Supplier> getAll() {
         List<Supplier> suppliers = new ArrayList<>();
-        String sql = "select * from Supplier";
+        String sql = "SELECT * FROM Supplier";
+        Connection conn = connectDB.getConnection();
 
-        try (Connection con = connectDB.getConnection();
-             PreparedStatement pst = con.prepareStatement(sql);
-             ResultSet rs = pst.executeQuery()) {
+        try (
+            PreparedStatement pst = conn.prepareStatement(sql);
+            ResultSet rs = pst.executeQuery()
+        ) {
             while (rs.next()) {
                 suppliers.add(readSupplier(rs));
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
         return suppliers;
     }
 
-    public List<String> getAllSupplier() throws SQLException {
+    public List<String> getAllSupplier() {
         List<String> suppliers = new ArrayList<>();
-        String sql = "select * from Supplier";
+        String sql = "SELECT * FROM Supplier";
+        Connection conn = connectDB.getConnection();
 
-        try (Connection con = connectDB.getConnection();
-             PreparedStatement pst = con.prepareStatement(sql);
-             ResultSet rs = pst.executeQuery()) {
+        try (
+            PreparedStatement pst = conn.prepareStatement(sql);
+            ResultSet rs = pst.executeQuery()
+        ) {
             while (rs.next()) {
                 suppliers.add(rs.getString(2));
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
         return suppliers;
     }
 
-    public Supplier findById(String supplierId) throws SQLException {
-        String sql = "select * from Supplier where supplierId = ?";
+    public Supplier findById(String supplierId) {
+        String sql = "SELECT * FROM Supplier WHERE supplierId = ?";
+        Connection conn = connectDB.getConnection();
 
-        try (Connection con = connectDB.getConnection();
-             PreparedStatement pst = con.prepareStatement(sql)) {
+        try (PreparedStatement pst = conn.prepareStatement(sql)) {
             pst.setString(1, supplierId);
             try (ResultSet rs = pst.executeQuery()) {
-                return rs.next() ? readSupplier(rs) : null;
+                if (rs.next()) {
+                    return readSupplier(rs);
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
+        return null;
     }
 
-    public boolean insert(Supplier supplier) throws SQLException {
-        String sql = "insert into Supplier "
-                + "(supplierId, supplierName, address, phoneNumber, email, logo) "
-                + "values (?, ?, ?, ?, ?, ?)";
+    public boolean insert(Supplier supplier) {
+        String sql = "INSERT INTO Supplier (supplierId, supplierName, address, phoneNumber, email, logo) VALUES (?, ?, ?, ?, ?, ?)";
+        Connection conn = connectDB.getConnection();
 
-        try (Connection con = connectDB.getConnection();
-             PreparedStatement pst = con.prepareStatement(sql)) {
+        try (PreparedStatement pst = conn.prepareStatement(sql)) {
             bindSupplier(pst, supplier);
             return pst.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 
-    public boolean update(String oldSupplierId, Supplier supplier) throws SQLException {
-        String sql = "update Supplier set supplierId = ?, supplierName = ?, address = ?, "
-                + "phoneNumber = ?, email = ?, logo = ? where supplierId = ?";
+    public boolean update(String oldSupplierId, Supplier supplier) {
+        String sql = "UPDATE Supplier SET supplierId = ?, supplierName = ?, address = ?, phoneNumber = ?, email = ?, logo = ? WHERE supplierId = ?";
+        Connection conn = connectDB.getConnection();
 
-        try (Connection con = connectDB.getConnection();
-             PreparedStatement pst = con.prepareStatement(sql)) {
+        try (PreparedStatement pst = conn.prepareStatement(sql)) {
             bindSupplier(pst, supplier);
             pst.setString(7, oldSupplierId);
             return pst.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 
-    public boolean delete(String supplierId) throws SQLException {
-        String sql = "delete from Supplier where supplierId = ?";
+    public boolean delete(String supplierId) {
+        String sql = "DELETE FROM Supplier WHERE supplierId = ?";
+        Connection conn = connectDB.getConnection();
 
-        try (Connection con = connectDB.getConnection();
-             PreparedStatement pst = con.prepareStatement(sql)) {
+        try (PreparedStatement pst = conn.prepareStatement(sql)) {
             pst.setString(1, supplierId);
             return pst.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 
-    private Supplier readSupplier(ResultSet rs) throws SQLException {
-        return new Supplier(
+    private Supplier readSupplier(ResultSet rs) {
+        try {
+            return new Supplier(
                 rs.getString("supplierId"),
                 rs.getString("supplierName"),
                 rs.getString("address"),
                 rs.getString("phoneNumber"),
                 rs.getString("email"),
-                rs.getString("logo"));
+                rs.getString("logo")
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
-    private void bindSupplier(PreparedStatement pst, Supplier supplier)
-            throws SQLException {
+    private void bindSupplier(PreparedStatement pst, Supplier supplier) throws Exception {
         pst.setString(1, supplier.getSupplierId());
         pst.setString(2, supplier.getSupplierName());
         pst.setString(3, supplier.getAddress());

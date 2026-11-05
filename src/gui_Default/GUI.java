@@ -194,16 +194,7 @@ public class GUI extends JFrame implements ActionListener {
         pnlDefaultHome.add(lblBanner, BorderLayout.CENTER);
 
         pnlCenter.add(pnlDefaultHome, "HOME");
-<<<<<<< HEAD
         pnlCenter.add(new SupplierUI(), "SUPPLIER");
-        pnlCenter.add(createDummyPanel(Color.ORANGE, "Giao Diện Sản Phẩm"), "PRODUCT");
-        pnlCenter.add(createDummyPanel(Color.LIGHT_GRAY, "Giao Diện Nhân Viên"), "EMPLOYEE");
-        pnlCenter.add(createDummyPanel(Color.PINK, "Giao Diện Khách Hàng"), "CUSTOMER");
-        pnlCenter.add(createDummyPanel(Color.YELLOW, "Giao Diện Nhập Hàng"), "IMPORT");
-        pnlCenter.add(createDummyPanel(Color.GREEN, "Giao Diện Bán Hàng"), "POS");
-        pnlCenter.add(createDummyPanel(Color.MAGENTA, "Giao Diện Báo Cáo"), "REPORT");
-=======
-        pnlCenter.add(new NhaCungCapUI(), "SUPPLIER");
         pnlCenter.add(new Employee(), "EMPLOYEE");
         pnlCenter.add(new ProductUI(), "PRODUCT");
         pnlCenter.add(new KhachHangUI(), "CUSTOMER");
@@ -211,7 +202,6 @@ public class GUI extends JFrame implements ActionListener {
        //pnlCenter.add(createDummyPanel(Color.GREEN, "Giao Diện Bán Hàng"), "POS");
         pnlCenter.add(new BaoCaoUI(), "REPORT");
         
->>>>>>> 647a787a6839a61506152c753f9d7c96df4540b0
 
         add(pnlCenter, BorderLayout.CENTER);
     }

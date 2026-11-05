@@ -1,13 +1,7 @@
 package gui_Default;
 
-<<<<<<< HEAD:src/gui_Default/SupplierUI.java
-import HSK.gui_Default.entity.Supplier;
+import entity.Supplier;
 import dao.SupplierDAO;
-=======
-import dao.NhaCungCapDao;
-import entity.NhaCungCap;
-
->>>>>>> 647a787a6839a61506152c753f9d7c96df4540b0:src/gui_Default/NhaCungCapUI.java
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -17,7 +11,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.sql.SQLException;
 import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -225,7 +218,7 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
 
         new SwingWorker<List<Supplier>, Void>() {
             @Override
-            protected List<Supplier> doInBackground() throws SQLException {
+            protected List<Supplier> doInBackground() {
                 return supplierDao.getAll();
             }
 
@@ -322,7 +315,7 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
         }
     }
 
-    private void refreshSupplierData() throws SQLException {
+    private void refreshSupplierData() {
         List<Supplier> suppliers = supplierDao.getAll();
         updateTable(suppliers);
         updateSupplierComboBox(suppliers);
@@ -363,15 +356,10 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
     // Xử lý thao tác thêm, sửa, xóa, làm mới và tìm mã.
     @Override
     public void actionPerformed(ActionEvent event) {
-        try {
-            handleAction(event);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            showMessage("Không thể thao tác với dữ liệu nhà cung cấp: " + e.getMessage());
-        }
+        handleAction(event);
     }
 
-    private void handleAction(ActionEvent event) throws SQLException {
+    private void handleAction(ActionEvent event) {
         Object source = event.getSource();
         if (source == btnAdd) {
             if (!validData()) {
@@ -469,7 +457,7 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
                 if (supplier != null) {
                     showSupplier(supplier);
                 }
-            } catch (SQLException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 showMessage("Không thể tải thông tin nhà cung cấp: " + e.getMessage());
             }

@@ -69,13 +69,16 @@ public class ProductUI extends JPanel {
 		CategoryDAO pd = new CategoryDAO();
 		SupplierDAO sd = new SupplierDAO();
 
-		List<String> list = pd.getCategory();
-		List<String> listSupplier = sd.getAllSupplier();
-		for (String item : list)
-			cboProductCategory.addItem(item);
-		for (String item : listSupplier)
-			cboProductSupplier.addItem(item);
-			
+		try {
+			List<String> list = pd.getCategory();
+			List<String> listSupplier = sd.getAllSupplier();
+			for (String item : list)
+				cboProductCategory.addItem(item);
+			for (String item : listSupplier)
+				cboProductSupplier.addItem(item);
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(this, "Không thể tải dữ liệu danh mục/nhà cung cấp: " + e.getMessage());
+		}
 	}
 
 	private void addToModelTable() {
