@@ -194,7 +194,7 @@ public class GUI extends JFrame implements ActionListener {
         pnlDefaultHome.add(lblBanner, BorderLayout.CENTER);
 
         pnlCenter.add(pnlDefaultHome, "HOME");
-        pnlCenter.add(new NhaCungCapUI(), "SUPPLIER");
+        pnlCenter.add(new SupplierUI(), "SUPPLIER");
         pnlCenter.add(new Employee(), "EMPLOYEE");
         pnlCenter.add(new ProductUI(), "PRODUCT");
         pnlCenter.add(new KhachHangUI(), "CUSTOMER");
