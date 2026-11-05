@@ -1,10 +1,9 @@
 package gui_Default;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import entity.NhanVien;
+import javax.swing.*;
 
 public class GUI extends JFrame implements ActionListener {   
     /**
@@ -198,8 +197,7 @@ public class GUI extends JFrame implements ActionListener {
         pnlCenter.add(new Employee(), "EMPLOYEE");
         pnlCenter.add(new ProductUI(), "PRODUCT");
         pnlCenter.add(new KhachHangUI(), "CUSTOMER");
-       //pnlCenter.add(createDummyPanel(Color.YELLOW, "Giao Diện Nhập Hàng"), "IMPORT");
-       //pnlCenter.add(createDummyPanel(Color.GREEN, "Giao Diện Bán Hàng"), "POS");
+        pnlCenter.add(new ImportProductUI(), "IMPORT");
         pnlCenter.add(new BaoCaoUI(), "REPORT");
         
 
