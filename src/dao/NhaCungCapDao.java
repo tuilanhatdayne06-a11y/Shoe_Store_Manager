@@ -1,8 +1,9 @@
 package dao;
 
-import HSK.gui_Default.entity.NhaCungCap;
 import java.util.ArrayList;
 import java.util.List;
+
+import entity.NhaCungCap;
 
 public class NhaCungCapDao {
     private final List<NhaCungCap> suppliers = new ArrayList<>();

@@ -13,8 +13,8 @@ public class SupplierDAO {
 		ArrayList<String> list = new ArrayList<String>();
 		
 		String sql = "select * from Supplier";
-		
-		try(Connection con = connectDB.getConnection();
+		Connection con = connectDB.getConnection();
+		try(
 			PreparedStatement pst = con.prepareStatement(sql);
 			ResultSet rs = pst.executeQuery()
 		)

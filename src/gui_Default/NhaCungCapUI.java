@@ -1,7 +1,8 @@
 package gui_Default;
 
-import HSK.gui_Default.entity.NhaCungCap;
 import dao.NhaCungCapDao;
+import entity.NhaCungCap;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;

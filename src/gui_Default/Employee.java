@@ -3,9 +3,13 @@ package gui_Default;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
+
+import dao.EmployeeDao;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 public class Employee extends JPanel implements ActionListener {
 
@@ -118,7 +122,7 @@ public class Employee extends JPanel implements ActionListener {
         add(pnlTop, BorderLayout.NORTH);
 
 
-        String[] columns = {"Mã NV", "Họ Tên", "Giới Tính", "Số Điện Thoại", "Email", "Chức Vụ"};
+        String[] columns = {"Mã NV", "Họ Tên", "Giới Tính", "Số Điện Thoại", "Chức Vụ"};
         modelNhanVien = new DefaultTableModel(columns, 0);
         tblNhanVien = new JTable(modelNhanVien);
         tblNhanVien.setRowHeight(28); 
@@ -135,12 +139,17 @@ public class Employee extends JPanel implements ActionListener {
 
 
         add(scrollPane, BorderLayout.CENTER);
-
-
-        modelNhanVien.addRow(new Object[]{"NV001", "Trương Minh Nhật", "Nam", "0989202998", "nhat@gmail.com", "Quản lý cửa hàng"});
-        modelNhanVien.addRow(new Object[]{"NV002", "Nguyễn Thị Mai", "Nữ", "0912345678", "mai@gmail.com", "Nhân viên bán hàng"});
+        add(scrollPane, BorderLayout.CENTER);
+        loadDataToTable();
     }
-
+    private void loadDataToTable() {
+        modelNhanVien.setRowCount(0);
+        EmployeeDao dao = new EmployeeDao();
+        ArrayList<Object[]> list = dao.getAllEmployee();
+        for (Object[] row : list) {
+            modelNhanVien.addRow(row);
+        }
+    }
     private JButton createButton(String text) {
         JButton btn = new JButton(text);
         btn.setFont(new Font("Arial", Font.BOLD, 13));

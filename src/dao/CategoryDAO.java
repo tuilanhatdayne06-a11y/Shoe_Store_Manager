@@ -13,8 +13,8 @@ public class CategoryDAO {
 	{
 		List<String> list = new ArrayList<String>();
 		String sql = "select * from Category ";
-		
-		try (Connection conn = connectDB.getConnection();
+		Connection conn = connectDB.getConnection();
+		try (
 				PreparedStatement pst = conn.prepareStatement(sql);
 				ResultSet rs = pst.executeQuery()){
 			while(rs.next())
