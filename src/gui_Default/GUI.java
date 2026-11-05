@@ -194,17 +194,14 @@ public class GUI extends JFrame implements ActionListener {
         pnlDefaultHome.add(lblBanner, BorderLayout.CENTER);
 
         pnlCenter.add(pnlDefaultHome, "HOME");
-
         pnlCenter.add(new NhaCungCapUI(), "SUPPLIER");
         pnlCenter.add(new Employee(), "EMPLOYEE");
-
-        //pnlCenter.add(createDummyPanel(Color.CYAN, "Giao Diện Nhà Cung Cấp"), "SUPPLIER");
         pnlCenter.add(new ProductUI(), "PRODUCT");
-
-       // pnlCenter.add(createDummyPanel(Color.PINK, "Giao Diện Khách Hàng"), "CUSTOMER");
+        pnlCenter.add(new KhachHangUI(), "CUSTOMER");
        //pnlCenter.add(createDummyPanel(Color.YELLOW, "Giao Diện Nhập Hàng"), "IMPORT");
        //pnlCenter.add(createDummyPanel(Color.GREEN, "Giao Diện Bán Hàng"), "POS");
-       //pnlCenter.add(createDummyPanel(Color.MAGENTA, "Giao Diện Báo Cáo"), "REPORT");
+        pnlCenter.add(new BaoCaoUI(), "REPORT");
+        
 
         add(pnlCenter, BorderLayout.CENTER);
     }

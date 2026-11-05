@@ -419,7 +419,7 @@ public class ProductUI extends JPanel {
 		lblTitle.setForeground(new Color(94, 53, 165));
 
 		try {
-			ImageIcon icon = new ImageIcon(getClass().getResource("/img/beyono.png"));
+			ImageIcon icon = new ImageIcon(getClass().getResource("/img/beyono.png"));//Thay ảnh sao cho phù hợp 
 			Image scaleIcon = icon.getImage().getScaledInstance(50, 50, java.awt.Image.SCALE_SMOOTH);
 			lblTitle.setIcon(new ImageIcon(scaleIcon));
 		} catch (Exception e) {
