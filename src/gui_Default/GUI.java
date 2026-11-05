@@ -194,22 +194,18 @@ public class GUI extends JFrame implements ActionListener {
         pnlDefaultHome.add(lblBanner, BorderLayout.CENTER);
 
         pnlCenter.add(pnlDefaultHome, "HOME");
-<<<<<<< HEAD
         pnlCenter.add(createDummyPanel(Color.CYAN, "Giao Diện Nhà Cung Cấp"), "SUPPLIER");
         pnlCenter.add(new ProductUI(), "PRODUCT");
         pnlCenter.add(createDummyPanel(Color.LIGHT_GRAY, "Giao Diện Nhân Viên"), "EMPLOYEE");
-=======
         pnlCenter.add(new NhaCungCapUI(), "SUPPLIER");
         pnlCenter.add(createDummyPanel(Color.ORANGE, "Giao Diện Sản Phẩm"), "PRODUCT");
         pnlCenter.add(new Employee(), "EMPLOYEE");
->>>>>>> refs/remotes/origin/main_2
         pnlCenter.add(createDummyPanel(Color.PINK, "Giao Diện Khách Hàng"), "CUSTOMER");
         pnlCenter.add(createDummyPanel(Color.YELLOW, "Giao Diện Nhập Hàng"), "IMPORT");
         pnlCenter.add(createDummyPanel(Color.GREEN, "Giao Diện Bán Hàng"), "POS");
         pnlCenter.add(createDummyPanel(Color.MAGENTA, "Giao Diện Báo Cáo"), "REPORT");
 
         add(pnlCenter, BorderLayout.CENTER);
-<<<<<<< HEAD
 
         btnHome.addActionListener(e -> mainCardLayout.show(pnlCenter, "HOME"));
         btnSupplier.addActionListener(e -> mainCardLayout.show(pnlCenter, "SUPPLIER"));
@@ -222,8 +218,7 @@ public class GUI extends JFrame implements ActionListener {
         
         pnlCenter.add(new KhachHangUI(), "CUSTOMER");
         pnlCenter.add(new BaoCaoUI(), "REPORT");
-=======
->>>>>>> refs/remotes/origin/main_2
+
     }
 
     private JButton createMenuButton(String text) {
