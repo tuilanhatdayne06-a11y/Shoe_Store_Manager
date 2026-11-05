@@ -153,6 +153,9 @@ public class GUI extends JFrame {
         btnImport.addActionListener(e -> mainCardLayout.show(pnlCenter, "IMPORT"));
         btnPOS.addActionListener(e -> mainCardLayout.show(pnlCenter, "POS"));
         btnReport.addActionListener(e -> mainCardLayout.show(pnlCenter, "REPORT"));
+        
+        pnlCenter.add(new KhachHangUI(), "CUSTOMER");
+        pnlCenter.add(new BaoCaoUI(), "REPORT");
     }
 
     private JButton createMenuButton(String text) {
