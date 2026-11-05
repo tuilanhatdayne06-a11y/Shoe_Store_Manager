@@ -2,7 +2,6 @@ package dao;
 
 import connectDB.connectDB;
 import entity.Supplier;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -21,25 +20,6 @@ public class SupplierDAO {
         ) {
             while (rs.next()) {
                 suppliers.add(readSupplier(rs));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return suppliers;
-    }
-
-    public List<String> getAllSupplier() {
-        List<String> suppliers = new ArrayList<>();
-        String sql = "SELECT * FROM Supplier";
-        Connection conn = connectDB.getConnection();
-
-        try (
-            PreparedStatement pst = conn.prepareStatement(sql);
-            ResultSet rs = pst.executeQuery()
-        ) {
-            while (rs.next()) {
-                suppliers.add(rs.getString(2));
             }
         } catch (Exception e) {
             e.printStackTrace();
