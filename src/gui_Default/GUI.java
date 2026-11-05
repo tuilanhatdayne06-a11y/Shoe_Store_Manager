@@ -185,6 +185,16 @@ public class GUI extends JFrame implements ActionListener {
             
         pnlCenter.add(new Home(), "HOME");
         pnlCenter.add(createDummyPanel(Color.CYAN, "Giao Diện Nhà Cung Cấp"), "SUPPLIER");
+        
+        JPanel pnlDefaultHome = new JPanel(new BorderLayout());
+        pnlDefaultHome.setBackground(Color.WHITE);
+        JLabel lblBanner = new JLabel("WELCOME TO SHOE STORE SYSTEM", SwingConstants.CENTER);
+        lblBanner.setFont(new Font("Arial", Font.BOLD, 40));
+        lblBanner.setForeground(new Color(220, 180, 230));
+        pnlDefaultHome.add(lblBanner, BorderLayout.CENTER);
+
+        pnlCenter.add(pnlDefaultHome, "HOME");
+        pnlCenter.add(new NhaCungCapUI(), "SUPPLIER");
         pnlCenter.add(createDummyPanel(Color.ORANGE, "Giao Diện Sản Phẩm"), "PRODUCT");
         pnlCenter.add(new Employee(), "EMPLOYEE");
         pnlCenter.add(createDummyPanel(Color.PINK, "Giao Diện Khách Hàng"), "CUSTOMER");
