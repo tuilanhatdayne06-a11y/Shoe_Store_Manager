@@ -2,7 +2,7 @@ package entity;
 
 import java.util.Objects;
 
-public class NhanVien {
+public class Employee {
 
 	private String EmployeeId;
     private String EmployeeName;
@@ -10,7 +10,7 @@ public class NhanVien {
     private String position;
     private String pass;
     private String phoneNumber;
-    public NhanVien(String employeeID, String employeeName, boolean isGender, String phoneNumber, String position, String pass) {
+    public Employee (String employeeID, String employeeName, boolean isGender, String phoneNumber, String position, String pass) {
         this.EmployeeId = employeeID;
         this.EmployeeName = employeeName;
         this.isGender = isGender;

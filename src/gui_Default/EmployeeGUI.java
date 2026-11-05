@@ -11,7 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-public class Employee extends JPanel implements ActionListener {
+public class EmployeeGUI extends JPanel implements ActionListener {
 
     private static final long serialVersionUID = 1L;
     
@@ -25,7 +25,7 @@ public class Employee extends JPanel implements ActionListener {
     private Color primaryColor = new Color(180, 60, 200);
     private Color bgLight = new Color(253, 240, 255);
 
-    public Employee() {
+    public EmployeeGUI() {
         setLayout(new BorderLayout(10, 15));
         setBackground(Color.WHITE);
         setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
