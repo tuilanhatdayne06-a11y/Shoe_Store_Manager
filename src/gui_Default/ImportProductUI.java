@@ -1,6 +1,12 @@
 package gui_Default;
 
 import dao.ImportProductDAO;
+import dao.EmployeeDao;
+import dao.PurchaseOrderDAO;
+import entity.Employee;
+import entity.ProductDetail;
+import entity.PurchaseOrder;
+import entity.PurchaseOrderDetail;
 import entity.Supplier;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -22,7 +28,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
+import javax.swing.SwingConstants;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
@@ -31,8 +37,10 @@ import javax.swing.table.DefaultTableModel;
 
 public class ImportProductUI extends JPanel {
     private final ImportProductDAO importDAO = new ImportProductDAO();
+    private final PurchaseOrderDAO purchaseOrderDAO = new PurchaseOrderDAO();
     private final JComboBox<SupplierOption> cboSupplier = new JComboBox<>();
     private final JComboBox<ProductChoice> cboProduct = new JComboBox<>();
+    private final JComboBox<EmployeeOption> cboEmployee = new JComboBox<>();
     private final JComboBox<String> cboSize = new JComboBox<>();
     private final JTextField txtUnitPrice = new JTextField(12);
     private final JTextField txtQuantity = new JTextField(8);
@@ -52,13 +60,10 @@ public class ImportProductUI extends JPanel {
 
     public ImportProductUI() {
         setLayout(new BorderLayout());
-        setBackground(new Color(242, 242, 242));
-        setBorder(BorderFactory.createEmptyBorder(14, 22, 12, 20));
+        setBackground(new Color(253, 240, 255));
+        setBorder(BorderFactory.createEmptyBorder(14, 0, 12, 0));
 
-        JTabbedPane tabs = new JTabbedPane();
-        tabs.addTab("Nhập Lô Hàng", createImportTab());
-        tabs.addTab("Lịch Sử Phiếu Nhập", createHistoryTab());
-        add(tabs, BorderLayout.CENTER);
+        add(createImportTab(), BorderLayout.CENTER);
 
         cboSupplier.addActionListener(event -> {
             if (!loadingSuppliers) {
@@ -72,16 +77,26 @@ public class ImportProductUI extends JPanel {
         });
         addPriceCalculationListeners();
         loadSuppliers();
+        loadEmployees();
         refreshHistory();
     }
 
     private JPanel createImportTab() {
-        JPanel panel = new JPanel(new BorderLayout(0, 10));
-        panel.setBackground(new Color(242, 242, 242));
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(new Color(253, 240, 255));
         panel.setBorder(BorderFactory.createEmptyBorder(12, 0, 0, 0));
+
+        JPanel sectionHeader = new JPanel(new BorderLayout());
+        sectionHeader.setBackground(new Color(253, 240, 255));
+        sectionHeader.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+        JLabel sectionTitle = new JLabel("NHẬP KHO", SwingConstants.CENTER);
+        sectionTitle.setFont(new Font("Arial", Font.BOLD, 24));
+        sectionTitle.setForeground(new Color(180, 60, 200));
+        sectionHeader.add(sectionTitle, BorderLayout.CENTER);
 
         cboSupplier.setPreferredSize(new java.awt.Dimension(190, 28));
         cboProduct.setPreferredSize(new java.awt.Dimension(220, 28));
+        cboEmployee.setPreferredSize(new java.awt.Dimension(190, 28));
         cboSize.setPreferredSize(new java.awt.Dimension(90, 28));
         txtUnitPrice.setPreferredSize(new java.awt.Dimension(150, 28));
         txtQuantity.setPreferredSize(new java.awt.Dimension(100, 28));
@@ -94,14 +109,15 @@ public class ImportProductUI extends JPanel {
         fieldsTop.add(createField("Size", cboSize));
 
         Box fieldsBottom = Box.createHorizontalBox();
+        fieldsBottom.add(createField("Nhân viên phụ trách", cboEmployee));
+        fieldsBottom.add(Box.createHorizontalStrut(12));
         fieldsBottom.add(createField("Đơn giá nhập (VNĐ)", txtUnitPrice));
         fieldsBottom.add(Box.createHorizontalStrut(12));
         fieldsBottom.add(createField("Số lượng", txtQuantity));
-        fieldsBottom.add(Box.createHorizontalGlue());
 
         JPanel form = new JPanel();
         form.setLayout(new BoxLayout(form, BoxLayout.Y_AXIS));
-        form.setBackground(new Color(242, 242, 242));
+        form.setBackground(new Color(253, 240, 255));
         form.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(205, 205, 205)),
                 BorderFactory.createEmptyBorder(10, 14, 10, 14)));
@@ -115,7 +131,7 @@ public class ImportProductUI extends JPanel {
         btnReset.addActionListener(event -> resetForm());
 
         JPanel footer = new JPanel(new BorderLayout());
-        footer.setBackground(new Color(242, 242, 242));
+        footer.setBackground(new Color(253, 240, 255));
         JPanel totalPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
         totalPanel.setOpaque(false);
         JLabel totalLabel = new JLabel("TỔNG TIỀN LÔ HÀNG:");
@@ -133,30 +149,33 @@ public class ImportProductUI extends JPanel {
         footer.add(actions, BorderLayout.EAST);
 
         JPanel editor = new JPanel(new BorderLayout(0, 10));
-        editor.setBackground(new Color(242, 242, 242));
+        editor.setBackground(new Color(253, 240, 255));
         editor.add(form, BorderLayout.CENTER);
         editor.add(footer, BorderLayout.SOUTH);
 
-        panel.add(editor, BorderLayout.NORTH);
-        panel.add(createHistoryTablePanel(), BorderLayout.CENTER);
+        JPanel content = new JPanel(new BorderLayout(0, 10));
+        content.setBackground(new Color(253, 240, 255));
+        content.setBorder(BorderFactory.createEmptyBorder(8, 22, 0, 20));
+        content.add(editor, BorderLayout.NORTH);
+        content.add(createHistoryTablePanel(), BorderLayout.CENTER);
+
+        panel.add(sectionHeader, BorderLayout.NORTH);
+        panel.add(content, BorderLayout.CENTER);
         return panel;
     }
 
-    private Box createField(String labelText, java.awt.Component input) {
-        Box field = Box.createVerticalBox();
+    private JPanel createField(String labelText, java.awt.Component input) {
+        JPanel field = new JPanel(new BorderLayout(0, 4));
+        field.setOpaque(false);
+        field.setPreferredSize(new java.awt.Dimension(100, 60));
+        field.setMinimumSize(new java.awt.Dimension(0, 60));
+        field.setMaximumSize(new java.awt.Dimension(Integer.MAX_VALUE, 60));
         JLabel label = new JLabel(labelText);
         label.setFont(new Font("Arial", Font.PLAIN, 13));
-        field.add(label);
-        field.add(Box.createVerticalStrut(4));
-        field.add(input);
+        input.setPreferredSize(new java.awt.Dimension(input.getPreferredSize().width, 34));
+        field.add(label, BorderLayout.NORTH);
+        field.add(input, BorderLayout.CENTER);
         return field;
-    }
-
-    private JPanel createHistoryTab() {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBackground(Color.WHITE);
-        panel.add(createHistoryTablePanel(), BorderLayout.CENTER);
-        return panel;
     }
 
     private JPanel createHistoryTablePanel() {
@@ -189,6 +208,15 @@ public class ImportProductUI extends JPanel {
             loadingSuppliers = false;
         }
         loadProducts();
+    }
+
+    private void loadEmployees() {
+        DefaultComboBoxModel<EmployeeOption> model = new DefaultComboBoxModel<>();
+        for (Object[] employee : new EmployeeDao().getAllEmployee()) {
+            model.addElement(new EmployeeOption(
+                    (String) employee[0], (String) employee[1]));
+        }
+        cboEmployee.setModel(model);
     }
 
     private void loadProducts() {
@@ -252,6 +280,7 @@ public class ImportProductUI extends JPanel {
     }
 
     private void addImport() {
+        EmployeeOption employee = (EmployeeOption) cboEmployee.getSelectedItem();
         SupplierOption supplier = (SupplierOption) cboSupplier.getSelectedItem();
         ProductChoice choice = (ProductChoice) cboProduct.getSelectedItem();
         String size = (String) cboSize.getSelectedItem();
@@ -264,9 +293,9 @@ public class ImportProductUI extends JPanel {
                 }
             }
         }
-        if (supplier == null || product == null) {
+        if (employee == null || supplier == null || product == null) {
             JOptionPane.showMessageDialog(this,
-                    "Cần có nhà cung cấp và mẫu giày trong cơ sở dữ liệu trước khi nhập kho.");
+                    "Cần có nhân viên, nhà cung cấp và mẫu giày trong cơ sở dữ liệu trước khi nhập kho.");
             return;
         }
 
@@ -279,8 +308,13 @@ public class ImportProductUI extends JPanel {
                 throw new IllegalArgumentException("Đơn giá và số lượng phải lớn hơn 0.");
             }
 
-            String purchaseOrderId = importDAO.createPurchaseOrder(
-                    supplier.supplierId, product.getProductDetailId(), quantity, importPrice);
+            PurchaseOrder order = new PurchaseOrder(
+                    null, null, new Employee(employee.employeeId),
+                    new Supplier(supplier.supplierId));
+            PurchaseOrderDetail detail = new PurchaseOrderDetail(
+                    order, new ProductDetail(product.getProductDetailId()),
+                    quantity, importPrice);
+            String purchaseOrderId = purchaseOrderDAO.createImportOrder(order, detail);
             refreshHistory();
             resetForm();
             JOptionPane.showMessageDialog(this,
@@ -351,6 +385,21 @@ public class ImportProductUI extends JPanel {
         @Override
         public String toString() {
             return supplierId + " - " + supplierName;
+        }
+    }
+
+    private static class EmployeeOption {
+        private final String employeeId;
+        private final String employeeName;
+
+        private EmployeeOption(String employeeId, String employeeName) {
+            this.employeeId = employeeId;
+            this.employeeName = employeeName;
+        }
+
+        @Override
+        public String toString() {
+            return employeeId + " - " + employeeName;
         }
     }
 
