@@ -11,8 +11,8 @@ import java.util.ArrayList;
 
 public class EmployeeDao {
 
-    public boolean themNhanVien(Employee nv) {
-        String sql = "INSERT INTO Employee (employeeId, employeeName, gender, phoneNumber, position, password) VALUES (?, ?, ?, ?, ?, ?)";
+    public boolean themNhanVien(Employee nv, String matKhau) {
+        String sql = "INSERT INTO Employee (employeeId, employeeName, gender, phoneNumber, position) VALUES (?, ?, ?, ?, ?)";
         String sqlAccount = "INSERT INTO Account (employeeId, password, role) VALUES (?, ?, ?)";
         Connection con = connectDB.getConnection();
         PreparedStatement pst = null;
@@ -29,12 +29,11 @@ public class EmployeeDao {
             pst.setBoolean(3, nv.isGender());
             pst.setString(4, nv.getPhoneNumber());
             pst.setString(5, nv.getPosition());
-            pst.setString(6, nv.getPass());
             
             int updateEmployee = pst.executeUpdate();
             
             pstAccount.setString(1, nv.getEmployeeId());
-            pstAccount.setString(2, nv.getPass());
+            pstAccount.setString(2, matKhau);
             pstAccount.setString(3, nv.getPosition());
             
             int updateAccount = pstAccount.executeUpdate();
@@ -60,7 +59,9 @@ public class EmployeeDao {
     }
 
     public Employee dangNhap(String maNV, String matKhau) {
-        String sql = "SELECT * FROM Employee WHERE employeeId = ? AND password = ?;";
+        String sql = "SELECT e.employeeId, e.employeeName, e.gender, e.phoneNumber, e.position "
+                   + "FROM Employee e JOIN Account a ON e.employeeId = a.employeeId "
+                   + "WHERE e.employeeId = ? AND a.password = ?";
         
         Connection con = connectDB.getConnection();
         
@@ -70,18 +71,13 @@ public class EmployeeDao {
             
             ResultSet rs = pst.executeQuery();
             if (rs.next()) {
-                System.out.println("Tim thay nhan vien!");
-
                 return new Employee(
                     rs.getString("employeeId"),
                     rs.getString("employeeName"),
                     rs.getBoolean("gender"),
                     rs.getString("phoneNumber"),
-                    rs.getString("position"),
-                    rs.getString("password")
+                    rs.getString("position")
                 );
-            } else {
-                System.out.println("Khong tim thay nhan vien!");
             }
         } catch (Exception e) {
             e.printStackTrace();

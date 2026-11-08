@@ -1,7 +1,7 @@
 package gui_Default;
 
-import entity.NhanVien;
-import dao.NhanVienDao;
+import entity.Employee;
+import dao.EmployeeDao;
 
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
@@ -217,10 +217,10 @@ public class FrmSubscribe extends JFrame {
                 return;
             }
 
-            NhanVien nv = new NhanVien(ma, ten, isNam, phone, chucVu, pass);
-            NhanVienDao dao = new NhanVienDao();
+            Employee nv = new Employee(ma, ten, isNam, phone, chucVu);
+            EmployeeDao dao = new EmployeeDao();
 
-            if (dao.themNhanVien(nv)) {
+            if (dao.themNhanVien(nv, pass)) {
                 JOptionPane.showMessageDialog(this, "Đăng ký thành công!"
                 		+ " Vui lòng đăng nhập.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
                 if(loginForm != null)

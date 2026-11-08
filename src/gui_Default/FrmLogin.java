@@ -6,13 +6,12 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 
-import entity.NhanVien;
-import dao.NhanVienDao;
+import entity.Employee;
+import dao.EmployeeDao;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import entity.NhanVien;
 
 public class FrmLogin extends JFrame {
 	
@@ -20,7 +19,7 @@ public class FrmLogin extends JFrame {
     private JPasswordField txtMatKhau;
     private JButton btnDangNhap;
     
-    private java.util.function.Consumer<NhanVien> onLoginSuccess;
+    private java.util.function.Consumer<Employee> onLoginSuccess;
 
     private Color bgLight = new Color(253, 240, 255);
     private Color primaryColor = new Color(180, 60, 200);
@@ -31,7 +30,7 @@ public class FrmLogin extends JFrame {
         this(null);
     }
 
-    public FrmLogin(java.util.function.Consumer<NhanVien> onLoginSuccess) {
+    public FrmLogin(java.util.function.Consumer<Employee> onLoginSuccess) {
         this.onLoginSuccess = onLoginSuccess;
         
         setTitle("Hệ Thống - Đăng Nhập");
@@ -137,8 +136,8 @@ public class FrmLogin extends JFrame {
                 return;
             }
 
-            NhanVienDao dao = new NhanVienDao();
-            NhanVien nv = dao.dangNhap(ma, pass);
+            EmployeeDao dao = new EmployeeDao();
+            Employee nv = dao.dangNhap(ma, pass);
 
             if (nv != null) {
                 JOptionPane.showMessageDialog(this, "Đăng nhập thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);

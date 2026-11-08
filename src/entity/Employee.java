@@ -10,13 +10,12 @@ public class Employee {
     private String position;
     private String pass;
     private String phoneNumber;
-    public Employee (String employeeID, String employeeName, boolean isGender, String phoneNumber, String position, String pass) {
+    public Employee (String employeeID, String employeeName, boolean isGender, String phoneNumber, String position) {
         this.EmployeeId = employeeID;
         this.EmployeeName = employeeName;
         this.isGender = isGender;
         this.phoneNumber = phoneNumber;
         this.position = position;
-        this.pass = pass;
     }
 	public String getEmployeeId() {
 		return EmployeeId;
@@ -42,12 +41,6 @@ public class Employee {
 	public void setPosition(String position) {
 		this.position = position;
 	}
-	public String getPass() {
-		return pass;
-	}
-	public void setPass(String pass) {
-		this.pass = pass;
-	}
 	public String getPhoneNumber() {
 		return phoneNumber;
 	}
@@ -57,7 +50,7 @@ public class Employee {
 	@Override
 	public String toString() {
 		return "NhanVien [EmployeeId=" + EmployeeId + ", EmployeeName=" + EmployeeName + ", isGender=" + isGender
-				+ ", position=" + position + ", pass=" + pass + ", phoneNumber=" + phoneNumber + "]";
+				+ ", position=" + position + ", phoneNumber=" + phoneNumber + "]";
 	}
 
 }
