@@ -9,7 +9,6 @@ public class Supplier {
 	private String logo;
 	
 	public Supplier() {
-		// TODO Auto-generated constructor stub
 	}
 
 	public Supplier(String supplierId) {
@@ -72,6 +71,10 @@ public class Supplier {
 
 	public void setLogo(String logo) {
 		this.logo = logo;
+	}
+
+	public Object[] toRow() {
+		return new Object[] { supplierId, supplierName, address, phoneNumber, email, logo };
 	}
 
 	@Override

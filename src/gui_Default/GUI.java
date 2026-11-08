@@ -165,8 +165,9 @@ public class GUI extends JFrame implements ActionListener {
         mainCardLayout = new CardLayout();
         pnlCenter = new JPanel(mainCardLayout);
 
+
         pnlCenter.add(new Home(mainCardLayout, pnlCenter), "HOME");
-        pnlCenter.add(new NhaCungCapUI(), "SUPPLIER");
+        pnlCenter.add(new SupplierUI(), "SUPPLIER");
         pnlCenter.add(new EmployeeGUI(), "EMPLOYEE");
         pnlCenter.add(new ProductUI(), "PRODUCT");
         pnlCenter.add(new KhachHangUI(), "CUSTOMER");
