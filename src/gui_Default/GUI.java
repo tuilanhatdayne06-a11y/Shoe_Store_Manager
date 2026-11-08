@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import entity.NhanVien;
+import entity.Report;
 
 public class GUI extends JFrame implements ActionListener {   
     /**
@@ -197,10 +198,10 @@ public class GUI extends JFrame implements ActionListener {
         pnlCenter.add(new NhaCungCapUI(), "SUPPLIER");
         pnlCenter.add(new Employee(), "EMPLOYEE");
         pnlCenter.add(new ProductUI(), "PRODUCT");
-        pnlCenter.add(new KhachHangUI(), "CUSTOMER");
+        pnlCenter.add(new CustomerUI(), "CUSTOMER");
        //pnlCenter.add(createDummyPanel(Color.YELLOW, "Giao Diện Nhập Hàng"), "IMPORT");
        //pnlCenter.add(createDummyPanel(Color.GREEN, "Giao Diện Bán Hàng"), "POS");
-        pnlCenter.add(new BaoCaoUI(), "REPORT");
+        pnlCenter.add(new ReportUI(), "REPORT");
         
 
         add(pnlCenter, BorderLayout.CENTER);
