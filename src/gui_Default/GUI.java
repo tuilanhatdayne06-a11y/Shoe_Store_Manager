@@ -5,7 +5,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import entity.NhanVien;
-import entity.Report;
 
 public class GUI extends JFrame implements ActionListener {   
     /**

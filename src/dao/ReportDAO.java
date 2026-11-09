@@ -12,56 +12,93 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 
 import connectDB.connectDB;
-import entity.Report;
 
 public class ReportDAO {
 
-    // Tong hop doanh thu va chi phi trong mot khoang ngay
-    public Report getRevenueAndImportSummary(LocalDate tuNgay, LocalDate denNgay) throws SQLException {
-        String sqlBan = "SELECT COALESCE(SUM(totalAmount), 0) AS tong "
-                      + "FROM dbo.Invoice WHERE creationDate >= ? AND creationDate < ?";
-        String sqlNhap = "SELECT COALESCE(SUM(d.quantity * d.importPrice), 0) AS tong "
-                       + "FROM dbo.PurchaseOrderDetail d "
-                       + "JOIN dbo.PurchaseOrder p ON d.purchaseOrderId = p.purchaseOrderId "
-                       + "WHERE p.orderDate >= ? AND p.orderDate < ?";
+    // Lay ngay co giao dich moi nhat de hien thi thong ke khi mo giao dien
+    public LocalDate getLatestTransactionDate() throws SQLException {
+        String sql = "SELECT MAX(ngay) AS ngayCuoi FROM ("
+                   + "SELECT MAX(creationDate) AS ngay FROM dbo.Invoice "
+                   + "UNION ALL "
+                   + "SELECT MAX(orderDate) AS ngay FROM dbo.PurchaseOrder "
+                   + "WHERE status = 'Da nhap') AS t";
 
         Connection con = connectDB.getConnection();
         if (con == null || con.isClosed()) {
             throw new SQLException("Khong ket noi duoc database ShoeStore");
         }
 
-        BigDecimal doanhThu = tinhTongTienTheoNgay(con, sqlBan, tuNgay, denNgay);
-        BigDecimal chiPhi = tinhTongTienTheoNgay(con, sqlNhap, tuNgay, denNgay);
-        return new Report(doanhThu, chiPhi);
+        try (PreparedStatement pst = con.prepareStatement(sql);
+             ResultSet rs = pst.executeQuery()) {
+            if (rs.next()) {
+                Timestamp ngay = rs.getTimestamp("ngayCuoi");
+                if (ngay != null) {
+                    return ngay.toLocalDateTime().toLocalDate();
+                }
+            }
+        }
+        return LocalDate.now();
     }
 
-    private BigDecimal tinhTongTienTheoNgay(Connection con, String sql,
-            LocalDate tuNgay, LocalDate denNgay) throws SQLException {
+    // Tong doanh thu hoa don trong khoang ngay
+    public BigDecimal getTotalRevenue(LocalDate tuNgay, LocalDate denNgay)
+            throws SQLException {
+        String sql = "SELECT COALESCE(SUM(totalAmount), 0) AS tong "
+                   + "FROM dbo.Invoice WHERE creationDate >= ? AND creationDate < ?";
+
+        Connection con = connectDB.getConnection();
+        if (con == null || con.isClosed()) {
+            throw new SQLException("Khong ket noi duoc database ShoeStore");
+        }
+
         try (PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setTimestamp(1, Timestamp.valueOf(tuNgay.atStartOfDay()));
             pst.setTimestamp(2, Timestamp.valueOf(denNgay.atStartOfDay()));
             try (ResultSet rs = pst.executeQuery()) {
                 if (rs.next()) {
-                    BigDecimal tong = rs.getBigDecimal("tong");
-                    if (tong != null) {
-                        return tong;
-                    }
+                    return rs.getBigDecimal("tong");
                 }
             }
         }
         return BigDecimal.ZERO;
     }
 
-    // Moi dong gom: ma giay, ten giay, so luong ban
+    // Chi phi cac phieu nhap da nhap kho
+    public BigDecimal getTotalImportCost(LocalDate tuNgay, LocalDate denNgay)
+            throws SQLException {
+        String sql = "SELECT COALESCE(SUM(d.quantity * d.importPrice), 0) AS tong "
+                   + "FROM dbo.PurchaseOrderDetail d "
+                   + "JOIN dbo.PurchaseOrder p ON d.purchaseOrderId = p.purchaseOrderId "
+                   + "WHERE p.status = 'Da nhap' "
+                   + "AND p.orderDate >= ? AND p.orderDate < ?";
+
+        Connection con = connectDB.getConnection();
+        if (con == null || con.isClosed()) {
+            throw new SQLException("Khong ket noi duoc database ShoeStore");
+        }
+
+        try (PreparedStatement pst = con.prepareStatement(sql)) {
+            pst.setTimestamp(1, Timestamp.valueOf(tuNgay.atStartOfDay()));
+            pst.setTimestamp(2, Timestamp.valueOf(denNgay.atStartOfDay()));
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getBigDecimal("tong");
+                }
+            }
+        }
+        return BigDecimal.ZERO;
+    }
+
+    // Top 5 giay ban chay, moi dong gom: ma, ten, so luong
     public ArrayList<Object[]> getTop5SellingShoes(LocalDate tuNgay, LocalDate denNgay)
             throws SQLException {
         ArrayList<Object[]> list = new ArrayList<Object[]>();
         String sql = "SELECT TOP 5 p.productId, p.productName, "
                    + "SUM(d.quantity) AS soLuong "
                    + "FROM dbo.InvoiceDetail d "
-                   + "JOIN dbo.Invoice i ON i.invoiceId = d.invoiceId "
-                   + "JOIN dbo.ProductDetail pd ON pd.productDetailId = d.productDetailId "
-                   + "JOIN dbo.Product p ON p.productId = pd.productId "
+                   + "JOIN dbo.Invoice i ON d.invoiceId = i.invoiceId "
+                   + "JOIN dbo.ProductDetail pd ON d.productDetailId = pd.productDetailId "
+                   + "JOIN dbo.Product p ON pd.productId = p.productId "
                    + "WHERE i.creationDate >= ? AND i.creationDate < ? "
                    + "GROUP BY p.productId, p.productName "
                    + "ORDER BY SUM(d.quantity) DESC, p.productName";
@@ -77,9 +114,9 @@ public class ReportDAO {
             try (ResultSet rs = pst.executeQuery()) {
                 while (rs.next()) {
                     Object[] giay = {
-                            rs.getString("productId"),
-                            rs.getString("productName"),
-                            rs.getInt("soLuong")
+                        rs.getString("productId"),
+                        rs.getString("productName"),
+                        rs.getInt("soLuong")
                     };
                     list.add(giay);
                 }
@@ -88,49 +125,53 @@ public class ReportDAO {
         return list;
     }
 
-    // Moi dong bieu do: nhan cot, doanh thu, chi phi
-    public ArrayList<Object[]> getRevenueAndImportChart(boolean theoTuan) throws SQLException {
+    // Du lieu bieu do: ngay/tuan, doanh thu, chi phi
+    public ArrayList<Object[]> getChartData(LocalDate ngayThamChieu, boolean theoTuan)
+            throws SQLException {
         ArrayList<Object[]> list = new ArrayList<Object[]>();
-        LocalDate ngayBatDau = getReportStartDate(theoTuan);
+        LocalDate batDau = getStartDate(ngayThamChieu, theoTuan);
 
         if (theoTuan) {
             for (int i = 0; i < 7; i++) {
-                LocalDate ngay = ngayBatDau.plusDays(i);
-                Report report = getRevenueAndImportSummary(ngay, ngay.plusDays(1));
-                String nhan = i == 6 ? "CN" : "T" + (i + 2);
-                Object[] cot = {nhan, report.getTotalRevenue(), report.getTotalImportCost()};
+                LocalDate ngay = batDau.plusDays(i);
+                String nhan = (i == 6) ? "CN" : "T" + (i + 2);
+                Object[] cot = {
+                    nhan,
+                    getTotalRevenue(ngay, ngay.plusDays(1)),
+                    getTotalImportCost(ngay, ngay.plusDays(1))
+                };
                 list.add(cot);
             }
         } else {
-            LocalDate dauThangSau = ngayBatDau.plusMonths(1);
+            LocalDate cuoiThang = batDau.plusMonths(1);
             int soTuan = 1;
-            while (ngayBatDau.isBefore(dauThangSau)) {
-                LocalDate ketThuc = ngayBatDau.plusDays(7);
-                if (ketThuc.isAfter(dauThangSau)) {
-                    ketThuc = dauThangSau;
+            while (batDau.isBefore(cuoiThang)) {
+                LocalDate ketThuc = batDau.plusDays(7);
+                if (ketThuc.isAfter(cuoiThang)) {
+                    ketThuc = cuoiThang;
                 }
-
-                Report report = getRevenueAndImportSummary(ngayBatDau, ketThuc);
-                Object[] cot = {"Tuần " + soTuan,
-                                report.getTotalRevenue(), report.getTotalImportCost()};
+                Object[] cot = {
+                    "Tuần " + soTuan,
+                    getTotalRevenue(batDau, ketThuc),
+                    getTotalImportCost(batDau, ketThuc)
+                };
                 list.add(cot);
-                ngayBatDau = ketThuc;
+                batDau = ketThuc;
                 soTuan++;
             }
         }
         return list;
     }
 
-    public LocalDate getReportStartDate(boolean theoTuan) {
-        LocalDate homNay = LocalDate.now();
+    public LocalDate getStartDate(LocalDate ngay, boolean theoTuan) {
         if (theoTuan) {
-            return homNay.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+            return ngay.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
         }
-        return homNay.withDayOfMonth(1);
+        return ngay.withDayOfMonth(1);
     }
 
-    public LocalDate getReportEndDate(boolean theoTuan) {
-        LocalDate batDau = getReportStartDate(theoTuan);
+    public LocalDate getEndDate(LocalDate ngay, boolean theoTuan) {
+        LocalDate batDau = getStartDate(ngay, theoTuan);
         if (theoTuan) {
             return batDau.plusDays(7);
         }
