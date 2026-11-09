@@ -1,7 +1,7 @@
 package dao;
 
 import entity.NhanVien;
-import connectDB.connectDB;
+import connectDB.ConnectDB;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -15,7 +15,7 @@ public class NhanVienDao {
 	public boolean themNhanVien(NhanVien nv) {
         String sql = "INSERT INTO Employee (employeeId, employeeName, gender, phoneNumber, position, password) VALUES (?, ?, ?, ?, ?, ?)";
         String sqlAccount = "INSERT INTO Account (employeeId, password, role) VALUES (?, ?, ?)";
-        Connection con = connectDB.getConnection();
+        Connection con = ConnectDB.getConnection();
         PreparedStatement pst = null;
         PreparedStatement pstAccount = null;
         
@@ -65,7 +65,7 @@ public class NhanVienDao {
 	public NhanVien dangNhap(String maNV, String matKhau) {
 	    String sql = "SELECT * FROM Employee WHERE employeeId = ? AND password = ?;";
 	    
-	    Connection con = connectDB.getConnection();
+	    Connection con = ConnectDB.getConnection();
 	    
 	    try (PreparedStatement pst = con.prepareStatement(sql)) {
 	    	

@@ -183,13 +183,13 @@ public class GUI extends JFrame implements ActionListener {
         mainCardLayout = new CardLayout();
         pnlCenter = new JPanel(mainCardLayout);
             
-        pnlCenter.add(new Home(), "HOME");
+        pnlCenter.add(new Home(mainCardLayout, pnlCenter), "HOME");
         pnlCenter.add(new SupplierUI(), "SUPPLIER");
         pnlCenter.add(new Employee(), "EMPLOYEE");
         pnlCenter.add(new ProductUI(), "PRODUCT");
         pnlCenter.add(new KhachHangUI(), "CUSTOMER");
 //        pnlCenter.add(createDummyPanel(Color.YELLOW, "Giao Diện Nhập Hàng"), "IMPORT");
-        pnlCenter.add(createDummyPanel(Color.GREEN, "Giao Diện Bán Hàng"), "POS");
+        pnlCenter.add(new SaleProductUI(), "POS");
         pnlCenter.add(new BaoCaoUI(), "REPORT");
         
 
@@ -242,7 +242,9 @@ public class GUI extends JFrame implements ActionListener {
         } else if (o == btnImport) {
             mainCardLayout.show(pnlCenter, "IMPORT");
         } else if (o == btnPOS) {
-            mainCardLayout.show(pnlCenter, "POS");
+        	{
+        		mainCardLayout.show(pnlCenter, "POS");
+        	}
         } else if (o == btnReport) {
             mainCardLayout.show(pnlCenter, "REPORT");
         }

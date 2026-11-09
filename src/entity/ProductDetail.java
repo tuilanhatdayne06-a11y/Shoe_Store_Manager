@@ -4,14 +4,14 @@ public class ProductDetail {
 	private String productDetailId;
 	private int size;
 	private String color;
-	private String stockQuantity;
+	private int stockQuantity;
 	private Product product;
+	private String imgProductColor;
 	
 	
 	public ProductDetail() {
 		
 	}
-
 
 	public ProductDetail(String productDetailId) {
 		super();
@@ -19,12 +19,17 @@ public class ProductDetail {
 	}
 
 
-	public ProductDetail(String productDetailId, int size, String color, String stockQuantity, Product product) {
+	
+
+
+	public ProductDetail(String productDetailId, int size, String color, int stockQuantity, Product product,
+			String imgProductColor) {
 		setProductDetailId(productDetailId);
 		setSize(size);
 		setColor(color);
 		setStockQuantity(stockQuantity);
 		setProduct(product);
+		setImgProductColor(imgProductColor);
 	}
 
 
@@ -58,12 +63,12 @@ public class ProductDetail {
 	}
 
 
-	public String getStockQuantity() {
+	public int getStockQuantity() {
 		return stockQuantity;
 	}
 
 
-	public void setStockQuantity(String stockQuantity) {
+	public void setStockQuantity(int stockQuantity) {
 		this.stockQuantity = stockQuantity;
 	}
 
@@ -77,13 +82,20 @@ public class ProductDetail {
 		this.product = product;
 	}
 
+	
+
+	public String getImgProductColor() {
+		return imgProductColor;
+	}
+
+	public void setImgProductColor(String imgProductColor) {
+		this.imgProductColor = imgProductColor;
+	}
 
 	@Override
 	public String toString() {
 		return "ProductDetail [productDetailId=" + productDetailId + ", size=" + size + ", color=" + color
-				+ ", stockQuantity=" + stockQuantity + ", product=" + product + "]";
+				+ ", stockQuantity=" + stockQuantity + ", product=" + product + ", imgPathColor=" + imgProductColor + "]";
 	}
-	
-	
 	
 }

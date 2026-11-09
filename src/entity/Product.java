@@ -7,6 +7,7 @@ public class Product {
 	private Category category;
 	private Supplier supplier;
 	
+	
 	public Product() {
 		// TODO Auto-generated constructor stub
 	}

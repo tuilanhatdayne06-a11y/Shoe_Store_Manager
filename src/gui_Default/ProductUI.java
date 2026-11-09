@@ -32,11 +32,16 @@ import javax.swing.table.DefaultTableModel;
 
 import dao.CategoryDAO;
 import dao.ProductDAO;
+import dao.ProductDetailDAO;
 import dao.SupplierDAO;
+import entity.Category;
 import entity.Product;
+import entity.ProductDetail;
+import entity.Supplier;
 import utils.AppUtils;
 import utils.ImageUtil;
 
+@SuppressWarnings("unused")
 public class ProductUI extends JPanel {
 	private JTextField txtProductCode;
 	private JTextField txtProductName;
@@ -54,7 +59,7 @@ public class ProductUI extends JPanel {
 	private DefaultTableModel modelTable;
 	private JTable table;
 	private JScrollPane pane;
-	boolean isSelectedEdit = false; //biến này có thể bỏ qua nếu thay đổi thiết kế
+	private boolean isSelectedEdit = false; //biến này có thể bỏ qua nếu thay đổi thiết kế
 	private JScrollPane paneProductCard;
 	private Box bCard;
 	private JButton btnBrowseImg;
@@ -64,14 +69,16 @@ public class ProductUI extends JPanel {
 	private Box bImage;
 	private JLabel lblEmptyProduct;
 	
+	private CategoryDAO categoryDAO = new CategoryDAO();
+	private SupplierDAO supplierDAO = new SupplierDAO();
+	private AppUtils appUtils = new AppUtils();
+	private ProductDAO productDAO = new ProductDAO();
+	private ProductDetailDAO productDetailDAO = new ProductDetailDAO();
 
 	private void addToComboBox() {
-		CategoryDAO pd = new CategoryDAO();
-		SupplierDAO sd = new SupplierDAO();
-
 		try {
-			List<String> list = pd.getCategory();
-			List<String> listSupplier = sd.getAllSupplier();
+			List<String> list = categoryDAO.getCategoryName();
+			List<String> listSupplier = supplierDAO.getSupplierName();
 			for (String item : list)
 				cboProductCategory.addItem(item);
 			for (String item : listSupplier)
@@ -80,13 +87,22 @@ public class ProductUI extends JPanel {
 			JOptionPane.showMessageDialog(this, "Không thể tải dữ liệu danh mục/nhà cung cấp: " + e.getMessage());
 		}
 	}
-
+	
 	private void addToModelTable() {
-		ProductDAO pao = new ProductDAO();
-		ArrayList<Object[]> list = pao.getAllProduct();
+		ArrayList<ProductDetail> list = productDAO.getAllProduct();
 
-		for (Object[] l : list) {
-			modelTable.addRow(l);
+		for (ProductDetail l : list) {
+			modelTable.addRow(new Object[] {
+					l.getProductDetailId(),
+					l.getProduct().getProductName(),
+					l.getSize(),
+					l.getColor(),
+					l.getProduct().getCategory().getCategoryName(),
+					l.getStockQuantity(),
+					l.getProduct().getUnitPrice(),
+					l.getProduct().getSupplier().getSupplierName(),
+					l.getImgProductColor()
+			});
 		}
 	}
 
@@ -103,6 +119,20 @@ public class ProductUI extends JPanel {
 		}
 
 		return output;
+	}
+	
+	private void setEmptyTextField()
+	{
+		txtProductCode.setText("");
+		txtProductName.setText("");
+		txtProductSize.setText("");
+		txtProductColor.setText("");
+		cboProductCategory.setSelectedIndex(0);
+		txtProductStock.setText("");
+		txtProductCost.setText("");
+		cboProductSupplier.setSelectedIndex(0);
+		lblDefaultImg.setText("");
+		lblDefaultImg.setIcon(null);
 	}
 
 	private void handleClicked()
@@ -125,11 +155,12 @@ public class ProductUI extends JPanel {
 		txtProductCost.setText(modelTable.getValueAt(sltR, 6).toString());
 		cboProductSupplier.setSelectedIndex(foundElementCboSupplier);
 		txtProductCost.setEnabled(false);
-		String path = "src/img/" + modelTable.getValueAt(sltR, 8).toString();
+		String imgName = modelTable.getValueAt(sltR, 8).toString();
+		String path = "src/img/" + imgName;
 		
 		try {
 			ImageIcon icon = new ImageIcon(path);
-			
+			selectedImg = new File(path);
 			Image scale = icon.getImage().getScaledInstance(80, 80, Image.SCALE_SMOOTH);
 			
 			lblDefaultImg.setIcon(new ImageIcon(scale));
@@ -139,69 +170,191 @@ public class ProductUI extends JPanel {
 		}
 	}
 	
-	private void findById()
+	private void findByProductName()
 	{
 		String input = txtFind.getText().trim();
+		if(input.equals(""))
+		{
+			JOptionPane.showMessageDialog(this, "Chưa chọn sản phẩm để tìm");
+			return;
+		}
+		
 		boolean founded = false;
+		ArrayList<Integer> listIndex = new ArrayList<Integer>();
 		
 		for(int i = 0;i < modelTable.getRowCount();i++)
 		{
-			if(modelTable.getValueAt(i, 0).equals(input))
+			if(modelTable.getValueAt(i, 1).equals(input))
 			{
-				table.setRowSelectionInterval(i, i);
-				handleClicked();
-				founded = true;
+				listIndex.add(i);
 			}
 		}
-		if(!founded)
-			JOptionPane.showMessageDialog(this, "Không tìm thấy sản phẩm này");
+		
+		
+		if(listIndex.size() == 0)
+		{
+			JOptionPane.showMessageDialog(null, "Không tìm thấy sản phẩm này");
+			return;
+		}
+		else
+			table.setRowSelectionInterval(listIndex.getFirst(), listIndex.getLast());
+		
+	}
+
+	
+	private boolean validData()
+	{
+		String name = txtProductName.getText().trim();
+		String color = txtProductColor.getText().trim();
+		
+		if(name.length() <= 0)
+		{
+			JOptionPane.showMessageDialog(this, "Chưa nhập tên giày/dép");
+			txtProductName.requestFocus();
+			return false;
+		}
+		
+		if(txtProductSize.getText().trim().equals(""))
+		{
+			JOptionPane.showMessageDialog(this, "Chưa nhập kích cỡ");
+			txtProductSize.requestFocus();
+			return false;
+		}
+		try {
+			int size = Integer.parseInt(txtProductSize.getText());
+			if(!(size >= 36 && size <= 46))
+			{
+				JOptionPane.showMessageDialog(this, "Kích cỡ phải nằm trong khoảng 36 và 46");
+				txtProductSize.requestFocus();
+				return false;
+			}
+		} catch (NumberFormatException e) {
+			JOptionPane.showMessageDialog(this, "Kích cỡ phải là số");
+			txtProductSize.requestFocus();
+			return false;
+		}
+		
+		if(color.length() <= 0)
+		{
+			JOptionPane.showMessageDialog(this, "Chưa nhập màu");
+			txtProductColor.requestFocus();
+			return false;
+		}
+		
+		if(txtProductStock.getText().trim().equals(""))
+		{
+			JOptionPane.showMessageDialog(this, "Chưa nhập số lượng tồn");
+			txtProductStock.requestFocus();
+			return false;
+		}
+		try {
+			int stock = Integer.parseInt(txtProductStock.getText());
+		} catch (NumberFormatException e) {
+			JOptionPane.showMessageDialog(this, "Số lượng tồn phải là số");
+			return false;
+		}
+		
+		if(txtProductCost.getText().trim().equals(""))
+		{
+			JOptionPane.showMessageDialog(this, "Chưa nhập giá bán");
+			txtProductCost.requestFocus();
+			return false;
+		}
+		try {
+			double price = Double.parseDouble(txtProductCost.getText());
+			if(!(price > 0))
+			{
+				JOptionPane.showMessageDialog(this, "Giá phải lớn hơn 0");
+				txtProductCost.requestFocus();
+				return false;
+			}
+		} catch (NumberFormatException e) {
+			JOptionPane.showMessageDialog(this, "Giá giày/dép phải là số");
+			txtProductCost.requestFocus();
+			return false;
+		}
+		
+		if(selectedImg == null)
+		{
+			JOptionPane.showMessageDialog(this, "Chưa chọn ảnh");
+			return false;
+		}
+		
+		return true;
 	}
 	
 	private void triggerEventProduct() {
-		AppUtils appUtils = new AppUtils();
-		ProductDAO pd = new ProductDAO();
 		
 		btnAddProduct.addActionListener(e -> {
-			String name = txtProductName.getText().trim();
-			String size = txtProductSize.getText().trim();
-			String color = txtProductColor.getText().trim();
-			String category = (String) cboProductCategory.getSelectedItem();
-			String stock = txtProductStock.getText().trim();
-			String cost = txtProductCost.getText().trim();
-			String supplier = (String) cboProductSupplier.getSelectedItem();
-			String productDetailId = null; // dùng tạo mới id cho product detail
-			String imgName = selectedImg.getName();
-		
-			
-			for(int i = 0;i < modelTable.getRowCount();i++)
+			if(validData())
 			{
-				if(table.getValueAt(i, 1).equals(name)
-						&& table.getValueAt(i, 4).equals(category))
+				String name = txtProductName.getText().trim();
+				String size = txtProductSize.getText().trim();
+				String color = txtProductColor.getText().trim();
+				String categoryName = (String) cboProductCategory.getSelectedItem();
+				int stock = Integer.parseInt(txtProductStock.getText().trim());
+				String cost = txtProductCost.getText().trim();
+				String supplierName = (String) cboProductSupplier.getSelectedItem();
+				String imgName = selectedImg.getName();
+				boolean isDuplicated = false; // dùng để kiểm tra xem có bị trùng biến thể hay không
+				boolean isExistProduct = false;
+				ImageUtil util = new ImageUtil();
+				util.saveImg(selectedImg);
+				
+				
+				for(int i = 0;i < modelTable.getRowCount();i++)
 				{
-					if(table.getValueAt(i, 2).toString().equals(size) && table.getValueAt(i, 3).equals(color))
+					if(table.getValueAt(i, 1).equals(name)
+							&& table.getValueAt(i, 4).equals(categoryName))
 					{
-						JOptionPane.showMessageDialog(this, "Sản phẩm này đã tồn tại");
-						return;
+						isExistProduct = true;
+						if(table.getValueAt(i, 2).toString().equals(size) && table.getValueAt(i, 3).equals(color))
+						{
+							table.setValueAt(Integer.parseInt(table.getValueAt(i, 5).toString()) + stock, i, 5);
+							productDAO.updateStockQuantity(
+									Integer.parseInt(table.getValueAt(i, 5).toString()),
+									name, Integer.parseInt(size), color, categoryName);
+							isDuplicated = true;
+							break;
+						}
 					}
 				}
+				
+				
+				if(!isDuplicated)
+				{
+					Category category = categoryDAO.getCategoryByName(categoryName);
+					Supplier supplier = supplierDAO.getSupplierByName(supplierName);
+					Product product = null;
+					
+					if(!isExistProduct)
+					{
+						String productId = appUtils.autoGenerateId("SP");
+						product = new Product(productId, name, Double.parseDouble(cost), 
+								category, supplier);
+						productDAO.addProduct(product);
+					}
+					else 
+						product = productDAO.getProduct(name, categoryName, supplierName);
+					String productDetailId = appUtils.autoGenerateId("PD");
+					if(productDetailId == null) return;
+					
+					ProductDetail productDetail = new ProductDetail(
+							productDetailId, Integer.parseInt(size), color, stock, product ,imgName
+					);
+					
+					
+					productDetailDAO.addProductDetail(product, productDetail);
+					modelTable.addRow(new Object[] { productDetailId, name, size, color, categoryName, stock, cost, supplierName, imgName });
+				}
+				
+				bCard.removeAll();
+				displayProductCardList();
+				
+				bCard.revalidate();
+				bCard.repaint();
+				setEmptyTextField();
 			}
-			
-			
-			productDetailId = appUtils.autoGenerateId("PD");
-			if(productDetailId == null) return;
-			
-			pd.addToDatabase(
-					productDetailId, name, Integer.parseInt(size), color, category,
-					Integer.parseInt(stock), Double.parseDouble(cost),
-					supplier, modelTable.getRowCount(), imgName
-			);
-			
-			bCard.removeAll();
-			modelTable.addRow(new Object[] { productDetailId, name, size, color, category, stock, cost, supplier, imgName });
-			displayProductCardList();
-			
-			bCard.revalidate();
-			bCard.repaint();
 		});
 		
 		
@@ -237,10 +390,22 @@ public class ProductUI extends JPanel {
 				}
 			}
 			
-			String code = txtProductCode.getText().trim();
+			String productName = txtProductName.getText().trim();
+			Category category = categoryDAO
+					.getCategoryByName(cboProductCategory.getSelectedItem().toString());
+			Supplier supplier = supplierDAO
+					.getSupplierByName(cboProductSupplier.getSelectedItem().toString());
 			double price = Double.parseDouble(txtProductCost.getText().trim());
-			
-			modelTable.setValueAt(price, sltR, 6);
+			for(int i = 0;i < modelTable.getRowCount();i++)
+			{
+				if(table.getValueAt(i, 1).toString().equals(productName)
+					&& table.getValueAt(i, 4).toString().equals(category.getCategoryName())
+					&& table.getValueAt(i, 7).toString().equals(supplier.getSupplierName())
+				)
+				{
+					table.setValueAt(price, i, 6);
+				}
+			}
 			bCard.removeAll();
 			displayProductCardList();
 			
@@ -248,7 +413,8 @@ public class ProductUI extends JPanel {
 			bCard.repaint();
 			
 			
-			pd.updateUnitPrice(code, price);
+			productDAO.updateUnitPrice(productName, 
+					category.getCategoryId(), supplier.getSupplierId(), price);
 			
 		});
 
@@ -264,9 +430,9 @@ public class ProductUI extends JPanel {
 					JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
 				for (int i = sltR.length - 1; i >= 0; i--) {
 					String removeId = table.getValueAt(sltR[i], 0).toString();
-					pd.removeProduct(removeId);	
-
-					modelTable.removeRow(sltR[i]);
+					if(productDetailDAO.removeProductDetail(removeId))	
+						modelTable.removeRow(sltR[i]);
+					
 				}
 			}
 			
@@ -278,11 +444,11 @@ public class ProductUI extends JPanel {
 		});
 		
 		txtFind.addActionListener(e -> {
-			findById();
+			findByProductName();
 		});
 		
 		btnFind.addActionListener(e -> {
-			findById();
+			findByProductName();
 		});
 
 		table.addMouseListener(new MouseAdapter() {
@@ -313,18 +479,16 @@ public class ProductUI extends JPanel {
 		});
 	}
 	
-	private String truncateText(String text, int maxLenght)
-	{
-		if(text.length() <= maxLenght) return text;
-		return text.substring(0, maxLenght - 4) + "...";
-	}
+	
+	// PHẦN UI Ở DƯỚI, CÁC PHẦN XỬ LÝ LOGIC Ở TRÊN
+	
 	
 	private JPanel generateProductCard(String imgName, String productName, String stock, String price)
 	{
 		JPanel pnlCard = new JPanel(new GridBagLayout());
 		pnlCard.setPreferredSize(new Dimension(140, 150));
 		pnlCard.setBackground(new Color(245, 243, 250));
-		final String PATH = "src/img/product/" + imgName;
+		final String PATH = "src/img/" + imgName;
 		
 		
 		JPanel pnlImgCard = new JPanel();
@@ -344,7 +508,7 @@ public class ProductUI extends JPanel {
 		pnlProductName.setBackground(new Color(230, 216, 255));
 		
 		
-		JLabel lblName = new JLabel(truncateText(productName, 15));
+		JLabel lblName = new JLabel(appUtils.truncateText(productName, 15));
 		lblName.setForeground(new Color(107, 33, 168));
 		lblName.setFont(new Font(lblName.getName(), Font.BOLD, 11));
 		pnlProductName.add(lblName);

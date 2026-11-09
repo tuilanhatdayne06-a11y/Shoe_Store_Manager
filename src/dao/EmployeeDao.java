@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
-import connectDB.connectDB;
+import connectDB.ConnectDB;
 
 public class EmployeeDao {
     
@@ -12,7 +12,7 @@ public class EmployeeDao {
         ArrayList<Object[]> list = new ArrayList<>();
         String sql = "SELECT employeeId, employeeName, gender, phoneNumber, position FROM Employee";
         
-        Connection con = connectDB.getConnection(); 
+        Connection con = ConnectDB.getConnection(); 
         
         try (
             PreparedStatement pst = con.prepareStatement(sql);
