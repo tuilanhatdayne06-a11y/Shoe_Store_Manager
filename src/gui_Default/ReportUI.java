@@ -6,7 +6,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -24,6 +23,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
@@ -43,7 +43,7 @@ public class ReportUI extends JPanel implements ActionListener {
     private JLabel lblReportStatus;
     private JTable table;
     private DefaultTableModel modelTable;
-    private RevenueChartPanel pRevenueChart;
+    private JPanel pRevenueChart;
 
     private ReportDAO reportDAO = new ReportDAO();
 
@@ -72,9 +72,9 @@ public class ReportUI extends JPanel implements ActionListener {
         lblImportCost = new JLabel("—", SwingConstants.CENTER);
         lblProfit = new JLabel("—", SwingConstants.CENTER);
 
-        pKPI.add(taoKhungThongKe("DOANH THU BÁN GIÀY", lblRevenue));
-        pKPI.add(taoKhungThongKe("CHI PHÍ NHẬP KHO", lblImportCost));
-        pKPI.add(taoKhungThongKe("LỢI NHUẬN TẠM TÍNH", lblProfit));
+        pKPI.add(createSummaryCard("DOANH THU BÁN GIÀY", lblRevenue));
+        pKPI.add(createSummaryCard("CHI PHÍ NHẬP KHO", lblImportCost));
+        pKPI.add(createSummaryCard("LỢI NHUẬN TẠM TÍNH", lblProfit));
 
         JPanel pLoc = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 7));
         pLoc.setBackground(new Color(230, 216, 255));
@@ -89,7 +89,7 @@ public class ReportUI extends JPanel implements ActionListener {
         pLoc.add(btnRefreshReport);
 
         // Bieu do
-        pRevenueChart = new RevenueChartPanel();
+        pRevenueChart = new JPanel(new BorderLayout());
         pRevenueChart.setBackground(Color.WHITE);
 
         JPanel pChart = new JPanel(new BorderLayout());
@@ -144,7 +144,7 @@ public class ReportUI extends JPanel implements ActionListener {
         btnRefreshReport.addActionListener(this);
     }
 
-    private JPanel taoKhungThongKe(String tieuDe, JLabel lblSoLieu) {
+    private JPanel createSummaryCard(String tieuDe, JLabel lblSoLieu) {
         JPanel p = new JPanel(new GridLayout(2, 1));
         p.setBackground(Color.WHITE);
         p.setBorder(BorderFactory.createEmptyBorder(8, 10, 8, 10));
@@ -161,7 +161,7 @@ public class ReportUI extends JPanel implements ActionListener {
         return p;
     }
 
-    private String dinhDangTien(BigDecimal tien) {
+    private String formatMoney(BigDecimal tien) {
         NumberFormat format = NumberFormat.getNumberInstance(
                 new Locale("vi", "VN"));
         format.setMaximumFractionDigits(0);
@@ -170,34 +170,20 @@ public class ReportUI extends JPanel implements ActionListener {
     }
 
     // Lay du lieu thong ke tu ReportDAO
-    private void xemThongKe() {
+    private void loadReportData() {
         boolean theoTuan = cboReportPeriod.getSelectedItem().equals("Tuần");
 
         try {
-            LocalDate tuNgay = reportDAO.getNgayBatDau(theoTuan);
-            LocalDate denNgay = reportDAO.getNgayKetThuc(theoTuan);
+            LocalDate tuNgay = reportDAO.getReportStartDate(theoTuan);
+            LocalDate denNgay = reportDAO.getReportEndDate(theoTuan);
 
-            Report tong = reportDAO.getSummary(tuNgay, denNgay);
-            ArrayList<ReportDAO.TopShoe> ds = reportDAO.getTop5(tuNgay, denNgay);
-            ArrayList<ReportDAO.ChartBar> cot = reportDAO.getBieuDo(theoTuan);
+            Report tong = reportDAO.getRevenueAndImportSummary(tuNgay, denNgay);
+            ArrayList<Object[]> ds = reportDAO.getTop5SellingShoes(tuNgay, denNgay);
+            ArrayList<Object[]> cot = reportDAO.getRevenueAndImportChart(theoTuan);
 
-            lblRevenue.setText(dinhDangTien(tong.getTotalRevenue()));
-            lblImportCost.setText(dinhDangTien(tong.getTotalImportCost()));
-            lblProfit.setText(dinhDangTien(tong.getProfit()));
-
-            // Hien thi top 5 giay ban chay
-            modelTable.setRowCount(0);
-
-            int stt = 1;
-            for (ReportDAO.TopShoe giay : ds) {
-                modelTable.addRow(new Object[] {
-                    stt, giay.ma, giay.ten, giay.soLuong
-                });
-                stt++;
-            }
-
-            // Hien thi bieu do
-            pRevenueChart.setDanhSach(cot);
+            showSummary(tong);
+            loadTop5ToTable(ds);
+            showReportChart(cot);
 
             if (theoTuan) {
                 lblReportStatus.setText("Thống kê tuần hiện tại");
@@ -206,100 +192,111 @@ public class ReportUI extends JPanel implements ActionListener {
             }
 
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this,
+            showMessage(
                     "Không lấy được báo cáo: " + e.getMessage());
         }
     }
 
-    private void lamMoi() {
-        xemThongKe();
+    private void showSummary(Report report) {
+        lblRevenue.setText(formatMoney(report.getTotalRevenue()));
+        lblImportCost.setText(formatMoney(report.getTotalImportCost()));
+        lblProfit.setText(formatMoney(report.getProfit()));
     }
 
-    // Ve bieu do doanh thu va chi phi
-    private class RevenueChartPanel extends JPanel {
+    private void loadTop5ToTable(ArrayList<Object[]> list) {
+        modelTable.setRowCount(0);
+        int stt = 1;
+        for (Object[] giay : list) {
+            modelTable.addRow(new Object[] {
+                stt, giay[0], giay[1], giay[2]
+            });
+            stt++;
+        }
+    }
 
-        private ArrayList<ReportDAO.ChartBar> chartBars =
-                new ArrayList<ReportDAO.ChartBar>();
+    private void showMessage(String message) {
+        JOptionPane.showMessageDialog(this, message);
+    }
 
-        public void setDanhSach(ArrayList<ReportDAO.ChartBar> ds) {
-            chartBars = ds;
-            repaint();
+    private void refreshReport() {
+        loadReportData();
+    }
+
+    // Hien thi bieu do bang cac thanh JProgressBar
+    private void showReportChart(ArrayList<Object[]> dsCot) {
+        pRevenueChart.removeAll();
+
+        BigDecimal giaTriLonNhat = BigDecimal.ZERO;
+        for (Object[] cot : dsCot) {
+            BigDecimal doanhThu = (BigDecimal) cot[1];
+            BigDecimal chiPhi = (BigDecimal) cot[2];
+            if (doanhThu.compareTo(giaTriLonNhat) > 0) {
+                giaTriLonNhat = doanhThu;
+            }
+            if (chiPhi.compareTo(giaTriLonNhat) > 0) {
+                giaTriLonNhat = chiPhi;
+            }
         }
 
-        @Override
-        protected void paintComponent(Graphics g) {
-            super.paintComponent(g);
-
-            int rong = getWidth();
-            int cao = getHeight();
-            int trucX = cao - 35;
-            int trucY = 40;
-
-            BigDecimal giaTriLonNhat = BigDecimal.ZERO;
-
-            for (ReportDAO.ChartBar cot : chartBars) {
-                if (cot.doanhThu.compareTo(giaTriLonNhat) > 0) {
-                    giaTriLonNhat = cot.doanhThu;
-                }
-
-                if (cot.chiPhi.compareTo(giaTriLonNhat) > 0) {
-                    giaTriLonNhat = cot.chiPhi;
-                }
-            }
-
-            if (chartBars.isEmpty() || giaTriLonNhat.signum() == 0) {
-                g.setColor(Color.GRAY);
-                g.drawString("Chưa có dữ liệu để hiển thị",
-                        rong / 2 - 85, cao / 2);
-                return;
-            }
-
-            g.setColor(Color.LIGHT_GRAY);
-            g.drawLine(trucY, trucX, rong - 15, trucX);
-
-            int khoang = Math.max(1, (rong - 70) / chartBars.size());
-            int rongCot = Math.max(6, Math.min(20, khoang / 4));
-            int chieuCao = Math.max(1, cao - 85);
-
-            double max = giaTriLonNhat.doubleValue();
-
-            for (int i = 0; i < chartBars.size(); i++) {
-                ReportDAO.ChartBar cot = chartBars.get(i);
-
-                int x = 45 + i * khoang + khoang / 2 - rongCot;
-
-                int cotBan = (int) (
-                    cot.doanhThu.doubleValue() / max * chieuCao
-                );
-
-                int cotNhap = (int) (
-                    cot.chiPhi.doubleValue() / max * chieuCao
-                );
-
-                g.setColor(new Color(139, 62, 246));
-                g.fillRect(x, trucX - cotBan, rongCot, cotBan);
-
-                g.setColor(new Color(242, 150, 170));
-                g.fillRect(x + rongCot + 2,
-                        trucX - cotNhap, rongCot, cotNhap);
-
-                g.setColor(Color.DARK_GRAY);
-                g.drawString(cot.nhan, x - 4, trucX + 18);
-            }
-
-            // Chu thich bieu do
-            g.setColor(new Color(139, 62, 246));
-            g.fillRect(20, 12, 12, 12);
-
-            g.setColor(Color.DARK_GRAY);
-            g.drawString("Doanh thu", 37, 22);
-
-            g.setColor(new Color(242, 150, 170));
-            g.fillRect(122, 12, 12, 12);
-
-            g.setColor(Color.DARK_GRAY);
-            g.drawString("Chi phí nhập", 140, 22);
+        if (dsCot.isEmpty() || giaTriLonNhat.signum() == 0) {
+            JLabel lblTrong = new JLabel("Chưa có dữ liệu để hiển thị", SwingConstants.CENTER);
+            lblTrong.setForeground(Color.GRAY);
+            pRevenueChart.add(lblTrong, BorderLayout.CENTER);
+            pRevenueChart.revalidate();
+            pRevenueChart.repaint();
+            return;
         }
+
+        JPanel pChuThich = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 5));
+        pChuThich.setBackground(Color.WHITE);
+        JLabel lblBan = new JLabel("■ Doanh thu");
+        lblBan.setForeground(new Color(139, 62, 246));
+        JLabel lblNhap = new JLabel("■ Chi phí nhập");
+        lblNhap.setForeground(new Color(242, 150, 170));
+        pChuThich.add(lblBan);
+        pChuThich.add(lblNhap);
+        pRevenueChart.add(pChuThich, BorderLayout.NORTH);
+
+        JPanel pCacCot = new JPanel(new GridLayout(1, dsCot.size(), 12, 0));
+        pCacCot.setBackground(Color.WHITE);
+        pCacCot.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
+        double max = giaTriLonNhat.doubleValue();
+
+        for (Object[] cot : dsCot) {
+            String nhan = cot[0].toString();
+            BigDecimal doanhThu = (BigDecimal) cot[1];
+            BigDecimal chiPhi = (BigDecimal) cot[2];
+
+            int mucDoBan = (int) Math.round(doanhThu.doubleValue() / max * 1000);
+            int mucDoNhap = (int) Math.round(chiPhi.doubleValue() / max * 1000);
+
+            JProgressBar barBan = new JProgressBar(SwingConstants.VERTICAL, 0, 1000);
+            barBan.setValue(mucDoBan);
+            barBan.setForeground(new Color(139, 62, 246));
+            barBan.setBackground(new Color(247, 247, 247));
+            barBan.setBorderPainted(false);
+
+            JProgressBar barNhap = new JProgressBar(SwingConstants.VERTICAL, 0, 1000);
+            barNhap.setValue(mucDoNhap);
+            barNhap.setForeground(new Color(242, 150, 170));
+            barNhap.setBackground(new Color(247, 247, 247));
+            barNhap.setBorderPainted(false);
+
+            JPanel pHaiCot = new JPanel(new GridLayout(1, 2, 5, 0));
+            pHaiCot.setBackground(Color.WHITE);
+            pHaiCot.add(barBan);
+            pHaiCot.add(barNhap);
+
+            JPanel pNhom = new JPanel(new BorderLayout(0, 5));
+            pNhom.setBackground(Color.WHITE);
+            pNhom.add(pHaiCot, BorderLayout.CENTER);
+            pNhom.add(new JLabel(nhan, SwingConstants.CENTER), BorderLayout.SOUTH);
+            pCacCot.add(pNhom);
+        }
+
+        pRevenueChart.add(pCacCot, BorderLayout.CENTER);
+        pRevenueChart.revalidate();
+        pRevenueChart.repaint();
     }
 
     @Override
@@ -307,9 +304,9 @@ public class ReportUI extends JPanel implements ActionListener {
         Object o = e.getSource();
 
         if (o.equals(btnViewReport)) {
-            xemThongKe();
+            loadReportData();
         } else if (o.equals(btnRefreshReport)) {
-            lamMoi();
+            refreshReport();
         }
     }
 

@@ -193,49 +193,54 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
         txtFind.addActionListener(this);
         table.addMouseListener(this);
 
-        loadData();
+        loadDataToTable();
     }
 
-    private void loadData() {
+    private void loadDataToTable() {
         try {
-            ArrayList<Customer> ds = customerDAO.getAll();
-            hienThiDanhSach(ds);
+            ArrayList<Customer> ds = customerDAO.getAllCustomers();
+            showCustomerList(ds);
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this,
+            showMessage(
                     "Không tải được danh sách khách hàng: " + e.getMessage());
         }
     }
 
-    private void hienThiDanhSach(ArrayList<Customer> ds) {
+    private void showCustomerList(ArrayList<Customer> ds) {
         modelTable.setRowCount(0);
         for (Customer kh : ds) {
             modelTable.addRow(kh.toRow());
         }
     }
 
-    private boolean kiemTraDuLieu() {
+    private boolean validData() {
         String ten = txtCustomerName.getText().trim();
         String sdt = txtCustomerPhone.getText().trim();
         String diaChi = txtCustomerAddress.getText().trim();
 
         if (ten.isEmpty() || ten.length() > 100) {
-            JOptionPane.showMessageDialog(this, "Tên khách hàng không hợp lệ!");
+            showMessage("Tên khách hàng không hợp lệ!");
             txtCustomerName.requestFocus();
             return false;
         }
         if (!sdt.matches("0[0-9]{9}")) {
-            JOptionPane.showMessageDialog(this, "Số điện thoại phải gồm 10 số, bắt đầu bằng 0!");
+            showMessage("Số điện thoại phải gồm 10 số, bắt đầu bằng 0!");
             txtCustomerPhone.requestFocus();
             return false;
         }
         if (diaChi.length() > 200) {
-            JOptionPane.showMessageDialog(this, "Địa chỉ không được quá 200 ký tự!");
+            showMessage("Địa chỉ không được quá 200 ký tự!");
+            txtCustomerAddress.requestFocus();
             return false;
         }
         return true;
     }
 
-    private Customer layThongTinKH() {
+    private void showMessage(String message) {
+        JOptionPane.showMessageDialog(this, message);
+    }
+
+    private Customer getCustomerFromForm() {
         return new Customer(
                 txtCustomerCode.getText().trim(),
                 txtCustomerName.getText().trim(),
@@ -246,18 +251,18 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
 
     private void themKhachHang() {
         if (table.getSelectedRow() != -1) {
-            JOptionPane.showMessageDialog(this, "Hãy xóa trắng trước khi thêm khách hàng!");
+            showMessage("Hãy xóa trắng trước khi thêm khách hàng!");
             return;
         }
-        if (!kiemTraDuLieu()) return;
+        if (!validData()) return;
 
         try {
-            if (customerDAO.trungSoDienTho(txtCustomerPhone.getText().trim(), "")) {
-                JOptionPane.showMessageDialog(this, "Số điện thoại đã được đăng ký!");
+            if (customerDAO.isCustomerPhoneUsed(txtCustomerPhone.getText().trim(), "")) {
+                showMessage("Số điện thoại đã được đăng ký!");
                 return;
             }
 
-            String ma = customerDAO.themKhachHangTuSinhMa(
+            String ma = customerDAO.addCustomerWithGeneratedId(
                     txtCustomerName.getText().trim(),
                     txtCustomerAddress.getText().trim(),
                     txtCustomerPhone.getText().trim());
@@ -265,51 +270,51 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
             try {
                 luuAnhKhachHang(ma);
             } catch (Exception e) {
-                JOptionPane.showMessageDialog(this,
+                showMessage(
                         "Đã thêm khách hàng nhưng không lưu được ảnh: " + e.getMessage());
             }
-            loadData();
-            xoaTrang();
-            JOptionPane.showMessageDialog(this, "Thêm khách hàng thành công!");
+            loadDataToTable();
+            clearForm();
+            showMessage("Thêm khách hàng thành công!");
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Không thể thêm khách hàng: " + e.getMessage());
+            showMessage("Không thể thêm khách hàng: " + e.getMessage());
         }
     }
 
     private void suaKhachHang() {
         if (table.getSelectedRow() == -1) {
-            JOptionPane.showMessageDialog(this, "Chọn khách hàng cần sửa!");
+            showMessage("Chọn khách hàng cần sửa!");
             return;
         }
-        if (!kiemTraDuLieu()) return;
+        if (!validData()) return;
 
         String ma = txtCustomerCode.getText().trim();
         try {
-            if (customerDAO.trungSoDienTho(txtCustomerPhone.getText().trim(), ma)) {
-                JOptionPane.showMessageDialog(this, "Số điện thoại đã được đăng ký!");
+            if (customerDAO.isCustomerPhoneUsed(txtCustomerPhone.getText().trim(), ma)) {
+                showMessage("Số điện thoại đã được đăng ký!");
                 return;
             }
 
-            if (customerDAO.sua(layThongTinKH())) {
+            if (customerDAO.updateCustomer(getCustomerFromForm())) {
                 try {
                     luuAnhKhachHang(ma);
                 } catch (Exception e) {
-                    JOptionPane.showMessageDialog(this,
+                    showMessage(
                             "Đã sửa khách hàng nhưng không lưu được ảnh: " + e.getMessage());
                 }
-                loadData();
-                xoaTrang();
-                JOptionPane.showMessageDialog(this, "Sửa khách hàng thành công!");
+                loadDataToTable();
+                clearForm();
+                showMessage("Sửa khách hàng thành công!");
             }
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Không thể sửa khách hàng: " + e.getMessage());
+            showMessage("Không thể sửa khách hàng: " + e.getMessage());
         }
     }
 
     private void xoaKhachHang() {
         int row = table.getSelectedRow();
         if (row == -1) {
-            JOptionPane.showMessageDialog(this, "Chọn khách hàng cần xóa!");
+            showMessage("Chọn khách hàng cần xóa!");
             return;
         }
         String ma = table.getValueAt(row, 0).toString();
@@ -319,14 +324,14 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
         if (chon != JOptionPane.YES_OPTION) return;
 
         try {
-            if (customerDAO.xoa(ma)) {
+            if (customerDAO.removeCustomer(ma)) {
                 xoaAnhKhachHang(ma);
-                loadData();
-                xoaTrang();
-                JOptionPane.showMessageDialog(this, "Xóa khách hàng thành công!");
+                loadDataToTable();
+                clearForm();
+                showMessage("Xóa khách hàng thành công!");
             }
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this,
+            showMessage(
                     "Không thể xóa khách hàng (có thể đã phát sinh hóa đơn): " + e.getMessage());
         }
     }
@@ -334,21 +339,21 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
     private void timKhachHang() {
         String sdt = txtFind.getText().trim();
         if (sdt.isEmpty()) {
-            loadData();
+            loadDataToTable();
             return;
         }
         try {
-            ArrayList<Customer> ds = customerDAO.timTheoSDT(sdt);
-            hienThiDanhSach(ds);
+            ArrayList<Customer> ds = customerDAO.findCustomersByPhone(sdt);
+            showCustomerList(ds);
             if (ds.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Không tìm thấy khách hàng!");
+                showMessage("Không tìm thấy khách hàng!");
             }
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Không tìm được khách hàng: " + e.getMessage());
+            showMessage("Không tìm được khách hàng: " + e.getMessage());
         }
     }
 
-    private void xoaTrang() {
+    private void clearForm() {
         table.clearSelection();
         txtCustomerCode.setText("");
         txtCustomerName.setText("");
@@ -357,11 +362,11 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
         txtCustomerPoints.setText("0");
         txtFind.setText("");
         selectedImg = null;
-        hienThiAnh(null);
+        hienThiAnhKhachHang(null);
         txtCustomerName.requestFocus();
     }
 
-    private void chonAnh() {
+    private void chonAnhKhachHang() {
         JFileChooser chooser = new JFileChooser();
         chooser.setFileFilter(new FileNameExtensionFilter("Ảnh PNG/JPG", "png", "jpg", "jpeg"));
         if (chooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) return;
@@ -370,16 +375,16 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
         String tenFile = file.getName().toLowerCase();
         if (!tenFile.endsWith(".jpg") && !tenFile.endsWith(".jpeg")
                 && !tenFile.endsWith(".png")) {
-            JOptionPane.showMessageDialog(this, "Chỉ chọn ảnh JPG hoặc PNG!");
+            showMessage("Chỉ chọn ảnh JPG hoặc PNG!");
             return;
         }
         ImageIcon icon = new ImageIcon(file.getAbsolutePath());
         if (icon.getIconWidth() <= 0) {
-            JOptionPane.showMessageDialog(this, "Ảnh không hợp lệ!");
+            showMessage("Ảnh không hợp lệ!");
             return;
         }
         selectedImg = file;
-        hienThiAnh(file);
+        hienThiAnhKhachHang(file);
     }
 
     private File timAnhKhachHang(String ma) {
@@ -421,7 +426,7 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
         }
     }
 
-    private void hienThiAnh(File file) {
+    private void hienThiAnhKhachHang(File file) {
         lblCustomerImg.setIcon(null);
         lblCustomerImg.setText("Chưa có ảnh");
         lblImgName.setText(file == null ? "Chưa chọn ảnh" : file.getName());
@@ -434,8 +439,7 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
         lblCustomerImg.setText("");
     }
 
-    @Override
-    public void mouseClicked(MouseEvent e) {
+    private void fillFormFromTable() {
         int row = table.getSelectedRow();
         if (row == -1) return;
         txtCustomerCode.setText(modelTable.getValueAt(row, 0).toString());
@@ -445,7 +449,12 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
         txtCustomerAddress.setText(diaChi == null ? "" : diaChi.toString());
         txtCustomerPoints.setText(modelTable.getValueAt(row, 4).toString());
         selectedImg = null;
-        hienThiAnh(timAnhKhachHang(txtCustomerCode.getText()));
+        hienThiAnhKhachHang(timAnhKhachHang(txtCustomerCode.getText()));
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        fillFormFromTable();
     }
 
     @Override
@@ -458,12 +467,12 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
         } else if (o.equals(btnRemoveCustomer)) {
             xoaKhachHang();
         } else if (o.equals(btnClear)) {
-            xoaTrang();
-            loadData();
+            clearForm();
+            loadDataToTable();
         } else if (o.equals(btnFind) || o.equals(txtFind)) {
             timKhachHang();
         } else if (o.equals(btnBrowseImg)) {
-            chonAnh();
+            chonAnhKhachHang();
         }
     }
 
