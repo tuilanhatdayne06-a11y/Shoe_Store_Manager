@@ -5,9 +5,11 @@ import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
-public class Home extends JScrollPane implements ActionListener {
+public class Home extends JScrollPane implements ActionListener, MouseListener {
     
     private static final long serialVersionUID = 1L;
     
@@ -17,12 +19,21 @@ public class Home extends JScrollPane implements ActionListener {
     private JLabel lblBanner;
     private JPanel pnlContent;
 
-    public Home(CardLayout mainCardLayout, JPanel pnlCenter) {
+
+	private CardLayout mainCardLayout;
+
+	private JPanel pnlProductVisible;
+
+    public Home(CardLayout cardLayout, JPanel pnlCenter) {
+    	this.mainCardLayout = cardLayout;
+    	this.pnlProductVisible = pnlCenter;
+    	
         pnlContent = new JPanel();
         pnlContent.setLayout(new BoxLayout(pnlContent, BoxLayout.Y_AXIS));
         pnlContent.setBackground(Color.WHITE);
         pnlContent.setBorder(BorderFactory.createEmptyBorder(15, 30, 30, 30));
         
+
         setViewportView(pnlContent);
         setBorder(null);
         getVerticalScrollBar().setUnitIncrement(16);
@@ -244,6 +255,9 @@ public class Home extends JScrollPane implements ActionListener {
                 lblImg.setForeground(Color.GRAY);
             }
         } catch (Exception e) {}
+
+        lblImg.addMouseListener(this);
+
         card.add(lblImg, BorderLayout.CENTER);
 
         JPanel pnlInfo = new JPanel(new GridLayout(3, 1, 2, 2));
@@ -290,4 +304,32 @@ public class Home extends JScrollPane implements ActionListener {
             lblBanner.setIcon(banners.get(currentBannerIndex));
         }
     }
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		mainCardLayout.show(pnlProductVisible, "PRODUCT");
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
 }

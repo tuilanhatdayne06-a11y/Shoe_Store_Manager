@@ -4,6 +4,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 import javax.swing.JFileChooser;
 
@@ -32,30 +33,22 @@ public class ImageUtil {
 	 * cuối cùng là thực hiện sao chép ảnh gốc vào đường dẫn đã tạo
 	 * @param image
 	 * ảnh đầu vào
-	 * @param typeImg 
-	 * phân loại thư mục để lưu ảnh
 	 * 
 	 * @return đường dẫn của ảnh vừa thêm
 	 */
-	public static String saveImg(File image, String typeImg)
+	public void saveImg(File image)
 	{
-		if(image == null) return null;
-		final String PATH = "src/img/" + typeImg;
-		
-		String pathImg = null;
+		if(image == null) return;
+		final String PATH = "src/img/";
 		try {
 			Path path = Paths.get(PATH);
 			Files.createDirectories(path);
 			
 			Path destination = path.resolve(image.getName());
 			
-			Files.copy(image.toPath(), destination);
-			
-			pathImg = destination.toString();
+			Files.copy(image.toPath(), destination,StandardCopyOption.REPLACE_EXISTING);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		return pathImg;
 	}
 }

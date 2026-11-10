@@ -1,6 +1,6 @@
 package dao;
 
-import connectDB.connectDB;
+import connectDB.ConnectDB;
 import entity.Supplier;
 
 import java.sql.Connection;
@@ -10,10 +10,41 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SupplierDAO {
+	
+	public Supplier getSupplierByName(String name)
+	{
+		String sql = "select * from Supplier where supplierName = ?";
+		Connection con = ConnectDB.getConnection();
+		try {
+			PreparedStatement pst = con.prepareStatement(sql);
+			
+			pst.setString(1, name);
+			
+			ResultSet rs = pst.executeQuery();
+			
+			while(rs.next())
+			{
+				return new Supplier(
+					rs.getString("supplierId"),
+					rs.getString("supplierName"),
+					rs.getString("address"),
+					rs.getString("phoneNumber"),
+					rs.getString("email"),
+					rs.getString("logo")
+				);
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
     public List<Supplier> getAll() {
         List<Supplier> suppliers = new ArrayList<>();
         String sql = "SELECT * FROM Supplier";
-        Connection conn = connectDB.getConnection();
+        Connection conn = ConnectDB.getConnection();
 
         try (
             PreparedStatement pst = conn.prepareStatement(sql);
@@ -29,10 +60,11 @@ public class SupplierDAO {
         return suppliers;
     }
 
-    public List<String> getAllSupplier() {
+    public List<String> getSupplierName() {
         List<String> suppliers = new ArrayList<>();
         String sql = "SELECT * FROM Supplier";
-        Connection conn = connectDB.getConnection();
+        Connection conn = ConnectDB.getConnection();
+
 
         try (
             PreparedStatement pst = conn.prepareStatement(sql);
@@ -50,7 +82,7 @@ public class SupplierDAO {
 
     public Supplier findById(String supplierId) {
         String sql = "SELECT * FROM Supplier WHERE supplierId = ?";
-        Connection conn = connectDB.getConnection();
+        Connection conn = ConnectDB.getConnection();
 
         try (PreparedStatement pst = conn.prepareStatement(sql)) {
             pst.setString(1, supplierId);
@@ -66,9 +98,10 @@ public class SupplierDAO {
         return null;
     }
 
-    public boolean insert(Supplier supplier) {
+
+    public boolean insertSupplier(Supplier supplier) {
         String sql = "INSERT INTO Supplier (supplierId, supplierName, address, phoneNumber, email, logo) VALUES (?, ?, ?, ?, ?, ?)";
-        Connection conn = connectDB.getConnection();
+        Connection conn = ConnectDB.getConnection();
 
         try (PreparedStatement pst = conn.prepareStatement(sql)) {
             bindSupplier(pst, supplier);
@@ -79,9 +112,10 @@ public class SupplierDAO {
         }
     }
 
-    public boolean update(String oldSupplierId, Supplier supplier) {
+
+    public boolean updateSupplier(String oldSupplierId, Supplier supplier) {
         String sql = "UPDATE Supplier SET supplierId = ?, supplierName = ?, address = ?, phoneNumber = ?, email = ?, logo = ? WHERE supplierId = ?";
-        Connection conn = connectDB.getConnection();
+        Connection conn = ConnectDB.getConnection();
 
         try (PreparedStatement pst = conn.prepareStatement(sql)) {
             bindSupplier(pst, supplier);
@@ -95,7 +129,8 @@ public class SupplierDAO {
 
     public boolean delete(String supplierId) {
         String sql = "DELETE FROM Supplier WHERE supplierId = ?";
-        Connection conn = connectDB.getConnection();
+        Connection conn = ConnectDB.getConnection();
+
 
         try (PreparedStatement pst = conn.prepareStatement(sql)) {
             pst.setString(1, supplierId);

@@ -370,7 +370,8 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
                 showMessage("Mã nhà cung cấp đã tồn tại.");
                 return;
             }
-            if (!supplierDao.insert(supplier)) {
+
+            if (!supplierDao.insertSupplier(supplier)) {
                 showMessage("Mã nhà cung cấp đã tồn tại.");
                 return;
             }
@@ -413,7 +414,9 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
                 showMessage("Mã nhà cung cấp đã tồn tại.");
                 return;
             }
-            if (!supplierDao.update(oldId, updatedSupplier)) {
+
+            if (!supplierDao.updateSupplier(oldId, updatedSupplier)) {
+
                 if (supplierDao.findById(oldId) == null) {
                     showMessage("Không tìm thấy nhà cung cấp cần cập nhật.");
                 } else {

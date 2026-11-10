@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-import connectDB.connectDB;
+import connectDB.ConnectDB;
 
 public class AppUtils {
 	/**
@@ -38,7 +38,8 @@ public class AppUtils {
 	    }
 	    
 	    try (
-	        Connection con = connectDB.getConnection();
+
+	        Connection con = ConnectDB.getConnection();
 	        PreparedStatement pst = con.prepareStatement(sql)
 	    ) {
 	        pst.setString(1, prefix);
@@ -55,4 +56,16 @@ public class AppUtils {
 	    return null;
 	}
 
+	/**
+	 * thực hiện cắt chuỗi, nếu chuỗi đầu vào dài hơn maxLength -> cắt
+	 * @param text: chuỗi đầu vào
+	 * @param maxLenght: giới hạn hiển thị text
+	 * @return
+	 */
+	public String truncateText(String text, int maxLenght)
+	{
+		if(text.length() <= maxLenght) return text;
+		return text.substring(0, maxLenght) + "...";
+	}
+	
 }

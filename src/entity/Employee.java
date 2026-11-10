@@ -1,14 +1,11 @@
 package entity;
 
-import java.util.Objects;
-
 public class Employee {
 
 	private String EmployeeId;
     private String EmployeeName;
     private boolean isGender;
     private String position;
-    private String pass;
     private String phoneNumber;
     public Employee (String employeeID, String employeeName, boolean isGender, String phoneNumber, String position) {
         this.EmployeeId = employeeID;
