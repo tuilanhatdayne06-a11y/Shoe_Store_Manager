@@ -159,11 +159,10 @@ public class Home extends JScrollPane implements ActionListener {
         
         JPanel pnlSocial = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 0));
         pnlSocial.setOpaque(false);
-        pnlSocial.add(createSocialIcon("/img/icon_fb.png", "FB"));
-        pnlSocial.add(createSocialIcon("/img/icon_tiktok.png", "Tik"));
-        pnlSocial.add(createSocialIcon("/img/icon_email.png", "Mail"));
-        pnlSocial.add(createSocialIcon("/img/icon_phone.png", "Call"));
-        pnlSocial.add(createSocialIcon("/img/icon_youtube.png", "YT"));
+        pnlSocial.add(createSocialIcon("/img/logo-facebook.jpg", "FB"));
+        pnlSocial.add(createSocialIcon("/img/tiktok.jpg", "Tik"));
+        pnlSocial.add(createSocialIcon("/img/email.png", "Mail"));
+        pnlSocial.add(createSocialIcon("/img/Youtube_logo.png", "YT"));
         
         JPanel pnlCol4 = new JPanel(new BorderLayout());
         pnlCol4.setOpaque(false);
