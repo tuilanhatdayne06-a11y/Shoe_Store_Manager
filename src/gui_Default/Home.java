@@ -17,7 +17,7 @@ public class Home extends JScrollPane implements ActionListener {
     private JLabel lblBanner;
     private JPanel pnlContent;
 
-    public Home() {
+    public Home(CardLayout mainCardLayout, JPanel pnlCenter) {
         pnlContent = new JPanel();
         pnlContent.setLayout(new BoxLayout(pnlContent, BoxLayout.Y_AXIS));
         pnlContent.setBackground(Color.WHITE);

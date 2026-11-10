@@ -3,14 +3,17 @@ package gui_Default;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.*;
 
-public class GUI extends JFrame implements ActionListener {   
-    /**
+import javax.swing.*;
+import entity.Employee;
+
+
+public class GUI extends JFrame implements ActionListener {
+	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
-	private JPanel pnlCenter;
+    private static final long serialVersionUID = 1L;
+    private JPanel pnlCenter;
     private CardLayout mainCardLayout;
     
     private JPanel pnlRight;
@@ -63,7 +66,7 @@ public class GUI extends JFrame implements ActionListener {
         JLabel lblLogo = new JLabel("SHOE STORE");
         lblLogo.setFont(new Font("Arial", Font.BOLD, 18));
         try {
-            ImageIcon originalIcon = new ImageIcon(getClass().getResource("/img/logo.png"));
+            ImageIcon originalIcon = new ImageIcon(getClass().getResource("/img/Logo.png"));
             Image scaledImage = originalIcon.getImage().getScaledInstance(120, 50, Image.SCALE_SMOOTH);
             lblLogo.setIcon(new ImageIcon(scaledImage));
         } catch (Exception e) {}
@@ -126,24 +129,6 @@ public class GUI extends JFrame implements ActionListener {
 
         pnlHeader.add(pnlRight, BorderLayout.EAST);
 
-
-        btnChuaDangNhap.addActionListener(e -> {
-            new FrmLogin(nv -> {
-                String iconPath = nv.isGender() ? "/img/employee_male.png" : "/img/employee_female.png";
-                java.net.URL avatarUrl = getClass().getResource(iconPath);
-                if (avatarUrl != null) {
-                    btnAvatar.setIcon(new ImageIcon(new ImageIcon(avatarUrl).getImage().getScaledInstance(35, 35, Image.SCALE_SMOOTH)));
-                }
-                
-                String gioiTinh = nv.isGender() ? "Nam" : "Nữ";
-                String tooltipText = "<html><b>Họ tên:</b> " + nv.getEmployeeName() + "<br><b>Mã NV:</b> " + nv.getEmployeeId() + "<br><b>Chức vụ:</b> " + nv.getPosition() + "<br><b>Giới tính:</b> " + gioiTinh + "</html>";
-                btnAvatar.setToolTipText(tooltipText);
-                
-                loginCardLayout.show(pnlRight, "DaDangNhap");
-            }).setVisible(true);
-        });
-
-
         JPanel pnlMenu = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 12));
         pnlMenu.setBackground(bgLight);
         pnlMenu.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, new Color(230, 200, 240)));
@@ -181,20 +166,11 @@ public class GUI extends JFrame implements ActionListener {
 
         mainCardLayout = new CardLayout();
         pnlCenter = new JPanel(mainCardLayout);
-            
-        pnlCenter.add(new Home(), "HOME");
-        pnlCenter.add(createDummyPanel(Color.CYAN, "Giao Diện Nhà Cung Cấp"), "SUPPLIER");
-        
-        JPanel pnlDefaultHome = new JPanel(new BorderLayout());
-        pnlDefaultHome.setBackground(Color.WHITE);
-        JLabel lblBanner = new JLabel("WELCOME TO SHOE STORE SYSTEM", SwingConstants.CENTER);
-        lblBanner.setFont(new Font("Arial", Font.BOLD, 40));
-        lblBanner.setForeground(new Color(220, 180, 230));
-        pnlDefaultHome.add(lblBanner, BorderLayout.CENTER);
 
-        pnlCenter.add(pnlDefaultHome, "HOME");
+
+        pnlCenter.add(new Home(mainCardLayout, pnlCenter), "HOME");
         pnlCenter.add(new SupplierUI(), "SUPPLIER");
-        pnlCenter.add(new Employee(), "EMPLOYEE");
+        pnlCenter.add(new EmployeeUI(), "EMPLOYEE");
         pnlCenter.add(new ProductUI(), "PRODUCT");
         pnlCenter.add(new KhachHangUI(), "CUSTOMER");
         pnlCenter.add(new ImportProductUI(), "IMPORT");

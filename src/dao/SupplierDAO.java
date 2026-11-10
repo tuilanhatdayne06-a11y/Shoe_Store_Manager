@@ -9,23 +9,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SupplierDAO {
-    public List<Supplier> getAll() {
-        List<Supplier> suppliers = new ArrayList<>();
+	public ArrayList<Supplier> getAll() {
+        ArrayList<Supplier> list = new ArrayList<>();
         String sql = "SELECT * FROM Supplier";
-        Connection conn = connectDB.getConnection();
-
-        try (
-            PreparedStatement pst = conn.prepareStatement(sql);
-            ResultSet rs = pst.executeQuery()
-        ) {
+        Connection con = connectDB.getConnection();
+        
+        try {
+            PreparedStatement pst;
+            synchronized (con) {
+                pst = con.prepareStatement(sql);
+            }
+            ResultSet rs = pst.executeQuery();
             while (rs.next()) {
-                suppliers.add(readSupplier(rs));
+                Supplier sp = new Supplier();
+                sp.setSupplierId(rs.getString("supplierId"));
+                sp.setSupplierName(rs.getString("supplierName"));
+                sp.setAddress(rs.getString("address"));
+                sp.setPhoneNumber(rs.getString("phoneNumber"));
+                sp.setEmail(rs.getString("email"));
+                sp.setLogo(rs.getString("logo"));
+                list.add(sp);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        return suppliers;
+        return list;
     }
 
     public Supplier findById(String supplierId) {
