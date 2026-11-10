@@ -1,10 +1,10 @@
 package gui_Default;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import entity.Employee;
+
+import javax.swing.*;
 
 public class GUI extends JFrame implements ActionListener {
 	/**
@@ -12,6 +12,7 @@ public class GUI extends JFrame implements ActionListener {
 	 */
     private static final long serialVersionUID = 1L;
     private JPanel pnlCenter;
+
     private CardLayout mainCardLayout;
     
     private JPanel pnlRight;
@@ -65,6 +66,7 @@ public class GUI extends JFrame implements ActionListener {
         lblLogo.setFont(new Font("Arial", Font.BOLD, 18));
         try {
             ImageIcon originalIcon = new ImageIcon(getClass().getResource("/img/Logo.png"));
+
             Image scaledImage = originalIcon.getImage().getScaledInstance(120, 50, Image.SCALE_SMOOTH);
             lblLogo.setIcon(new ImageIcon(scaledImage));
         } catch (Exception e) {}
@@ -127,6 +129,23 @@ public class GUI extends JFrame implements ActionListener {
 
         pnlHeader.add(pnlRight, BorderLayout.EAST);
 
+
+        btnChuaDangNhap.addActionListener(e -> {
+            new FrmLogin(nv -> {
+                String iconPath = nv.isGender() ? "/img/employee_male.png" : "/img/employee_female.png";
+                java.net.URL avatarUrl = getClass().getResource(iconPath);
+                if (avatarUrl != null) {
+                    btnAvatar.setIcon(new ImageIcon(new ImageIcon(avatarUrl).getImage().getScaledInstance(35, 35, Image.SCALE_SMOOTH)));
+                }
+                
+                String gioiTinh = nv.isGender() ? "Nam" : "Nữ";
+                String tooltipText = "<html><b>Họ tên:</b> " + nv.getEmployeeName() + "<br><b>Mã NV:</b> " + nv.getEmployeeId() + "<br><b>Chức vụ:</b> " + nv.getPosition() + "<br><b>Giới tính:</b> " + gioiTinh + "</html>";
+                btnAvatar.setToolTipText(tooltipText);
+                
+                loginCardLayout.show(pnlRight, "DaDangNhap");
+            }).setVisible(true);
+        });
+
         JPanel pnlMenu = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 12));
         pnlMenu.setBackground(bgLight);
         pnlMenu.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, new Color(230, 200, 240)));
@@ -165,14 +184,14 @@ public class GUI extends JFrame implements ActionListener {
         mainCardLayout = new CardLayout();
         pnlCenter = new JPanel(mainCardLayout);
 
-
+            
         pnlCenter.add(new Home(mainCardLayout, pnlCenter), "HOME");
         pnlCenter.add(new SupplierUI(), "SUPPLIER");
-        pnlCenter.add(new EmployeeGUI(), "EMPLOYEE");
+        pnlCenter.add(new EmployeeUI(), "EMPLOYEE");
         pnlCenter.add(new ProductUI(), "PRODUCT");
         pnlCenter.add(new KhachHangUI(), "CUSTOMER");
-       //pnlCenter.add(createDummyPanel(Color.YELLOW, "Giao Diện Nhập Hàng"), "IMPORT");
-       //pnlCenter.add(createDummyPanel(Color.GREEN, "Giao Diện Bán Hàng"), "POS");
+        pnlCenter.add(new ImportProductUI(), "IMPORT");
+        pnlCenter.add(new SaleProductUI(), "POS");
         pnlCenter.add(new BaoCaoUI(), "REPORT");
         
 
@@ -226,6 +245,7 @@ public class GUI extends JFrame implements ActionListener {
             mainCardLayout.show(pnlCenter, "IMPORT");
         } else if (o == btnPOS) {
             mainCardLayout.show(pnlCenter, "POS");
+
         } else if (o == btnReport) {
             mainCardLayout.show(pnlCenter, "REPORT");
         }

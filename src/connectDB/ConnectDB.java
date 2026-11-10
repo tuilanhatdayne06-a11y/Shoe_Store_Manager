@@ -4,11 +4,11 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class connectDB {
+public class ConnectDB {
     public static Connection con = null;
-    private static connectDB instance = new connectDB();
+    private static ConnectDB instance = new ConnectDB();
 
-    private connectDB() {
+    private ConnectDB() {
         String url = "jdbc:sqlserver://localhost:1433;databaseName=ShoeStore;encrypt=false;trustServerCertificate=true;";
         String user = "sa";
         String password = "sapassword";
@@ -19,14 +19,18 @@ public class connectDB {
         }
     }
 
-    public static connectDB getInstance() {
+    public static ConnectDB getInstance() {
         return instance;
     }
 
     public static Connection getConnection() {
-        if (con == null) {
-            new connectDB();
-        }
+    	 try {
+    		 if (con == null || con.isClosed()) {
+	            new ConnectDB();
+	         }
+    	 } catch (SQLException e) {
+    		 e.printStackTrace();
+    	 }
         return con;
     }
 }
