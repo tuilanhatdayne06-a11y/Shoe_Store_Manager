@@ -54,6 +54,7 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
     private JTable supplierTable;
     private JComboBox<String> cboSupplierId;
     private boolean updatingSupplierComboBox;
+	private File image;
 
     public SupplierUI() {
         setLayout(new BorderLayout());
@@ -236,7 +237,7 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
         btnUpdate.addActionListener(this);
         btnDelete.addActionListener(this);
         btnBrowseLogo.addActionListener(event -> {
-            File image = ImageUtil.browseImg();
+            image = ImageUtil.browseImg();
             if (image != null) {
                 setLogoPreview(image.getAbsolutePath());
             }
@@ -304,7 +305,7 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
                 txtAddress.getText().trim(),
                 txtPhoneNumber.getText().trim(),
                 txtEmail.getText().trim(),
-                logoPath.trim()
+                image.getName()
         };
     }
 
@@ -368,12 +369,13 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
 
     // Hiển thị thông tin một nhà cung cấp lên các ô nhập.
     private void showSupplier(Supplier supplier) {
+    	String path = "src/img/" + supplier.getLogo();
         txtSupplierId.setText(supplier.getSupplierId());
         txtSupplierName.setText(supplier.getSupplierName());
         txtAddress.setText(supplier.getAddress());
         txtPhoneNumber.setText(supplier.getPhoneNumber());
         txtEmail.setText(supplier.getEmail());
-        setLogoPreview(supplier.getLogo());
+        setLogoPreview(path);
     }
 
     private void setLogoPreview(String path) {
