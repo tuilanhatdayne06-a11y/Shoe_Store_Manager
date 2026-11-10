@@ -2,7 +2,6 @@ package dao;
 
 import connectDB.ConnectDB;
 import entity.Supplier;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -79,7 +78,6 @@ public class SupplierDAO {
 
         return suppliers;
     }
-
     public Supplier findById(String supplierId) {
         String sql = "SELECT * FROM Supplier WHERE supplierId = ?";
         Connection conn = ConnectDB.getConnection();

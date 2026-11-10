@@ -1,20 +1,23 @@
 package gui_Default;
 
-import entity.Supplier;
 import dao.SupplierDAO;
+import entity.Supplier;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.File;
 import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -25,16 +28,21 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingWorker;
 import javax.swing.table.DefaultTableModel;
+import utils.ImageUtil;
 
 public class SupplierUI extends JPanel implements ActionListener, MouseListener {
     private static final Font FONT = new Font("Arial", Font.PLAIN, 13);
+    private static final Color BACKGROUND_COLOR = new Color(253, 240, 255);
+    private static final Color ACCENT_COLOR = new Color(180, 60, 200);
 
     private JTextField txtSupplierId;
     private JTextField txtSupplierName;
     private JTextField txtAddress;
     private JTextField txtPhoneNumber;
     private JTextField txtEmail;
-    private JTextField txtLogo;
+    private String logoPath = "";
+    private JLabel lblLogoPreview;
+    private JButton btnBrowseLogo;
 
     private JButton btnAdd;
     private JButton btnClear;
@@ -49,24 +57,24 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
 
     public SupplierUI() {
         setLayout(new BorderLayout());
-        setBackground(new Color(242, 242, 242));
+        setBackground(BACKGROUND_COLOR);
 
         JPanel titleBar = new JPanel(new BorderLayout());
-        titleBar.setBackground(new Color(235, 231, 250));
-        titleBar.setBorder(BorderFactory.createEmptyBorder(14, 26, 14, 12));
-        JLabel title = new JLabel("Quản lý nhà cung cấp");
+        titleBar.setBackground(BACKGROUND_COLOR);
+        titleBar.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        JLabel title = new JLabel("QUẢN LÝ NHÀ CUNG CẤP", JLabel.CENTER);
         title.setFont(new Font("Arial", Font.BOLD, 24));
-        title.setForeground(new Color(91, 62, 145));
+        title.setForeground(ACCENT_COLOR);
         titleBar.add(title, BorderLayout.CENTER);
         add(titleBar, BorderLayout.NORTH);
 
         JPanel mainPanel = new JPanel(new BorderLayout(0, 12));
-        mainPanel.setBackground(new Color(242, 242, 242));
+        mainPanel.setBackground(BACKGROUND_COLOR);
         mainPanel.setBorder(BorderFactory.createEmptyBorder(14, 22, 12, 20));
         add(mainPanel, BorderLayout.CENTER);
 
         JPanel editorPanel = new JPanel(new BorderLayout(0, 8));
-        editorPanel.setBackground(new Color(242, 242, 242));
+        editorPanel.setBackground(BACKGROUND_COLOR);
         editorPanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(205, 205, 205)),
                 BorderFactory.createEmptyBorder(10, 14, 10, 14)));
@@ -77,17 +85,16 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
         txtAddress = new JTextField(25);
         txtPhoneNumber = new JTextField(25);
         txtEmail = new JTextField(25);
-        txtLogo = new JTextField(25);
         txtSupplierId.setFont(FONT);
         txtSupplierName.setFont(FONT);
         txtAddress.setFont(FONT);
         txtPhoneNumber.setFont(FONT);
         txtEmail.setFont(FONT);
-        txtLogo.setFont(FONT);
 
         Box b = Box.createVerticalBox();
         Box bTop = Box.createHorizontalBox();
         Box bBottom = Box.createHorizontalBox();
+        Box bLogo = Box.createHorizontalBox();
         Box b1 = Box.createVerticalBox();
         Box b2 = Box.createVerticalBox();
         Box b3 = Box.createVerticalBox();
@@ -121,10 +128,23 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
         b5.add(lblEmail);
         b5.add(txtEmail);
 
-        JLabel lblLogo = new JLabel("Đường dẫn logo");
+        JLabel lblLogo = new JLabel("Logo");
         lblLogo.setFont(FONT);
         b6.add(lblLogo);
-        b6.add(txtLogo);
+        Box logoInput = Box.createHorizontalBox();
+        btnBrowseLogo = new JButton("Chọn ảnh");
+        btnBrowseLogo.setFont(FONT);
+        JPanel logoPreview = new JPanel(new BorderLayout());
+        logoPreview.setBackground(new Color(229, 237, 255));
+        logoPreview.setPreferredSize(new Dimension(100, 100));
+        logoPreview.setMinimumSize(new Dimension(100, 100));
+        logoPreview.setMaximumSize(new Dimension(100, 100));
+        lblLogoPreview = new JLabel("Chưa có ảnh", JLabel.CENTER);
+        logoPreview.add(lblLogoPreview, BorderLayout.CENTER);
+        logoInput.add(logoPreview);
+        logoInput.add(Box.createHorizontalStrut(30));
+        logoInput.add(btnBrowseLogo);
+        b6.add(logoInput);
 
         lblSupplierId.setAlignmentX(Component.LEFT_ALIGNMENT);
         txtSupplierId.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -137,7 +157,7 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
         lblEmail.setAlignmentX(Component.LEFT_ALIGNMENT);
         txtEmail.setAlignmentX(Component.LEFT_ALIGNMENT);
         lblLogo.setAlignmentX(Component.LEFT_ALIGNMENT);
-        txtLogo.setAlignmentX(Component.LEFT_ALIGNMENT);
+        logoInput.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         bTop.add(b1);
         bTop.add(Box.createHorizontalStrut(10));
@@ -148,13 +168,15 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
         bBottom.add(b4);
         bBottom.add(Box.createHorizontalStrut(10));
         bBottom.add(b5);
-        bBottom.add(Box.createHorizontalStrut(10));
-        bBottom.add(b6);
+        bLogo.add(b6);
+        bLogo.add(Box.createHorizontalGlue());
 
         b.add(Box.createVerticalStrut(10));
         b.add(bTop);
         b.add(Box.createVerticalStrut(5));
         b.add(bBottom);
+        b.add(Box.createVerticalStrut(8));
+        b.add(bLogo);
         b.add(Box.createVerticalStrut(10));
 
         Box actionPanel = Box.createHorizontalBox();
@@ -187,7 +209,7 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
         editorPanel.add(actionPanel, BorderLayout.SOUTH);
 
         JPanel tablePanel = new JPanel(new BorderLayout());
-        tablePanel.setBackground(java.awt.Color.WHITE);
+        tablePanel.setBackground(BACKGROUND_COLOR);
         mainPanel.add(tablePanel, BorderLayout.CENTER);
 
         String[] columnHeaders = {
@@ -213,6 +235,12 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
         btnClear.addActionListener(this);
         btnUpdate.addActionListener(this);
         btnDelete.addActionListener(this);
+        btnBrowseLogo.addActionListener(event -> {
+            File image = ImageUtil.browseImg();
+            if (image != null) {
+                setLogoPreview(image.getAbsolutePath());
+            }
+        });
         cboSupplierId.addActionListener(this);
         supplierTable.addMouseListener(this);
 
@@ -276,7 +304,7 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
                 txtAddress.getText().trim(),
                 txtPhoneNumber.getText().trim(),
                 txtEmail.getText().trim(),
-                txtLogo.getText().trim()
+                logoPath.trim()
         };
     }
 
@@ -328,7 +356,7 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
         txtAddress.setText("");
         txtPhoneNumber.setText("");
         txtEmail.setText("");
-        txtLogo.setText("");
+        setLogoPreview(null);
         supplierTable.clearSelection();
         updatingSupplierComboBox = true;
         try {
@@ -345,7 +373,25 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
         txtAddress.setText(supplier.getAddress());
         txtPhoneNumber.setText(supplier.getPhoneNumber());
         txtEmail.setText(supplier.getEmail());
-        txtLogo.setText(supplier.getLogo());
+        setLogoPreview(supplier.getLogo());
+    }
+
+    private void setLogoPreview(String path) {
+        logoPath = path == null ? "" : path.trim();
+        lblLogoPreview.setIcon(null);
+        lblLogoPreview.setText("Chưa có ảnh");
+        if (logoPath.isEmpty()) {
+            return;
+        }
+
+        ImageIcon original = new ImageIcon(logoPath);
+        if (original.getIconWidth() <= 0 || original.getIconHeight() <= 0) {
+            return;
+        }
+
+        Image scaled = original.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+        lblLogoPreview.setText("");
+        lblLogoPreview.setIcon(new ImageIcon(scaled));
     }
 
     // Hiển thị thông báo cho người dùng.

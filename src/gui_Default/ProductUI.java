@@ -81,10 +81,11 @@ public class ProductUI extends JPanel {
 		try {
 			List<String> list = categoryDAO.getCategoryName();
 			List<String> listSupplier = supplierDAO.getSupplierName();
+
 			for (String item : list)
 				cboProductCategory.addItem(item);
-			for (String item : listSupplier)
-				cboProductSupplier.addItem(item);
+			for (String supplier : listSupplier)
+				cboProductSupplier.addItem(supplier);
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(this, "Không thể tải dữ liệu danh mục/nhà cung cấp: " + e.getMessage());
 		}

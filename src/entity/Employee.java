@@ -7,6 +7,12 @@ public class Employee {
     private boolean isGender;
     private String position;
     private String phoneNumber;
+    
+    public Employee(String id)
+    {
+    	this.EmployeeId = id;
+    }
+    
     public Employee (String employeeID, String employeeName, boolean isGender, String phoneNumber, String position) {
         this.EmployeeId = employeeID;
         this.EmployeeName = employeeName;
