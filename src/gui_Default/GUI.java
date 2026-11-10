@@ -189,10 +189,17 @@ public class GUI extends JFrame implements ActionListener {
         pnlCenter.add(new SupplierUI(), "SUPPLIER");
         pnlCenter.add(new EmployeeUI(), "EMPLOYEE");
         pnlCenter.add(new ProductUI(), "PRODUCT");
+<<<<<<< HEAD
         pnlCenter.add(new KhachHangUI(), "CUSTOMER");
         pnlCenter.add(new ImportProductUI(), "IMPORT");
         pnlCenter.add(new SaleProductUI(), "POS");
         pnlCenter.add(new BaoCaoUI(), "REPORT");
+=======
+        pnlCenter.add(new CustomerUI(), "CUSTOMER");
+       //pnlCenter.add(createDummyPanel(Color.YELLOW, "Giao Diện Nhập Hàng"), "IMPORT");
+       //pnlCenter.add(createDummyPanel(Color.GREEN, "Giao Diện Bán Hàng"), "POS");
+        pnlCenter.add(new ReportUI(), "REPORT");
+>>>>>>> refs/remotes/origin/feature/khach-hang-bao-cao
         
 
         add(pnlCenter, BorderLayout.CENTER);
