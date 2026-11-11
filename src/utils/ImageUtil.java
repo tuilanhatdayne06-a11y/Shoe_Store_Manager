@@ -14,7 +14,7 @@ public class ImageUtil {
 	 * 
 	 * @return ảnh đã chọn
 	 */
-	public static File browseImg() {
+	public File browseImg() {
 		
 		JFileChooser chooseFile = new JFileChooser();
 		

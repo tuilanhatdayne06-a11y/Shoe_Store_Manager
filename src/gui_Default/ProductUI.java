@@ -76,8 +76,8 @@ public class ProductUI extends JPanel {
 	private AppUtils appUtils = new AppUtils();
 	private ProductDAO productDAO = new ProductDAO();
 	private ProductDetailDAO productDetailDAO = new ProductDetailDAO();
-
 	private ImageUtil imgUtil = new ImageUtil();
+
 	private JButton btnResetTable;
 	private JButton btnClearForm;
 
@@ -479,7 +479,9 @@ public class ProductUI extends JPanel {
 		});
 		
 		btnBrowseImg.addActionListener(e -> {
+
 			selectedImg = imgUtil.browseImg();
+
 			if(selectedImg != null)
 			{
 				ImageIcon originalImg = new ImageIcon(selectedImg.getAbsolutePath());

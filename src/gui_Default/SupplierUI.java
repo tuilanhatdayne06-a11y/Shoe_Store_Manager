@@ -50,6 +50,7 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
     private JButton btnDelete;
 
     private final SupplierDAO supplierDao = new SupplierDAO();
+    private ImageUtil imgUtil = new ImageUtil();
     private DefaultTableModel supplierTableModel;
     private JTable supplierTable;
     private JComboBox<String> cboSupplierId;
@@ -237,7 +238,7 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
         btnUpdate.addActionListener(this);
         btnDelete.addActionListener(this);
         btnBrowseLogo.addActionListener(event -> {
-            image = ImageUtil.browseImg();
+            image = imgUtil.browseImg();
             if (image != null) {
                 setLogoPreview(image.getAbsolutePath());
             }
