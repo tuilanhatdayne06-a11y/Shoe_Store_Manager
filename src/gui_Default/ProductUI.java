@@ -77,6 +77,10 @@ public class ProductUI extends JPanel {
 	private ProductDAO productDAO = new ProductDAO();
 	private ProductDetailDAO productDetailDAO = new ProductDetailDAO();
 
+	private ImageUtil imgUtil = new ImageUtil();
+	private JButton btnResetTable;
+	private JButton btnClearForm;
+
 	private void addToComboBox() {
 		try {
 			List<String> list = categoryDAO.getCategoryName();
@@ -92,20 +96,20 @@ public class ProductUI extends JPanel {
 	}
 
 	
-	private void addToModelTable() {
-		ArrayList<ProductDetail> list = productDAO.getAllProduct();
-
-		for (ProductDetail l : list) {
+	private void addToModelTable(ArrayList<ProductDetail> l) {
+		ArrayList<ProductDetail> list = (l == null)? productDAO.getAllProduct() : l;
+		modelTable.setRowCount(0);
+		for (ProductDetail ll : list) {
 			modelTable.addRow(new Object[] {
-					l.getProductDetailId(),
-					l.getProduct().getProductName(),
-					l.getSize(),
-					l.getColor(),
-					l.getProduct().getCategory().getCategoryName(),
-					l.getStockQuantity(),
-					l.getProduct().getUnitPrice(),
-					l.getProduct().getSupplier().getSupplierName(),
-					l.getImgProductColor()
+					ll.getProductDetailId(),
+					ll.getProduct().getProductName(),
+					ll.getSize(),
+					ll.getColor(),
+					ll.getProduct().getCategory().getCategoryName(),
+					ll.getStockQuantity(),
+					ll.getProduct().getUnitPrice(),
+					ll.getProduct().getSupplier().getSupplierName(),
+					ll.getImgProductColor()
 			});
 		}
 	}
@@ -125,7 +129,7 @@ public class ProductUI extends JPanel {
 		return output;
 	}
 	
-	private void setEmptyTextField()
+	private void resetForm()
 	{
 		txtProductCode.setText("");
 		txtProductName.setText("");
@@ -139,9 +143,19 @@ public class ProductUI extends JPanel {
 		lblDefaultImg.setIcon(null);
 	}
 
-	private void handleClicked()
+	/**
+	 * 
+	 * @param i biến để xác định dòng nào trên modelTable
+	 * @param isClickedModel nếu là true thì trả về dòng được chọn trên model,
+	 * còn false thì sẽ lấy i làm dòng được chọn
+	 */
+	private void handleClicked(int i, boolean isClickedModel)
 	{
-		int sltR = table.getSelectedRow();
+		int sltR = 0;
+		if(isClickedModel)
+			sltR = table.getSelectedRow();
+		else
+			sltR = i;
 		int foundElementCboCategory = getSelectedComboboxIndex(
 				cboProductCategory,
 				modelTable.getValueAt(sltR, 4).toString());
@@ -174,24 +188,6 @@ public class ProductUI extends JPanel {
 			e.printStackTrace();
 		}
 	}
-	private void findById()
-	{
-		String input = txtFind.getText().trim();
-		boolean founded = false;
-		
-		for(int i = 0;i < modelTable.getRowCount();i++)
-		{
-			if(modelTable.getValueAt(i, 0).equals(input))
-			{
-				table.setRowSelectionInterval(i, i);
-				handleClicked();
-				founded = true;
-			}
-		}
-		if(!founded)
-			JOptionPane.showMessageDialog(this, "Không tìm thấy sản phẩm này");
-	}
-	
 	
 	private void findByProductName()
 	{
@@ -202,26 +198,12 @@ public class ProductUI extends JPanel {
 			return;
 		}
 		
-		boolean founded = false;
-		ArrayList<Integer> listIndex = new ArrayList<Integer>();
-		
-		for(int i = 0;i < modelTable.getRowCount();i++)
-		{
-			if(modelTable.getValueAt(i, 1).equals(input))
-			{
-				listIndex.add(i);
-			}
-		}
-		
-		
-		if(listIndex.size() == 0)
-		{
-			JOptionPane.showMessageDialog(null, "Không tìm thấy sản phẩm này");
-			return;
-		}
-		else
-			table.setRowSelectionInterval(listIndex.getFirst(), listIndex.getLast());
-		
+		 ArrayList<ProductDetail> listFoundDetail = productDetailDAO.findProduct(input);
+		 
+		 if(listFoundDetail != null)
+			 addToModelTable(listFoundDetail);
+		 else
+			 JOptionPane.showMessageDialog(this, "Không tìm thấy sản phẩm tương tự");
 	}
 
 	
@@ -376,7 +358,7 @@ public class ProductUI extends JPanel {
 				
 				bCard.revalidate();
 				bCard.repaint();
-				setEmptyTextField();
+				resetForm();
 			}
 		});
 		
@@ -466,12 +448,20 @@ public class ProductUI extends JPanel {
 		});
 		
 		txtFind.addActionListener(e -> {
-
 			findByProductName();
 		});
 		
 		btnFind.addActionListener(e -> {
 			findByProductName();
+		});
+		
+		btnResetTable.addActionListener(e -> {
+			txtFind.setText("");
+			addToModelTable(null);
+		});
+		
+		btnClearForm.addActionListener(e -> {
+			resetForm();
 		});
 
 		table.addMouseListener(new MouseAdapter() {
@@ -484,12 +474,12 @@ public class ProductUI extends JPanel {
 				txtProductStock.setEnabled(true);
 				cboProductSupplier.setEnabled(true);
 				
-				handleClicked();
+				handleClicked(0, true);
 			}
 		});
 		
 		btnBrowseImg.addActionListener(e -> {
-			selectedImg = ImageUtil.browseImg();
+			selectedImg = imgUtil.browseImg();
 			if(selectedImg != null)
 			{
 				ImageIcon originalImg = new ImageIcon(selectedImg.getAbsolutePath());
@@ -507,7 +497,7 @@ public class ProductUI extends JPanel {
 	
 
 	
-	private JPanel generateProductCard(String imgName, String productName, String stock, String price)
+	private JPanel generateProductCard(String pdId, String imgName, String productName, String stock, String price)
 	{
 		JPanel pnlCard = new JPanel(new GridBagLayout());
 		pnlCard.setPreferredSize(new Dimension(140, 150));
@@ -526,6 +516,20 @@ public class ProductUI extends JPanel {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		lblImg.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				for(int i = 0;i < modelTable.getRowCount();i++)
+				{
+					if(table.getValueAt(i, 0).equals(pdId))
+					{
+						handleClicked(i, false);
+					}
+				}
+			}
+		});
+		
 		pnlImgCard.add(lblImg);
 		
 		JPanel pnlProductName = new JPanel();
@@ -586,6 +590,7 @@ public class ProductUI extends JPanel {
 			for(int i = 0;i < modelTable.getRowCount();i++)
 			{
 				bCard.add(generateProductCard(
+						table.getValueAt(i, 0).toString(),
 						table.getValueAt(i, 8).toString(),
 						table.getValueAt(i, 1).toString(),
 						table.getValueAt(i, 5).toString(),
@@ -637,13 +642,16 @@ public class ProductUI extends JPanel {
 		JPanel pnlFindProduct = new JPanel();
 		pnlFindProduct.setLayout(new FlowLayout());
 		txtFind = new JTextField(30);
-		btnFind = new JButton("Tìm theo mã");
+		btnFind = new JButton("Tìm theo tên sản phẩm");
+		btnResetTable = new JButton("Làm mới bảng");
 
 		txtFind.setFont(new Font(txtFind.getName(), Font.BOLD, 12));
-		btnFind.setFont(new Font(btnFind.getName(), Font.BOLD, 13));
+		btnFind.setFont(new Font(btnFind.getName(), Font.BOLD, 12));
+		btnResetTable.setFont(new Font(btnResetTable.getName(), Font.BOLD, 12));
 
 		pnlFindProduct.add(txtFind);
 		pnlFindProduct.add(btnFind);
+		pnlFindProduct.add(btnResetTable);
 
 		String[] cols = { "Mã giày", "Tên giày", "Kích cỡ", "Màu sắc", "Phân Loại", "Số lượng tồn", "Đơn giá bán",
 				"Nhà cung cấp", "Ảnh" };
@@ -652,7 +660,7 @@ public class ProductUI extends JPanel {
 		table.getTableHeader().setFont(new Font(table.getName(), Font.PLAIN, 11));
 		table.setFont(new Font(table.getName(), Font.PLAIN, 11));
 		pane = new JScrollPane(table);
-		addToModelTable();
+		addToModelTable(null);
 		
 		bCard = Box.createHorizontalBox();
 		JPanel pnlEmpty = new JPanel(new GridBagLayout());
@@ -830,25 +838,34 @@ public class ProductUI extends JPanel {
 		pnlProductInput.add(cboProductSupplier, gbc);
 		
 
-		Box bButton = Box.createHorizontalBox();
+		Box bButtonAbove = Box.createHorizontalBox();
+		Box bButtonBelow = Box.createHorizontalBox();
 
 		btnAddProduct = new JButton("Thêm Sản Phẩm");
 		btnEditProduct = new JButton("Sửa Giá");
 		btnRemoveProduct = new JButton("Xóa SP");
+		btnClearForm = new JButton("Reset form");
 
 		btnAddProduct.setFont(new Font(btnAddProduct.getName(), Font.BOLD, 12));
 		btnEditProduct.setFont(new Font(btnEditProduct.getName(), Font.BOLD, 12));
 		btnRemoveProduct.setFont(new Font(btnRemoveProduct.getName(), Font.BOLD, 12));
+		btnClearForm.setFont(new Font(btnClearForm.getName(), Font.BOLD, 12));
 
-		bButton.add(btnAddProduct);
-		bButton.add(Box.createHorizontalStrut(15));
-		bButton.add(btnEditProduct);
-		bButton.add(Box.createHorizontalStrut(15));
-		bButton.add(btnRemoveProduct);
-
+		bButtonAbove.add(btnAddProduct);
+		bButtonAbove.add(Box.createHorizontalStrut(15));
+		bButtonAbove.add(btnEditProduct);
 		gbc.gridx = 1;
 		gbc.gridy = 9;
-		pnlProductInput.add(bButton, gbc);
+		bButtonAbove.add(Box.createVerticalStrut(15));
+		pnlProductInput.add(bButtonAbove, gbc);
+		
+		bButtonBelow.add(btnRemoveProduct);
+		bButtonBelow.add(Box.createHorizontalStrut(15));
+		bButtonBelow.add(btnClearForm);
+
+		gbc.gridx = 1;
+		gbc.gridy = 10;
+		pnlProductInput.add(bButtonBelow, gbc);
 
 		pnlManagerProduct.add(pnlHeader, BorderLayout.NORTH);
 		pnlManagerProduct.add(pnlDisplayProduct, BorderLayout.CENTER);

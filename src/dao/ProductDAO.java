@@ -176,6 +176,7 @@ public class ProductDAO {
 		}
 	}
 	
+	
 	public void addProduct(Product product)
 	{
 		String sql = "insert into Product values(?, ?, ?, ?, ?)";
