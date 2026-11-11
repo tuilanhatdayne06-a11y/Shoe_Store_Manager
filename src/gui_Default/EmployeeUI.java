@@ -3,44 +3,56 @@ package gui_Default;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
-
 import dao.EmployeeDao;
-
+import entity.Employee;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 public class EmployeeUI extends JPanel implements ActionListener {
+<<<<<<< HEAD
 
+=======
+	/**
+	 * 
+	 */
+>>>>>>> 41578e46e439ea9d03dc499b971a5e3051700e73
     private static final long serialVersionUID = 1L;
-    
-    private JTextField txtMaNV, txtHoTen, txtSDT, txtEmail, txtTimKiem;
-    private JRadioButton radNam, radNu;
+    private JTextField txtMaNV;
+    private JTextField txtHoTen;
+    private JTextField txtSDT;
+    private JTextField txtTimKiem;
+    private JRadioButton radNam;
+    private JRadioButton radNu;
     private JComboBox<String> cmbChucVu;
-    private JButton btnThem, btnXoa, btnSua, btnXoaTrang, btnTimKiem;
+    private JButton btnThem;
+    private JButton btnXoa;
+    private JButton btnSua;
+    private JButton btnXoaTrang;
+    private JButton btnLamMoi;
+    private JButton btnTimKiem;
     private JTable tblNhanVien;
     private DefaultTableModel modelNhanVien;
 
     private Color primaryColor = new Color(180, 60, 200);
     private Color bgLight = new Color(253, 240, 255);
+    
+    private EmployeeDao dao = new EmployeeDao();
 
     public EmployeeUI() {
         setLayout(new BorderLayout(10, 15));
         setBackground(Color.WHITE);
         setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
-       
         JPanel pnlTop = new JPanel(new BorderLayout(0, 15));
         pnlTop.setBackground(Color.WHITE);
 
-        // 1. Tiêu đề
         JLabel lblTitle = new JLabel("QUẢN LÝ NHÂN VIÊN", SwingConstants.CENTER);
         lblTitle.setFont(new Font("Arial", Font.BOLD, 24));
         lblTitle.setForeground(primaryColor);
         pnlTop.add(lblTitle, BorderLayout.NORTH);
 
-        // 2. Form Nhập Liệu
         JPanel pnlForm = new JPanel(new GridLayout(3, 4, 15, 15));
         pnlForm.setBackground(bgLight);
         TitledBorder formBorder = BorderFactory.createTitledBorder(
@@ -51,6 +63,8 @@ public class EmployeeUI extends JPanel implements ActionListener {
 
         pnlForm.add(new JLabel("Mã Nhân Viên:"));
         txtMaNV = new JTextField();
+        txtMaNV.setEditable(false);
+        txtMaNV.setBackground(Color.LIGHT_GRAY);
         pnlForm.add(txtMaNV);
 
         pnlForm.add(new JLabel("Họ Tên:"));
@@ -60,10 +74,6 @@ public class EmployeeUI extends JPanel implements ActionListener {
         pnlForm.add(new JLabel("Số Điện Thoại:"));
         txtSDT = new JTextField();
         pnlForm.add(txtSDT);
-
-        pnlForm.add(new JLabel("Email:"));
-        txtEmail = new JTextField();
-        pnlForm.add(txtEmail);
 
         pnlForm.add(new JLabel("Giới Tính:"));
         JPanel pnlGender = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
@@ -87,7 +97,6 @@ public class EmployeeUI extends JPanel implements ActionListener {
 
         pnlTop.add(pnlForm, BorderLayout.CENTER);
 
-        // 3. Các nút chức năng & Tìm kiếm
         JPanel pnlAction = new JPanel(new BorderLayout());
         pnlAction.setBackground(Color.WHITE);
 
@@ -98,11 +107,13 @@ public class EmployeeUI extends JPanel implements ActionListener {
         btnXoa = createButton("Xóa");
         btnSua = createButton("Sửa");
         btnXoaTrang = createButton("Xóa trắng");
+        btnLamMoi = createButton("Làm mới");
 
         pnlButtons.add(btnThem);
         pnlButtons.add(btnXoa);
         pnlButtons.add(btnSua);
         pnlButtons.add(btnXoaTrang);
+        pnlButtons.add(btnLamMoi);
 
         JPanel pnlSearch = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         pnlSearch.setBackground(Color.WHITE);
@@ -117,10 +128,7 @@ public class EmployeeUI extends JPanel implements ActionListener {
         pnlAction.add(pnlSearch, BorderLayout.EAST);
 
         pnlTop.add(pnlAction, BorderLayout.SOUTH);
-        
-
         add(pnlTop, BorderLayout.NORTH);
-
 
         String[] columns = {"Mã NV", "Họ Tên", "Giới Tính", "Số Điện Thoại", "Chức Vụ"};
         modelNhanVien = new DefaultTableModel(columns, 0);
@@ -137,19 +145,57 @@ public class EmployeeUI extends JPanel implements ActionListener {
         tableBorder.setTitleFont(new Font("Arial", Font.BOLD, 14));
         scrollPane.setBorder(tableBorder);
 
+        add(scrollPane, BorderLayout.CENTER);
 
-        add(scrollPane, BorderLayout.CENTER);
-        add(scrollPane, BorderLayout.CENTER);
+        tblNhanVien.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                int row = tblNhanVien.getSelectedRow();
+                if (row >= 0) {
+                    txtMaNV.setText(modelNhanVien.getValueAt(row, 0).toString());
+                    txtHoTen.setText(modelNhanVien.getValueAt(row, 1).toString());
+                    String gioiTinh = modelNhanVien.getValueAt(row, 2).toString();
+                    if (gioiTinh.equalsIgnoreCase("Nam")) {
+                        radNam.setSelected(true);
+                    } else {
+                        radNu.setSelected(true);
+                    }
+                    txtSDT.setText(modelNhanVien.getValueAt(row, 3).toString());
+                    cmbChucVu.setSelectedItem(modelNhanVien.getValueAt(row, 4).toString());
+                }
+            }
+        });
+
         loadDataToTable();
+        btnXoaTrang.doClick();
     }
+
     private void loadDataToTable() {
         modelNhanVien.setRowCount(0);
-        EmployeeDao dao = new EmployeeDao();
         ArrayList<Object[]> list = dao.getAllEmployee();
         for (Object[] row : list) {
             modelNhanVien.addRow(row);
         }
     }
+
+    private String phatSinhMaNV() {
+        ArrayList<Integer> danhSachSo = new ArrayList<>();
+        for (int i = 0; i < modelNhanVien.getRowCount(); i++) {
+            String id = modelNhanVien.getValueAt(i, 0).toString();
+            try {
+                int num = Integer.parseInt(id.replaceAll("\\D+", ""));
+                danhSachSo.add(num);
+            } catch (Exception e) {}
+        }
+        
+        int soMoi = 1;
+        while (danhSachSo.contains(soMoi)) {
+            soMoi++;
+        }
+        
+        return String.format("NV%03d", soMoi);
+    }
+
     private JButton createButton(String text) {
         JButton btn = new JButton(text);
         btn.setFont(new Font("Arial", Font.BOLD, 13));
@@ -172,35 +218,85 @@ public class EmployeeUI extends JPanel implements ActionListener {
             String ma = txtMaNV.getText();
             String ten = txtHoTen.getText();
             String sdt = txtSDT.getText();
-            String email = txtEmail.getText();
-            String gioiTinh = radNam.isSelected() ? "Nam" : "Nữ";
+            boolean isGender = radNam.isSelected();
+            String gioiTinh = isGender ? "Nam" : "Nữ";
             String chucVu = cmbChucVu.getSelectedItem().toString();
 
-            if (ma.isEmpty() || ten.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Vui lòng nhập đủ thông tin (Mã, Tên)!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            if (ten.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Vui lòng nhập họ tên!", "Lỗi", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            modelNhanVien.addRow(new Object[]{ma, ten, gioiTinh, sdt, email, chucVu});
-            btnXoaTrang.doClick(); 
+            
+            Employee nv = new Employee(ma, ten, isGender, sdt, chucVu);
+            String matKhauMacDinh = "123456"; 
+            
+            if (dao.themNhanVien(nv, matKhauMacDinh)) {
+                modelNhanVien.addRow(new Object[]{ma, ten, gioiTinh, sdt, chucVu});
+                JOptionPane.showMessageDialog(this, "Thêm nhân viên thành công vào CSDL!");
+                btnXoaTrang.doClick(); 
+            } else {
+                JOptionPane.showMessageDialog(this, "Lỗi! Không thể thêm vào CSDL.");
+            }
         } 
         else if (o == btnXoaTrang) {
-            txtMaNV.setText("");
             txtHoTen.setText("");
             txtSDT.setText("");
-            txtEmail.setText("");
             radNam.setSelected(true);
             cmbChucVu.setSelectedIndex(0);
-            txtMaNV.requestFocus();
+            txtMaNV.setText(phatSinhMaNV());
+            txtHoTen.requestFocus();
         }
         else if (o == btnXoa) {
             int row = tblNhanVien.getSelectedRow();
             if (row >= 0) {
-                if (JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn xóa nhân viên này?", "Xác nhận", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-                    modelNhanVien.removeRow(row);
+                if (JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn xóa nhân viên này khỏi cơ sở dữ liệu?", "Xác nhận", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                    String maNV = modelNhanVien.getValueAt(row, 0).toString();
+                    if (dao.xoaNhanVien(maNV)) {
+                        modelNhanVien.removeRow(row);
+                        JOptionPane.showMessageDialog(this, "Xóa thành công!");
+                        btnXoaTrang.doClick();
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Xóa thất bại! Nhân viên này có thể đang tồn tại trong các hóa đơn.");
+                    }
                 }
             } else {
                 JOptionPane.showMessageDialog(this, "Vui lòng chọn một dòng để xóa!", "Thông báo", JOptionPane.WARNING_MESSAGE);
             }
+        }
+        else if (o == btnSua) {
+            int row = tblNhanVien.getSelectedRow();
+            if (row >= 0) {
+                String ma = txtMaNV.getText();
+                String ten = txtHoTen.getText();
+                String sdt = txtSDT.getText();
+                boolean isGender = radNam.isSelected();
+                String gioiTinh = isGender ? "Nam" : "Nữ";
+                String chucVu = cmbChucVu.getSelectedItem().toString();
+
+                if (ten.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Vui lòng nhập họ tên!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                
+                Employee nv = new Employee(ma, ten, isGender, sdt, chucVu);
+                
+                if (dao.capNhatNhanVien(nv)) {
+                    modelNhanVien.setValueAt(ten, row, 1);
+                    modelNhanVien.setValueAt(gioiTinh, row, 2);
+                    modelNhanVien.setValueAt(sdt, row, 3);
+                    modelNhanVien.setValueAt(chucVu, row, 4);
+                    JOptionPane.showMessageDialog(this, "Cập nhật thành công vào CSDL!");
+                    btnXoaTrang.doClick();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Cập nhật thất bại!");
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Vui lòng chọn một nhân viên từ bảng để sửa!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            }
+        }
+        else if (o == btnLamMoi) {
+            loadDataToTable();
+            btnXoaTrang.doClick();
         }
     }
 }

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SupplierDAO {
+<<<<<<< HEAD
 	
 	public Supplier getSupplierByName(String name)
 	{
@@ -49,14 +50,33 @@ public class SupplierDAO {
             PreparedStatement pst = conn.prepareStatement(sql);
             ResultSet rs = pst.executeQuery()
         ) {
+=======
+	public ArrayList<Supplier> getAll() {
+        ArrayList<Supplier> list = new ArrayList<>();
+        String sql = "SELECT * FROM Supplier";
+        Connection con = connectDB.getConnection();
+        
+        try {
+            PreparedStatement pst;
+            synchronized (con) {
+                pst = con.prepareStatement(sql);
+            }
+            ResultSet rs = pst.executeQuery();
+>>>>>>> 41578e46e439ea9d03dc499b971a5e3051700e73
             while (rs.next()) {
-                suppliers.add(readSupplier(rs));
+                Supplier sp = new Supplier();
+                sp.setSupplierId(rs.getString("supplierId"));
+                sp.setSupplierName(rs.getString("supplierName"));
+                sp.setAddress(rs.getString("address"));
+                sp.setPhoneNumber(rs.getString("phoneNumber"));
+                sp.setEmail(rs.getString("email"));
+                sp.setLogo(rs.getString("logo"));
+                list.add(sp);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        return suppliers;
+        return list;
     }
 
     public List<String> getSupplierName() {

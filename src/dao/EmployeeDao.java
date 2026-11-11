@@ -110,4 +110,51 @@ public class EmployeeDao {
         }
         return list;
     }
+
+	public boolean xoaNhanVien(String maNV) {
+		// TODO Auto-generated method stub
+		Connection con = connectDB.getConnection();
+        String sqlAcc = "DELETE FROM Account WHERE employeeId = ?";
+        String sqlEmp = "DELETE FROM Employee WHERE employeeId = ?";
+        try {
+            con.setAutoCommit(false);
+            
+            try (PreparedStatement pstAcc = con.prepareStatement(sqlAcc)) {
+                pstAcc.setString(1, maNV);
+                pstAcc.executeUpdate();
+            }
+            
+            try (PreparedStatement pstEmp = con.prepareStatement(sqlEmp)) {
+                pstEmp.setString(1, maNV);
+                int n = pstEmp.executeUpdate();
+                con.commit();
+                return n > 0;
+            }
+        } catch (Exception e) {
+            try { if (con != null) con.rollback(); } catch (Exception ex) {}
+            e.printStackTrace();
+            return false;
+        } finally {
+            try { if (con != null) con.setAutoCommit(true); } catch (Exception e) {}
+        }
+	}
+
+	public boolean capNhatNhanVien(Employee nv) {
+		// TODO Auto-generated method stub
+        Connection con = connectDB.getConnection();
+        String sql = "UPDATE Employee SET employeeName=?, gender=?, phoneNumber=?, position=? WHERE RTRIM(employeeId)=?";
+        
+        try (PreparedStatement pst = con.prepareStatement(sql)) {
+            pst.setString(1, nv.getEmployeeName().trim());
+            pst.setBoolean(2, nv.isGender());
+            pst.setString(3, nv.getPhoneNumber().trim());
+            pst.setString(4, nv.getPosition().trim());
+            pst.setString(5, nv.getEmployeeId().trim()); 
+            int n = pst.executeUpdate();
+            return n > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+	}
 }
