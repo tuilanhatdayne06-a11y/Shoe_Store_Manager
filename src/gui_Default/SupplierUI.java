@@ -34,6 +34,7 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
     private static final Font FONT = new Font("Arial", Font.PLAIN, 13);
     private static final Color BACKGROUND_COLOR = new Color(253, 240, 255);
     private static final Color ACCENT_COLOR = new Color(180, 60, 200);
+    private static final int LOGO_SIZE = 80;
 
     private JTextField txtSupplierId;
     private JTextField txtSupplierName;
@@ -94,9 +95,11 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
         txtEmail.setFont(FONT);
 
         Box b = Box.createVerticalBox();
+        Box bFields = Box.createVerticalBox();
+        Box bContent = Box.createHorizontalBox();
         Box bTop = Box.createHorizontalBox();
         Box bBottom = Box.createHorizontalBox();
-        Box bLogo = Box.createHorizontalBox();
+        Box bLogo = Box.createVerticalBox();
         Box b1 = Box.createVerticalBox();
         Box b2 = Box.createVerticalBox();
         Box b3 = Box.createVerticalBox();
@@ -138,9 +141,9 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
         btnBrowseLogo.setFont(FONT);
         JPanel logoPreview = new JPanel(new BorderLayout());
         logoPreview.setBackground(new Color(229, 237, 255));
-        logoPreview.setPreferredSize(new Dimension(100, 100));
-        logoPreview.setMinimumSize(new Dimension(100, 100));
-        logoPreview.setMaximumSize(new Dimension(100, 100));
+        logoPreview.setPreferredSize(new Dimension(LOGO_SIZE, LOGO_SIZE));
+        logoPreview.setMinimumSize(new Dimension(LOGO_SIZE, LOGO_SIZE));
+        logoPreview.setMaximumSize(new Dimension(LOGO_SIZE, LOGO_SIZE));
         lblLogoPreview = new JLabel("Chưa có ảnh", JLabel.CENTER);
         logoPreview.add(lblLogoPreview, BorderLayout.CENTER);
         logoInput.add(logoPreview);
@@ -171,18 +174,19 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
         bBottom.add(Box.createHorizontalStrut(10));
         bBottom.add(b5);
         bLogo.add(b6);
-        bLogo.add(Box.createHorizontalGlue());
 
         b.add(Box.createVerticalStrut(10));
-        b.add(bTop);
+        bFields.add(bTop);
+        bFields.add(Box.createVerticalStrut(5));
+        bFields.add(bBottom);
+        bContent.add(bFields);
+        bContent.add(Box.createHorizontalStrut(16));
+        bContent.add(bLogo);
+        b.add(bContent);
         b.add(Box.createVerticalStrut(5));
-        b.add(bBottom);
-        b.add(Box.createVerticalStrut(8));
-        b.add(bLogo);
         b.add(Box.createVerticalStrut(10));
 
         Box actionPanel = Box.createHorizontalBox();
-        actionPanel.add(Box.createHorizontalGlue());
 
         btnAdd = new JButton("Thêm");
         btnUpdate = new JButton("Cập nhật");
@@ -192,6 +196,7 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
         btnUpdate.setFont(FONT);
         btnDelete.setFont(FONT);
         btnClear.setFont(FONT);
+        
         actionPanel.add(btnAdd);
         actionPanel.add(Box.createHorizontalStrut(10));
         actionPanel.add(btnUpdate);
@@ -200,6 +205,7 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
         actionPanel.add(Box.createHorizontalStrut(10));
         actionPanel.add(btnClear);
         actionPanel.add(Box.createHorizontalStrut(24));
+        
         actionPanel.add(new JLabel("Tìm theo mã nhà cung cấp:"));
         cboSupplierId = new JComboBox<>();
         cboSupplierId.setPreferredSize(new Dimension(150, 28));
@@ -240,7 +246,8 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
         btnBrowseLogo.addActionListener(event -> {
             image = imgUtil.browseImg();
             if (image != null) {
-                setLogoPreview(image.getAbsolutePath());
+                imgUtil.saveImg(image);
+                setLogoPreview(getLogoProjectPath(image.getName()));
             }
         });
         cboSupplierId.addActionListener(this);
@@ -306,7 +313,7 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
                 txtAddress.getText().trim(),
                 txtPhoneNumber.getText().trim(),
                 txtEmail.getText().trim(),
-                image.getName()
+                image == null ? getLogoFileName(logoPath) : image.getName()
         };
     }
 
@@ -320,7 +327,9 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
     private void updateTable(List<Supplier> suppliers) {
         supplierTableModel.setRowCount(0);
         for (Supplier supplier : suppliers) {
-            supplierTableModel.addRow(supplier.toRow());
+            Object[] row = supplier.toRow();
+            row[5] = getLogoProjectPath(supplier.getLogo());
+            supplierTableModel.addRow(row);
         }
     }
 
@@ -358,6 +367,7 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
         txtAddress.setText("");
         txtPhoneNumber.setText("");
         txtEmail.setText("");
+        image = null;
         setLogoPreview(null);
         supplierTable.clearSelection();
         updatingSupplierComboBox = true;
@@ -370,13 +380,23 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
 
     // Hiển thị thông tin một nhà cung cấp lên các ô nhập.
     private void showSupplier(Supplier supplier) {
-    	String path = "src/img/" + supplier.getLogo();
+        image = null;
+        String path = getLogoProjectPath(supplier.getLogo());
         txtSupplierId.setText(supplier.getSupplierId());
         txtSupplierName.setText(supplier.getSupplierName());
         txtAddress.setText(supplier.getAddress());
         txtPhoneNumber.setText(supplier.getPhoneNumber());
         txtEmail.setText(supplier.getEmail());
         setLogoPreview(path);
+    }
+
+    private String getLogoProjectPath(String fileName) {
+        String logoFileName = getLogoFileName(fileName);
+        return logoFileName.isEmpty() ? "" : new File("src/img", logoFileName).getPath();
+    }
+
+    private String getLogoFileName(String path) {
+        return path == null || path.trim().isEmpty() ? "" : new File(path.trim()).getName();
     }
 
     private void setLogoPreview(String path) {
@@ -392,7 +412,8 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
             return;
         }
 
-        Image scaled = original.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+        Image scaled = original.getImage().getScaledInstance(
+                LOGO_SIZE, LOGO_SIZE, Image.SCALE_SMOOTH);
         lblLogoPreview.setText("");
         lblLogoPreview.setIcon(new ImageIcon(scaled));
     }
@@ -439,7 +460,7 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
                     "Bạn có chắc muốn xóa nhà cung cấp " + supplierId + "?",
                     "Xác nhận xóa", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
             if (confirm == JOptionPane.YES_OPTION) {
-                if (supplierDao.delete(supplierId)) {
+                if (supplierDao.deleteSupplier(supplierId)) {
                     refreshSupplierData();
                     clearForm();
                 } else {

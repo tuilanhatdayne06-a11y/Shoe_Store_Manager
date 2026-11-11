@@ -50,12 +50,18 @@ public class SupplierDAO {
             ResultSet rs = pst.executeQuery()
         ) {
             while (rs.next()) {
-                suppliers.add(readSupplier(rs));
+                Supplier sp = new Supplier();
+                sp.setSupplierId(rs.getString("supplierId"));
+                sp.setSupplierName(rs.getString("supplierName"));
+                sp.setAddress(rs.getString("address"));
+                sp.setPhoneNumber(rs.getString("phoneNumber"));
+                sp.setEmail(rs.getString("email"));
+                sp.setLogo(rs.getString("logo"));
+                suppliers.add(sp);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return suppliers;
     }
 
@@ -125,7 +131,7 @@ public class SupplierDAO {
         }
     }
 
-    public boolean delete(String supplierId) {
+    public boolean deleteSupplier(String supplierId) {
         String sql = "DELETE FROM Supplier WHERE supplierId = ?";
         Connection conn = ConnectDB.getConnection();
 

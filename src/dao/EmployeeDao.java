@@ -1,8 +1,7 @@
 package dao;
 
-import entity.Employee;
 import connectDB.ConnectDB;
-
+import entity.Employee;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
