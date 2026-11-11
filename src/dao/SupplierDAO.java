@@ -125,7 +125,7 @@ public class SupplierDAO {
         }
     }
 
-    public boolean delete(String supplierId) {
+    public boolean deleteSupplier(String supplierId) {
         String sql = "DELETE FROM Supplier WHERE supplierId = ?";
         Connection conn = ConnectDB.getConnection();
 
