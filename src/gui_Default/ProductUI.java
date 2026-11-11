@@ -76,6 +76,7 @@ public class ProductUI extends JPanel {
 	private AppUtils appUtils = new AppUtils();
 	private ProductDAO productDAO = new ProductDAO();
 	private ProductDetailDAO productDetailDAO = new ProductDetailDAO();
+	private ImageUtil imgUtil = new ImageUtil();
 
 	private void addToComboBox() {
 		try {
@@ -489,7 +490,7 @@ public class ProductUI extends JPanel {
 		});
 		
 		btnBrowseImg.addActionListener(e -> {
-			selectedImg = ImageUtil.browseImg();
+			selectedImg = imgUtil .browseImg();
 			if(selectedImg != null)
 			{
 				ImageIcon originalImg = new ImageIcon(selectedImg.getAbsolutePath());
