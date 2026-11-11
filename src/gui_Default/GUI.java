@@ -3,13 +3,7 @@ package gui_Default;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.*;
-<<<<<<< HEAD
-=======
-import entity.Employee;
-
->>>>>>> 41578e46e439ea9d03dc499b971a5e3051700e73
 
 public class GUI extends JFrame implements ActionListener {
 	/**
