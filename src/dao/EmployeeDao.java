@@ -75,6 +75,7 @@ public class EmployeeDao {
                     rs.getString("employeeId"),
                     rs.getString("employeeName"),
                     rs.getBoolean("gender"),
+                    rs.getString("email"),
                     rs.getString("phoneNumber"),
                     rs.getString("position")
                 );
@@ -110,4 +111,41 @@ public class EmployeeDao {
         }
         return list;
     }
+
+	public boolean xoaNhanVien(String maNV) {
+		// TODO Auto-generated method stub
+		String sql = "DELETE FROM Employee WHERE employeeId = ?"; 
+	    
+	    try {
+	        Connection con = ConnectDB.getConnection();
+	        PreparedStatement pst = con.prepareStatement(sql);
+	        pst.setString(1, maNV);
+	        
+	        return pst.executeUpdate() > 0;
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return false;
+	}
+	public boolean capNhatNhanVien(Employee nv) {
+		// TODO Auto-generated method stub
+		String sql = "UPDATE Employee SET employeeName = ?, gender = ?, phoneNumber = ?, email = ?, position = ? WHERE employeeId = ?";
+	    
+	    try {
+	        Connection con = ConnectDB.getConnection();
+	        PreparedStatement pst = con.prepareStatement(sql);
+	        
+	        pst.setString(1, nv.getEmployeeName()); 
+	        pst.setBoolean(2, nv.isGender());
+	        pst.setString(3, nv.getPhoneNumber()); // Đổi thành nv.getSdt() nếu class Entity của bạn dùng tên đó
+	        pst.setString(4, nv.getEmail());
+	        pst.setString(5, nv.getPosition());    // Đổi thành nv.getChucVu() nếu class Entity của bạn dùng tên đó
+	        pst.setString(6, nv.getEmployeeId());
+	        
+	        return pst.executeUpdate() > 0;
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return false;
+	}
 }

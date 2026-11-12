@@ -5,6 +5,7 @@ public class Employee {
 	private String EmployeeId;
     private String EmployeeName;
     private boolean isGender;
+    private String email;
     private String position;
     private String phoneNumber;
     
@@ -13,13 +14,22 @@ public class Employee {
     	this.EmployeeId = id;
     }
     
-    public Employee (String employeeID, String employeeName, boolean isGender, String phoneNumber, String position) {
+    public Employee (String employeeID, String employeeName, boolean isGender, String email,  String phoneNumber, String position) {
         this.EmployeeId = employeeID;
         this.EmployeeName = employeeName;
         this.isGender = isGender;
+        this.email = email;
         this.phoneNumber = phoneNumber;
         this.position = position;
     }
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
 	public String getEmployeeId() {
 		return EmployeeId;
 	}
@@ -52,7 +62,7 @@ public class Employee {
 	}
 	@Override
 	public String toString() {
-		return "NhanVien [EmployeeId=" + EmployeeId + ", EmployeeName=" + EmployeeName + ", isGender=" + isGender
+		return "NhanVien [EmployeeId=" + EmployeeId + ", EmployeeName=" + EmployeeName + ", isGender=" + isGender + email + ", email"
 				+ ", position=" + position + ", phoneNumber=" + phoneNumber + "]";
 	}
 

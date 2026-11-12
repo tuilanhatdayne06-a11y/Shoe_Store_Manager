@@ -11,7 +11,7 @@ import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 
-import connectDB.connectDB;
+import connectDB.ConnectDB;
 
 public class ReportDAO {
 
@@ -23,7 +23,7 @@ public class ReportDAO {
                    + "SELECT MAX(orderDate) AS ngay FROM dbo.PurchaseOrder "
                    + "WHERE status = 'Da nhap') AS t";
 
-        Connection con = connectDB.getConnection();
+        Connection con = ConnectDB.getConnection();
         if (con == null || con.isClosed()) {
             throw new SQLException("Khong ket noi duoc database ShoeStore");
         }
@@ -46,7 +46,7 @@ public class ReportDAO {
         String sql = "SELECT COALESCE(SUM(totalAmount), 0) AS tong "
                    + "FROM dbo.Invoice WHERE creationDate >= ? AND creationDate < ?";
 
-        Connection con = connectDB.getConnection();
+        Connection con = ConnectDB.getConnection();
         if (con == null || con.isClosed()) {
             throw new SQLException("Khong ket noi duoc database ShoeStore");
         }
@@ -72,7 +72,7 @@ public class ReportDAO {
                    + "WHERE p.status = 'Da nhap' "
                    + "AND p.orderDate >= ? AND p.orderDate < ?";
 
-        Connection con = connectDB.getConnection();
+        Connection con = ConnectDB.getConnection();
         if (con == null || con.isClosed()) {
             throw new SQLException("Khong ket noi duoc database ShoeStore");
         }
@@ -103,7 +103,7 @@ public class ReportDAO {
                    + "GROUP BY p.productId, p.productName "
                    + "ORDER BY SUM(d.quantity) DESC, p.productName";
 
-        Connection con = connectDB.getConnection();
+        Connection con = ConnectDB.getConnection();
         if (con == null || con.isClosed()) {
             throw new SQLException("Khong ket noi duoc database ShoeStore");
         }

@@ -3,7 +3,6 @@ package gui_Default;
 import entity.Employee;
 import dao.EmployeeDao;
 
-
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
@@ -27,6 +26,7 @@ public class FrmSubscribe extends JFrame {
     private Color hoverColor = new Color(150, 40, 170);
     private Color textDark = new Color(70, 20, 80);
     private JTextField txtPhone;
+    private JTextField txtEmail; 
     
     private FrmLogin loginForm;
     
@@ -37,7 +37,7 @@ public class FrmSubscribe extends JFrame {
 
     public FrmSubscribe() {
         setTitle("Hệ Thống - Đăng Ký");
-        setSize(450, 470);
+        setSize(450, 520); 
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setResizable(false);
@@ -63,12 +63,14 @@ public class FrmSubscribe extends JFrame {
         txtChucVu = new JTextField();
         txtMatKhau = new JPasswordField();
         txtPhone = new JTextField();
+        txtEmail = new JTextField(); 
 
         styleField(txtMaNV);
         styleField(txtHoTen);
         styleField(txtChucVu);
         styleField(txtMatKhau);
         styleField(txtPhone);
+        styleField(txtEmail);
 
         JPanel pnlGioiTinh = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
         pnlGioiTinh.setBackground(bgLight);
@@ -108,11 +110,16 @@ public class FrmSubscribe extends JFrame {
         pnlForm.add(txtPhone, gbc);
 
         gbc.gridx = 0; gbc.gridy = 4; gbc.weightx = 0.3;
+        pnlForm.add(taoLabel("Email:"), gbc);
+        gbc.gridx = 1; gbc.weightx = 0.7;
+        pnlForm.add(txtEmail, gbc);
+
+        gbc.gridx = 0; gbc.gridy = 5; gbc.weightx = 0.3;
         pnlForm.add(taoLabel("Chức vụ:"), gbc);
         gbc.gridx = 1; gbc.weightx = 0.7;
         pnlForm.add(txtChucVu, gbc);
 
-        gbc.gridx = 0; gbc.gridy = 5; gbc.weightx = 0.3;
+        gbc.gridx = 0; gbc.gridy = 6; gbc.weightx = 0.3;
         pnlForm.add(taoLabel("Mật khẩu:"), gbc);
         gbc.gridx = 1; gbc.weightx = 0.7;
         pnlForm.add(txtMatKhau, gbc);
@@ -181,27 +188,34 @@ public class FrmSubscribe extends JFrame {
             String ten = txtHoTen.getText().trim();
             boolean isNam = radNam.isSelected();
             String phone = txtPhone.getText().trim();
+            String email = txtEmail.getText().trim();
             String chucVu = txtChucVu.getText().trim();
             String pass = new String(txtMatKhau.getPassword()).trim();
 
             if (!ma.matches("^NV\\d{3,}$")) {
                 JOptionPane.showMessageDialog(this, "Mã nhân viên không hợp lệ!\nĐịnh dạng đúng: Bắt đầu bằng 'NV' "
-                		+ "và theo sau ít nhất 3 chữ số (VD: NV001).", "Lỗi nhập liệu", JOptionPane.ERROR_MESSAGE);
+                        + "và theo sau ít nhất 3 chữ số (VD: NV001).", "Lỗi nhập liệu", JOptionPane.ERROR_MESSAGE);
                 txtMaNV.requestFocus();
                 return;
             }
 
             if (!ten.matches("^[\\p{L}\\s]+$")) {
                 JOptionPane.showMessageDialog(this, "Họ tên không hợp lệ!\nChỉ được chứa chữ cái "
-                		+ "và khoảng trắng.", "Lỗi nhập liệu", JOptionPane.ERROR_MESSAGE);
+                        + "và khoảng trắng.", "Lỗi nhập liệu", JOptionPane.ERROR_MESSAGE);
                 txtHoTen.requestFocus();
                 return;
             }
 
             if (!phone.matches("^0\\d{9}$")) {
                 JOptionPane.showMessageDialog(this, "Số điện thoại không hợp lệ!\nPhải gồm đúng 10 chữ số "
-                		+ "và bắt đầu bằng số 0.", "Lỗi nhập liệu", JOptionPane.ERROR_MESSAGE);
+                        + "và bắt đầu bằng số 0.", "Lỗi nhập liệu", JOptionPane.ERROR_MESSAGE);
                 txtPhone.requestFocus();
+                return;
+            }
+
+            if (email.isEmpty() || !email.matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
+                JOptionPane.showMessageDialog(this, "Email không hợp lệ!", "Lỗi nhập liệu", JOptionPane.ERROR_MESSAGE);
+                txtEmail.requestFocus();
                 return;
             }
 
@@ -213,23 +227,21 @@ public class FrmSubscribe extends JFrame {
 
             if (!pass.matches("^.{6,}$")) {
                 JOptionPane.showMessageDialog(this, "Mật khẩu quá ngắn!\n"
-                		+ "Vui lòng nhập ít nhất 6 ký tự.", "Lỗi nhập liệu", JOptionPane.ERROR_MESSAGE);
+                        + "Vui lòng nhập ít nhất 6 ký tự.", "Lỗi nhập liệu", JOptionPane.ERROR_MESSAGE);
                 txtMatKhau.requestFocus();
                 return;
             }
 
-            Employee nv = new Employee(ma, ten, isNam, phone, chucVu);
+            Employee nv = new Employee(ma, ten, isNam, phone, email, chucVu);
             EmployeeDao dao = new EmployeeDao();
 
             if (dao.themNhanVien(nv, pass)) {
-                JOptionPane.showMessageDialog(this, "Đăng ký thành công!"
-                		+ " Vui lòng đăng nhập.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Đăng ký thành công! Vui lòng đăng nhập.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
                 if(loginForm != null)
                     loginForm.setVisible(true);
                 dispose();
             } else {
-                JOptionPane.showMessageDialog(this, "Đăng ký thất bại!"
-                		+ " Trùng mã nhân viên hoặc lỗi CSDL.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Đăng ký thất bại! Trùng mã nhân viên hoặc lỗi CSDL.", "Lỗi", JOptionPane.ERROR_MESSAGE);
             }
         });
     }

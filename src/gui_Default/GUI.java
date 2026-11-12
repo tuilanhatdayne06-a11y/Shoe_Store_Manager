@@ -129,23 +129,6 @@ public class GUI extends JFrame implements ActionListener {
 
         pnlHeader.add(pnlRight, BorderLayout.EAST);
 
-
-        btnChuaDangNhap.addActionListener(e -> {
-            new FrmLogin(nv -> {
-                String iconPath = nv.isGender() ? "/img/employee_male.png" : "/img/employee_female.png";
-                java.net.URL avatarUrl = getClass().getResource(iconPath);
-                if (avatarUrl != null) {
-                    btnAvatar.setIcon(new ImageIcon(new ImageIcon(avatarUrl).getImage().getScaledInstance(35, 35, Image.SCALE_SMOOTH)));
-                }
-                
-                String gioiTinh = nv.isGender() ? "Nam" : "Nữ";
-                String tooltipText = "<html><b>Họ tên:</b> " + nv.getEmployeeName() + "<br><b>Mã NV:</b> " + nv.getEmployeeId() + "<br><b>Chức vụ:</b> " + nv.getPosition() + "<br><b>Giới tính:</b> " + gioiTinh + "</html>";
-                btnAvatar.setToolTipText(tooltipText);
-                
-                loginCardLayout.show(pnlRight, "DaDangNhap");
-            }).setVisible(true);
-        });
-
         JPanel pnlMenu = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 12));
         pnlMenu.setBackground(bgLight);
         pnlMenu.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, new Color(230, 200, 240)));
@@ -189,19 +172,12 @@ public class GUI extends JFrame implements ActionListener {
         pnlCenter.add(new SupplierUI(), "SUPPLIER");
         pnlCenter.add(new EmployeeUI(), "EMPLOYEE");
         pnlCenter.add(new ProductUI(), "PRODUCT");
-<<<<<<< HEAD
-        pnlCenter.add(new KhachHangUI(), "CUSTOMER");
+
+        pnlCenter.add(new CustomerUI(), "CUSTOMER");
         pnlCenter.add(new ImportProductUI(), "IMPORT");
         pnlCenter.add(new SaleProductUI(), "POS");
-        pnlCenter.add(new BaoCaoUI(), "REPORT");
-=======
-        pnlCenter.add(new CustomerUI(), "CUSTOMER");
-       //pnlCenter.add(createDummyPanel(Color.YELLOW, "Giao Diện Nhập Hàng"), "IMPORT");
-       //pnlCenter.add(createDummyPanel(Color.GREEN, "Giao Diện Bán Hàng"), "POS");
         pnlCenter.add(new ReportUI(), "REPORT");
->>>>>>> refs/remotes/origin/feature/khach-hang-bao-cao
         
-
         add(pnlCenter, BorderLayout.CENTER);
     }
 
@@ -223,15 +199,6 @@ public class GUI extends JFrame implements ActionListener {
             }
         });
         return btn;
-    }
-
-    private JPanel createDummyPanel(Color bgColor, String text) {
-        JPanel pnl = new JPanel(new BorderLayout());
-        pnl.setBackground(bgColor);
-        JLabel lbl = new JLabel(text, SwingConstants.CENTER);
-        lbl.setFont(new Font("Arial", Font.BOLD, 24));
-        pnl.add(lbl, BorderLayout.CENTER);
-        return pnl;
     }
 
     @Override

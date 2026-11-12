@@ -6,7 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import connectDB.connectDB;
+import connectDB.ConnectDB;
 import entity.Customer;
 
 public class CustomerDAO {
@@ -17,7 +17,7 @@ public class CustomerDAO {
         String sql = "SELECT customerId, customerName, address, phoneNumber, loyaltyPoints "
                    + "FROM dbo.Customer ORDER BY customerId";
 
-        Connection con = connectDB.getConnection();
+        Connection con = ConnectDB.getConnection();
         if (con == null || con.isClosed()) {
             throw new SQLException("Khong ket noi duoc database ShoeStore");
         }
@@ -43,7 +43,7 @@ public class CustomerDAO {
         String sql = "SELECT customerId, customerName, address, phoneNumber, loyaltyPoints "
                    + "FROM dbo.Customer WHERE phoneNumber LIKE ? ORDER BY customerId";
 
-        Connection con = connectDB.getConnection();
+        Connection con = ConnectDB.getConnection();
         if (con == null || con.isClosed()) {
             throw new SQLException("Khong ket noi duoc database ShoeStore");
         }
@@ -70,7 +70,7 @@ public class CustomerDAO {
         String sql = "SELECT COUNT(*) FROM dbo.Customer "
                    + "WHERE phoneNumber = ? AND customerId <> ?";
 
-        Connection con = connectDB.getConnection();
+        Connection con = ConnectDB.getConnection();
         if (con == null || con.isClosed()) {
             throw new SQLException("Khong ket noi duoc database ShoeStore");
         }
@@ -92,7 +92,7 @@ public class CustomerDAO {
         String sql = "UPDATE dbo.Customer SET customerName = ?, address = ?, "
                    + "phoneNumber = ? WHERE customerId = ?";
 
-        Connection con = connectDB.getConnection();
+        Connection con = ConnectDB.getConnection();
         if (con == null || con.isClosed()) {
             throw new SQLException("Khong ket noi duoc database ShoeStore");
         }
@@ -110,7 +110,7 @@ public class CustomerDAO {
     public boolean removeCustomer(String maKH) throws SQLException {
         String sql = "DELETE FROM dbo.Customer WHERE customerId = ?";
 
-        Connection con = connectDB.getConnection();
+        Connection con = ConnectDB.getConnection();
         if (con == null || con.isClosed()) {
             throw new SQLException("Khong ket noi duoc database ShoeStore");
         }
@@ -130,7 +130,7 @@ public class CustomerDAO {
                        + "(customerId, customerName, address, phoneNumber, loyaltyPoints) "
                        + "VALUES (?, ?, ?, ?, 0)";
 
-        Connection con = connectDB.getConnection();
+        Connection con = ConnectDB.getConnection();
         if (con == null || con.isClosed()) {
             throw new SQLException("Khong ket noi duoc database ShoeStore");
         }

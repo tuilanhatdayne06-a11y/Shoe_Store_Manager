@@ -76,9 +76,9 @@ public class Home extends JScrollPane implements ActionListener, MouseListener {
         pnlGrid.setMaximumSize(new Dimension(1100, 500));
 
         pnlGrid.add(createSportCard("GIÀY BÓNG ĐÁ", "Sân cỏ tự nhiên & nhân tạo", "Nike, Adidas, Puma", "/img/soccer.png"));
-        pnlGrid.add(createSportCard("GIÀY BÓNG CHUYỀN", "Đệm giảm chấn, bám sân cực tốt", "Mizuno, Asics, VHD", "/img/volleyball.png"));
-        pnlGrid.add(createSportCard("GIÀY CẦU LÔNG", "Đế kếp dẻo, chống lật cổ chân", "Yonex, Lining, Victor", "/img/badminton.png"));
-        pnlGrid.add(createSportCard("GIÀY THỜI TRANG", "Phong cách trẻ trung, đi hàng ngày", "Vans, Converse, MLB", "/img/fashion.png"));
+        pnlGrid.add(createSportCard("GIÀY BÓNG CHUYỀN", "Đệm giảm chấn, bám sân cực tốt", "Mizuno, Asics, VHD", "/img/Asics.png"));
+        pnlGrid.add(createSportCard("GIÀY CẦU LÔNG", "Đế kếp dẻo, chống lật cổ chân", "Yonex, Lining, Victor", "/img/Yonex.png"));
+        pnlGrid.add(createSportCard("GIÀY THỜI TRANG", "Phong cách trẻ trung, đi hàng ngày", "Vans, Converse, MLB", "/img/moon.png"));
         pnlGrid.add(createSportCard("GIÀY BÓNG RỔ", "Cổ cao bảo vệ khớp, bám sân", "Nike Jordan, Peak", "/img/basketball.png"));
         pnlGrid.add(createSportCard("GIÀY CHẠY BỘ", "Siêu nhẹ, êm ái, tối ưu lực đẩy", "Adidas, Hoka, Puma", "/img/running.png"));
 
@@ -100,8 +100,8 @@ public class Home extends JScrollPane implements ActionListener, MouseListener {
         pnlPartners.setAlignmentX(Component.CENTER_ALIGNMENT);
 
        
-        pnlPartners.add(createPartnerLogo("/img/logo_vhd.png", "VHD"));
-        pnlPartners.add(createPartnerLogo("/img/logo_beyono.png", "BEYONO"));
+        pnlPartners.add(createPartnerLogo("/img/logoVHD.jpg", "VHD"));
+        pnlPartners.add(createPartnerLogo("/img/logoBeyono.png", "BEYONO"));
         pnlPartners.add(createPartnerLogo("/img/adidas.png", "ADIDAS"));
 
         pnlContent.add(pnlPartners);
@@ -122,7 +122,7 @@ public class Home extends JScrollPane implements ActionListener, MouseListener {
             java.net.URL url = getClass().getResource(imgPath);
             if (url != null) {
                 Image img = new ImageIcon(url).getImage();
-                Image scaledImg = img.getScaledInstance(150, 80, Image.SCALE_SMOOTH);
+                Image scaledImg = img.getScaledInstance(100, 60, Image.SCALE_SMOOTH);
                 lbl.setIcon(new ImageIcon(scaledImg));
             } else {
 
