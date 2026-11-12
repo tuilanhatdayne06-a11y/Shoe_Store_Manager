@@ -62,7 +62,6 @@ public class ProductDetailDAO {
 			}
 			
 		} catch (Exception e) {}
-		
 		return list.size() > 0? list : null;
 	}
 	

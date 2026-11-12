@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+
 import connectDB.ConnectDB;
 import entity.Customer;
 
@@ -14,7 +15,8 @@ public class CustomerDAO {
     // Lay tat ca khach hang
     public ArrayList<Customer> getAllCustomers() throws SQLException {
         ArrayList<Customer> list = new ArrayList<Customer>();
-        String sql = "SELECT customerId, customerName, address, phoneNumber, loyaltyPoints "
+
+        String sql = "SELECT customerId, customerName, address, phoneNumber, loyaltyPoints, imgCustomer "
                    + "FROM dbo.Customer ORDER BY customerId";
 
         Connection con = ConnectDB.getConnection();
@@ -30,7 +32,9 @@ public class CustomerDAO {
                         rs.getString("customerName"),
                         rs.getString("address"),
                         rs.getString("phoneNumber"),
-                        rs.getInt("loyaltyPoints"));
+                        rs.getInt("loyaltyPoints"),
+                        rs.getString("imgCustomer")
+                );
                 list.add(kh);
             }
         }
@@ -40,7 +44,7 @@ public class CustomerDAO {
     // Tim kiem khach hang theo so dien thoai
     public ArrayList<Customer> findCustomersByPhone(String sdt) throws SQLException {
         ArrayList<Customer> list = new ArrayList<Customer>();
-        String sql = "SELECT customerId, customerName, address, phoneNumber, loyaltyPoints "
+        String sql = "SELECT customerId, customerName, address, phoneNumber, loyaltyPoints, imgCustomer "
                    + "FROM dbo.Customer WHERE phoneNumber LIKE ? ORDER BY customerId";
 
         Connection con = ConnectDB.getConnection();
@@ -57,12 +61,43 @@ public class CustomerDAO {
                             rs.getString("customerName"),
                             rs.getString("address"),
                             rs.getString("phoneNumber"),
-                            rs.getInt("loyaltyPoints"));
+                            rs.getInt("loyaltyPoints"),
+                            rs.getString("imgCustomer")
+                    );
                     list.add(kh);
                 }
             }
         }
         return list;
+    }
+    public Customer findById(String customerId)
+    {
+    	String sql = "select * from Customer where customerId = ?";
+    	
+    	try {
+			Connection con = ConnectDB.getConnection();
+			PreparedStatement pst = con.prepareStatement(sql);
+			
+			pst.setString(1, customerId);
+			
+			ResultSet rs = pst.executeQuery();
+			
+			if(rs.next())
+			{
+				return new Customer(
+						rs.getString("customerId"),
+						rs.getString("customerName"),
+						rs.getString("address"),
+						rs.getString("phoneNumber"),
+						rs.getInt("loyaltyPoints"),
+						rs.getString("imgCustomer")
+				);
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+    	
+    	return null;
     }
 
     // Kiem tra SDT da duoc su dung boi khach hang khac
@@ -93,6 +128,7 @@ public class CustomerDAO {
                    + "phoneNumber = ? WHERE customerId = ?";
 
         Connection con = ConnectDB.getConnection();
+
         if (con == null || con.isClosed()) {
             throw new SQLException("Khong ket noi duoc database ShoeStore");
         }
@@ -121,58 +157,46 @@ public class CustomerDAO {
         }
     }
 
+
     // Lay ma KH tu IDCounter va them khach hang trong cung giao dich
-    public String addCustomerWithGeneratedId(String ten, String diaChi, String sdt)
-            throws SQLException {
-        String sqlLayMa = "UPDATE dbo.IDCounter SET currentValue = currentValue + 1 "
-                         + "OUTPUT INSERTED.currentValue WHERE prefix = ?";
-        String sqlThem = "INSERT INTO dbo.Customer "
-                       + "(customerId, customerName, address, phoneNumber, loyaltyPoints) "
-                       + "VALUES (?, ?, ?, ?, 0)";
+//    public String addCustomerWithGeneratedId(String ten, String diaChi, String sdt) {
+//            throws SQLException {
+//        String sqlLayMa = "UPDATE dbo.IDCounter SET currentValue = currentValue + 1 "
+//                         + "OUTPUT INSERTED.currentValue WHERE prefix = ?";
+//        String sqlThem = "INSERT INTO dbo.Customer "
+//                       + "(customerId, customerName, address, phoneNumber, loyaltyPoints) "
+//                       + "VALUES (?, ?, ?, ?, 0)";
+//
+//        Connection con = ConnectDB.getConnection();
+//        if (con == null || con.isClosed()) {
+//            throw new SQLException("Khong ket noi duoc database ShoeStore");
+//        }
+//        if (!con.getAutoCommit()) {
+//            throw new SQLException("Ket noi dang co giao dich chua hoan tat");
+//        }
+//
+//        con.setAutoCommit(false);
 
-        Connection con = ConnectDB.getConnection();
-        if (con == null || con.isClosed()) {
-            throw new SQLException("Khong ket noi duoc database ShoeStore");
-        }
-        if (!con.getAutoCommit()) {
-            throw new SQLException("Ket noi dang co giao dich chua hoan tat");
-        }
-
-        con.setAutoCommit(false);
+    public void addCustomer(Customer customer){
+        String sql = "insert into Customer values(?, ?, ?, ?, ?, ?)";
+        
         try {
-            int stt;
-            try (PreparedStatement pst = con.prepareStatement(sqlLayMa)) {
-                pst.setString(1, "KH");
-                try (ResultSet rs = pst.executeQuery()) {
-                    if (!rs.next()) {
-                        throw new SQLException("Khong tim thay tien to KH trong IDCounter");
-                    }
-                    stt = rs.getInt(1);
-                }
-            }
-
-            String maKH = "KH" + String.format("%03d", stt);
-            try (PreparedStatement pst = con.prepareStatement(sqlThem)) {
-                pst.setString(1, maKH);
-                pst.setString(2, ten);
-                pst.setString(3, diaChi);
-                pst.setString(4, sdt);
-                if (pst.executeUpdate() != 1) {
-                    throw new SQLException("Them khach hang that bai");
-                }
-            }
-
-            con.commit();
-            return maKH;
-        } catch (SQLException e) {
-            try {
-                con.rollback();
-            } catch (SQLException loiRollback) {
-                e.addSuppressed(loiRollback);
-            }
-            throw e;
-        } finally {
-            con.setAutoCommit(true);
-        }
+        	Connection con = ConnectDB.getConnection();
+            
+            PreparedStatement pst = con.prepareStatement(sql);
+            
+            pst.setString(1, customer.getCustomerId());
+            pst.setString(2, customer.getCustomerName());
+            pst.setString(3, customer.getAddress());
+            pst.setString(4, customer.getPhoneNumber());
+            pst.setInt(5, customer.getLoyaltyPoints());
+            pst.setString(6, customer.getImgCustomer());
+            
+            pst.executeUpdate();
+            
+            
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
     }
 }

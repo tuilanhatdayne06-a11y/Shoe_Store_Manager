@@ -3,7 +3,6 @@ package gui_Default;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.*;
 
 public class GUI extends JFrame implements ActionListener {
@@ -172,12 +171,14 @@ public class GUI extends JFrame implements ActionListener {
         pnlCenter.add(new SupplierUI(), "SUPPLIER");
         pnlCenter.add(new EmployeeUI(), "EMPLOYEE");
         pnlCenter.add(new ProductUI(), "PRODUCT");
-
         pnlCenter.add(new CustomerUI(), "CUSTOMER");
         pnlCenter.add(new ImportProductUI(), "IMPORT");
         pnlCenter.add(new SaleProductUI(), "POS");
+        pnlCenter.add(new ImportProductUI(), "IMPORT");
+        pnlCenter.add(new SaleProductUI(), "POS");
+        pnlCenter.add(new CustomerUI(), "CUSTOMER");
         pnlCenter.add(new ReportUI(), "REPORT");
-        
+
         add(pnlCenter, BorderLayout.CENTER);
     }
 

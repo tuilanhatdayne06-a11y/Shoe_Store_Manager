@@ -1,8 +1,7 @@
 package dao;
 
-import entity.Employee;
 import connectDB.ConnectDB;
-
+import entity.Employee;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,7 +11,7 @@ import java.util.ArrayList;
 public class EmployeeDao {
 
     public boolean themNhanVien(Employee nv, String matKhau) {
-        String sql = "INSERT INTO Employee (employeeId, employeeName, gender, phoneNumber, position) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Employee (employeeId, employeeName, gender, email, phoneNumber, position) VALUES (?, ?, ?, ?, ?, ?)";
         String sqlAccount = "INSERT INTO Account (employeeId, password, role) VALUES (?, ?, ?)";
         Connection con = ConnectDB.getConnection();
         PreparedStatement pst = null;
@@ -27,8 +26,9 @@ public class EmployeeDao {
             pst.setString(1, nv.getEmployeeId());
             pst.setString(2, nv.getEmployeeName());
             pst.setBoolean(3, nv.isGender());
-            pst.setString(4, nv.getPhoneNumber());
-            pst.setString(5, nv.getPosition());
+            pst.setString(4, nv.getEmail());
+            pst.setString(5, nv.getPhoneNumber());
+            pst.setString(6, nv.getPosition());
             
             int updateEmployee = pst.executeUpdate();
             
@@ -59,13 +59,13 @@ public class EmployeeDao {
     }
 
     public Employee dangNhap(String maNV, String matKhau) {
-        String sql = "SELECT e.employeeId, e.employeeName, e.gender, e.phoneNumber, e.position "
+        String sql = "SELECT e.employeeId, e.employeeName, e.gender, e.email, e.phoneNumber, e.position "
                    + "FROM Employee e JOIN Account a ON e.employeeId = a.employeeId "
                    + "WHERE e.employeeId = ? AND a.password = ?";
         
-        Connection con = ConnectDB.getConnection();
-        
-        try (PreparedStatement pst = con.prepareStatement(sql)) {
+        try {
+            Connection con = ConnectDB.getConnection();
+            PreparedStatement pst = con.prepareStatement(sql);
             pst.setString(1, maNV);
             pst.setString(2, matKhau);
             
@@ -75,8 +75,8 @@ public class EmployeeDao {
                     rs.getString("employeeId"),
                     rs.getString("employeeName"),
                     rs.getBoolean("gender"),
-                    rs.getString("email"),
                     rs.getString("phoneNumber"),
+                    rs.getString("email"), 
                     rs.getString("position")
                 );
             }
@@ -89,22 +89,22 @@ public class EmployeeDao {
 
     public ArrayList<Object[]> getAllEmployee() {
         ArrayList<Object[]> list = new ArrayList<>();
-        String sql = "SELECT employeeId, employeeName, gender, phoneNumber, position FROM Employee";
+        String sql = "SELECT employeeId, employeeName, gender, email, phoneNumber, position FROM Employee";
 
-        Connection con = ConnectDB.getConnection(); 
-        
-        try (
+        try {
+            Connection con = ConnectDB.getConnection(); 
             PreparedStatement pst = con.prepareStatement(sql);
             ResultSet rs = pst.executeQuery();
-        ) {
+        
             while (rs.next()) {
                 String ma = rs.getString("employeeId");
                 String ten = rs.getString("employeeName");
                 String gioiTinh = rs.getBoolean("gender") ? "Nam" : "Nữ"; 
                 String sdt = rs.getString("phoneNumber");
+                String email = rs.getString("email");
                 String chucVu = rs.getString("position");
                 
-                list.add(new Object[]{ma, ten, gioiTinh, sdt, chucVu});
+                list.add(new Object[]{ma, ten, gioiTinh, sdt, email, chucVu});
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -112,40 +112,39 @@ public class EmployeeDao {
         return list;
     }
 
-	public boolean xoaNhanVien(String maNV) {
-		// TODO Auto-generated method stub
-		String sql = "DELETE FROM Employee WHERE employeeId = ?"; 
-	    
-	    try {
-	        Connection con = ConnectDB.getConnection();
-	        PreparedStatement pst = con.prepareStatement(sql);
-	        pst.setString(1, maNV);
-	        
-	        return pst.executeUpdate() > 0;
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    }
-	    return false;
-	}
-	public boolean capNhatNhanVien(Employee nv) {
-		// TODO Auto-generated method stub
-		String sql = "UPDATE Employee SET employeeName = ?, gender = ?, phoneNumber = ?, email = ?, position = ? WHERE employeeId = ?";
-	    
-	    try {
-	        Connection con = ConnectDB.getConnection();
-	        PreparedStatement pst = con.prepareStatement(sql);
-	        
-	        pst.setString(1, nv.getEmployeeName()); 
-	        pst.setBoolean(2, nv.isGender());
-	        pst.setString(3, nv.getPhoneNumber()); // Đổi thành nv.getSdt() nếu class Entity của bạn dùng tên đó
-	        pst.setString(4, nv.getEmail());
-	        pst.setString(5, nv.getPosition());    // Đổi thành nv.getChucVu() nếu class Entity của bạn dùng tên đó
-	        pst.setString(6, nv.getEmployeeId());
-	        
-	        return pst.executeUpdate() > 0;
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    }
-	    return false;
-	}
+    public boolean xoaNhanVien(String maNV) {
+        String sql = "DELETE FROM Employee WHERE employeeId = ?"; 
+        
+        try {
+            Connection con = ConnectDB.getConnection();
+            PreparedStatement pst = con.prepareStatement(sql);
+            pst.setString(1, maNV);
+            
+            return pst.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean capNhatNhanVien(Employee nv) {
+        String sql = "UPDATE Employee SET employeeName = ?, gender = ?, phoneNumber = ?, email = ?, position = ? WHERE employeeId = ?";
+        
+        try {
+            Connection con = ConnectDB.getConnection();
+            PreparedStatement pst = con.prepareStatement(sql);
+            
+            pst.setString(1, nv.getEmployeeName()); 
+            pst.setBoolean(2, nv.isGender());
+            pst.setString(3, nv.getPhoneNumber()); 
+            pst.setString(4, nv.getEmail());
+            pst.setString(5, nv.getPosition());    
+            pst.setString(6, nv.getEmployeeId());
+            
+            return pst.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }

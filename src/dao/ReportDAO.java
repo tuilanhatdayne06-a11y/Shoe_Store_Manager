@@ -13,6 +13,7 @@ import java.util.ArrayList;
 
 import connectDB.ConnectDB;
 
+
 public class ReportDAO {
 
     // Lay ngay co giao dich moi nhat de hien thi thong ke khi mo giao dien
@@ -73,6 +74,7 @@ public class ReportDAO {
                    + "AND p.orderDate >= ? AND p.orderDate < ?";
 
         Connection con = ConnectDB.getConnection();
+
         if (con == null || con.isClosed()) {
             throw new SQLException("Khong ket noi duoc database ShoeStore");
         }
