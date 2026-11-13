@@ -23,6 +23,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
@@ -33,16 +34,25 @@ public class ReportUI extends JPanel implements ActionListener {
 
     private JButton btnWeek;
     private JButton btnMonth;
+    private JButton btnPrevious;
+    private JButton btnNext;
+
     private JLabel lblRevenue;
     private JLabel lblImportCost;
     private JLabel lblProfit;
     private JLabel lblReportStatus;
-    private JTable table;
-    private DefaultTableModel modelTable;
+    private JLabel lblPeriod;
+
+    private JTable tblTop5;
+    private DefaultTableModel modelTop5;
+    private JTable tblImport;
+    private DefaultTableModel modelImport;
     private JPanel pRevenueChart;
 
     private ReportDAO reportDAO = new ReportDAO();
+    private LocalDate reportDate = LocalDate.now();
     private boolean theoTuan = false;
+    private boolean daTaiNgay = false;
 
     private Color bgColor = new Color(248, 247, 255);
     private Color primaryColor = new Color(94, 53, 165);
@@ -53,50 +63,49 @@ public class ReportUI extends JPanel implements ActionListener {
 
         JPanel pNorth = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 12));
         pNorth.setBackground(new Color(234, 230, 250));
-
-        JLabel lblTieuDe = new JLabel("BÁO CÁO & THỐNG KÊ");
-        lblTieuDe.setFont(new Font("Arial", Font.BOLD, 24));
-        lblTieuDe.setForeground(primaryColor);
-        pNorth.add(lblTieuDe);
+        JLabel lblTitle = new JLabel("BÁO CÁO & THỐNG KÊ");
+        lblTitle.setFont(new Font("Arial", Font.BOLD, 24));
+        lblTitle.setForeground(primaryColor);
+        pNorth.add(lblTitle);
         add(pNorth, BorderLayout.NORTH);
 
         JPanel pKPI = new JPanel(new GridLayout(1, 3, 12, 0));
         pKPI.setBackground(bgColor);
 
-        lblRevenue = new JLabel("0 đ", SwingConstants.CENTER);
-        lblImportCost = new JLabel("0 đ", SwingConstants.CENTER);
-        lblProfit = new JLabel("0 đ", SwingConstants.CENTER);
+        lblRevenue = new JLabel("—", SwingConstants.CENTER);
+        lblImportCost = new JLabel("—", SwingConstants.CENTER);
+        lblProfit = new JLabel("—", SwingConstants.CENTER);
 
         pKPI.add(createSummaryCard("DOANH THU BÁN GIÀY", lblRevenue));
         pKPI.add(createSummaryCard("CHI PHÍ NHẬP KHO", lblImportCost));
         pKPI.add(createSummaryCard("LỢI NHUẬN TẠM TÍNH", lblProfit));
 
-        JPanel pLoc = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 8));
-        pLoc.setBackground(new Color(230, 216, 255));
+        JPanel pFilter = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 7));
+        pFilter.setBackground(new Color(230, 216, 255));
 
-        JLabel lblLoc = new JLabel("Thống kê theo:");
         btnWeek = new JButton("Theo tuần");
         btnMonth = new JButton("Theo tháng");
+        btnPrevious = new JButton("Kỳ trước");
+        btnNext = new JButton("Kỳ sau");
+        lblPeriod = new JLabel("");
 
-        btnWeek.setPreferredSize(new Dimension(120, 34));
-        btnMonth.setPreferredSize(new Dimension(120, 34));
-        btnWeek.setFocusPainted(false);
-        btnMonth.setFocusPainted(false);
-        btnWeek.setOpaque(true);
-        btnMonth.setOpaque(true);
+        btnWeek.setPreferredSize(new Dimension(105, 32));
+        btnMonth.setPreferredSize(new Dimension(110, 32));
 
-        pLoc.add(lblLoc);
-        pLoc.add(btnWeek);
-        pLoc.add(btnMonth);
+        pFilter.add(new JLabel("Thống kê:") );
+        pFilter.add(btnWeek);
+        pFilter.add(btnMonth);
+        pFilter.add(btnPrevious);
+        pFilter.add(btnNext);
+        pFilter.add(lblPeriod);
 
         pRevenueChart = new JPanel(new BorderLayout());
         pRevenueChart.setBackground(Color.WHITE);
 
         JPanel pChart = new JPanel(new BorderLayout());
-        pChart.setBackground(Color.WHITE);
         pChart.setBorder(BorderFactory.createTitledBorder(
                 "Biểu đồ doanh thu và chi phí nhập kho"));
-        pChart.add(pLoc, BorderLayout.NORTH);
+        pChart.add(pFilter, BorderLayout.NORTH);
         pChart.add(pRevenueChart, BorderLayout.CENTER);
 
         JPanel pCenter = new JPanel(new BorderLayout(0, 12));
@@ -106,53 +115,61 @@ public class ReportUI extends JPanel implements ActionListener {
         pCenter.add(pChart, BorderLayout.CENTER);
         add(pCenter, BorderLayout.CENTER);
 
-        String[] cols = {"STT", "Mã giày", "Tên mẫu giày", "Số lượng bán"};
-        modelTable = new DefaultTableModel(cols, 0);
-        table = new JTable(modelTable);
-        table.setDefaultEditor(Object.class, null);
-        table.setRowHeight(27);
-        table.getTableHeader().setBackground(new Color(230, 216, 255));
+        String[] colsTop = {"STT", "Mã giày", "Tên mẫu giày", "Số lượng bán"};
+        modelTop5 = new DefaultTableModel(colsTop, 0);
+        tblTop5 = new JTable(modelTop5);
+        tblTop5.setDefaultEditor(Object.class, null);
+        tblTop5.setRowHeight(27);
 
-        JPanel pTop = new JPanel(new BorderLayout());
-        pTop.setBackground(Color.WHITE);
-        pTop.setPreferredSize(new Dimension(0, 180));
-        pTop.setBorder(BorderFactory.createTitledBorder("Top 5 mẫu giày bán chạy"));
-        pTop.add(new JScrollPane(table), BorderLayout.CENTER);
+        String[] colsImport = {
+            "Mã phiếu", "Ngày lập", "Nhà cung cấp", "Số lượng", "Tổng chi phí"
+        };
+        modelImport = new DefaultTableModel(colsImport, 0);
+        tblImport = new JTable(modelImport);
+        tblImport.setDefaultEditor(Object.class, null);
+        tblImport.setRowHeight(27);
+
+        JTabbedPane tabs = new JTabbedPane();
+        tabs.addTab("Top 5 giày bán chạy", new JScrollPane(tblTop5));
+        tabs.addTab("Chi tiết nhập kho", new JScrollPane(tblImport));
+        tabs.setPreferredSize(new Dimension(0, 205));
 
         lblReportStatus = new JLabel("Đang tải thống kê...");
         JPanel pSouth = new JPanel(new BorderLayout(0, 5));
         pSouth.setBackground(bgColor);
         pSouth.setBorder(BorderFactory.createEmptyBorder(0, 15, 10, 15));
-        pSouth.add(pTop, BorderLayout.CENTER);
+        pSouth.add(tabs, BorderLayout.CENTER);
         pSouth.add(lblReportStatus, BorderLayout.SOUTH);
         add(pSouth, BorderLayout.SOUTH);
 
         btnWeek.addActionListener(this);
         btnMonth.addActionListener(this);
+        btnPrevious.addActionListener(this);
+        btnNext.addActionListener(this);
 
         updateButtonStyle();
-        loadReportData(); 
+        loadReportData();
     }
 
-    private JPanel createSummaryCard(String tieuDe, JLabel lblSoLieu) {
+    private JPanel createSummaryCard(String title, JLabel lblValue) {
         JPanel p = new JPanel(new GridLayout(2, 1));
         p.setBackground(Color.WHITE);
         p.setBorder(BorderFactory.createEmptyBorder(8, 10, 8, 10));
 
-        JLabel lblTen = new JLabel(tieuDe, SwingConstants.CENTER);
-        lblTen.setFont(new Font("Arial", Font.BOLD, 12));
-        lblTen.setForeground(primaryColor);
-        lblSoLieu.setFont(new Font("Arial", Font.BOLD, 22));
+        JLabel lblTitle = new JLabel(title, SwingConstants.CENTER);
+        lblTitle.setFont(new Font("Arial", Font.BOLD, 12));
+        lblTitle.setForeground(primaryColor);
+        lblValue.setFont(new Font("Arial", Font.BOLD, 21));
 
-        p.add(lblTen);
-        p.add(lblSoLieu);
+        p.add(lblTitle);
+        p.add(lblValue);
         return p;
     }
 
-    private String formatMoney(BigDecimal tien) {
+    private String formatMoney(BigDecimal money) {
         NumberFormat format = NumberFormat.getNumberInstance(new Locale("vi", "VN"));
         format.setMaximumFractionDigits(0);
-        return format.format(tien) + " đ";
+        return format.format(money) + " đ";
     }
 
     private void updateButtonStyle() {
@@ -171,126 +188,158 @@ public class ReportUI extends JPanel implements ActionListener {
 
     private void loadReportData() {
         try {
-            LocalDate ngayGanNhat = reportDAO.getLatestTransactionDate();
-            LocalDate tuNgay = reportDAO.getStartDate(ngayGanNhat, theoTuan);
-            LocalDate denNgay = reportDAO.getEndDate(ngayGanNhat, theoTuan);
+            if (!daTaiNgay) {
+                reportDate = reportDAO.getLatestTransactionDate();
+                daTaiNgay = true;
+            }
 
-            BigDecimal doanhThu = reportDAO.getTotalRevenue(tuNgay, denNgay);
-            BigDecimal chiPhi = reportDAO.getTotalImportCost(tuNgay, denNgay);
-            ArrayList<Object[]> dsGiay = reportDAO.getTop5SellingShoes(tuNgay, denNgay);
-            ArrayList<Object[]> dsCot = reportDAO.getChartData(ngayGanNhat, theoTuan);
+            LocalDate fromDate = reportDAO.getStartDate(reportDate, theoTuan);
+            LocalDate toDate = reportDAO.getEndDate(reportDate, theoTuan);
 
-            showSummary(doanhThu, chiPhi);
-            loadTop5ToTable(dsGiay);
-            showReportChart(dsCot);
+            BigDecimal revenue = reportDAO.getTotalRevenue(fromDate, toDate);
+            BigDecimal importCost = reportDAO.getTotalImportCost(fromDate, toDate);
+            ArrayList<Object[]> top5 = reportDAO.getTop5SellingShoes(fromDate, toDate);
+            ArrayList<Object[]> importOrders = reportDAO.getImportOrders(fromDate, toDate);
+            ArrayList<Object[]> chart = reportDAO.getChartData(reportDate, theoTuan);
 
+            showSummary(revenue, importCost);
+            loadTop5ToTable(top5);
+            loadImportToTable(importOrders);
+            showReportChart(chart);
+
+            DateTimeFormatter format = DateTimeFormatter.ofPattern("dd/MM/yyyy");
             if (theoTuan) {
-                DateTimeFormatter format = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-                lblReportStatus.setText("Thống kê tuần "
-                        + tuNgay.format(format) + " - " + denNgay.minusDays(1).format(format));
+                String period = fromDate.format(format) + " - "
+                        + toDate.minusDays(1).format(format);
+                lblPeriod.setText(period);
+                lblReportStatus.setText("Thống kê tuần " + period
+                        + " | " + importOrders.size() + " phiếu đã nhập");
             } else {
-                lblReportStatus.setText("Thống kê tháng "
-                        + tuNgay.getMonthValue() + "/" + tuNgay.getYear());
+                String period = fromDate.getMonthValue() + "/" + fromDate.getYear();
+                lblPeriod.setText("Tháng " + period);
+                lblReportStatus.setText("Thống kê tháng " + period
+                        + " | " + importOrders.size() + " phiếu đã nhập");
             }
 
         } catch (SQLException e) {
             lblRevenue.setText("—");
             lblImportCost.setText("—");
             lblProfit.setText("—");
-            modelTable.setRowCount(0);
+            modelTop5.setRowCount(0);
+            modelImport.setRowCount(0);
             pRevenueChart.removeAll();
             pRevenueChart.revalidate();
             pRevenueChart.repaint();
-            lblReportStatus.setText("Không tải được thống kê: " + e.getMessage());
+            lblPeriod.setText("");
+            lblReportStatus.setText("Không lấy được dữ liệu: " + e.getMessage());
         }
     }
 
-    private void showSummary(BigDecimal doanhThu, BigDecimal chiPhi) {
-        lblRevenue.setText(formatMoney(doanhThu));
-        lblImportCost.setText(formatMoney(chiPhi));
-        lblProfit.setText(formatMoney(doanhThu.subtract(chiPhi)));
+    private void showSummary(BigDecimal revenue, BigDecimal importCost) {
+        lblRevenue.setText(formatMoney(revenue));
+        lblImportCost.setText(formatMoney(importCost));
+        lblProfit.setText(formatMoney(revenue.subtract(importCost)));
     }
 
     private void loadTop5ToTable(ArrayList<Object[]> list) {
-        modelTable.setRowCount(0);
+        modelTop5.setRowCount(0);
         int stt = 1;
-        for (Object[] giay : list) {
-            modelTable.addRow(new Object[] {stt, giay[0], giay[1], giay[2]});
+        for (Object[] shoe : list) {
+            modelTop5.addRow(new Object[] {stt, shoe[0], shoe[1], shoe[2]});
             stt++;
         }
     }
 
-    private void showReportChart(ArrayList<Object[]> dsCot) {
+    private void loadImportToTable(ArrayList<Object[]> list) {
+        modelImport.setRowCount(0);
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+        for (Object[] order : list) {
+            LocalDate date = (LocalDate) order[1];
+            BigDecimal cost = (BigDecimal) order[4];
+            modelImport.addRow(new Object[] {
+                order[0],
+                date == null ? "" : date.format(format),
+                order[2],
+                order[3],
+                formatMoney(cost)
+            });
+        }
+    }
+
+    private void showReportChart(ArrayList<Object[]> chart) {
         pRevenueChart.removeAll();
 
         BigDecimal maxValue = BigDecimal.ZERO;
-        for (Object[] cot : dsCot) {
-            BigDecimal doanhThu = (BigDecimal) cot[1];
-            BigDecimal chiPhi = (BigDecimal) cot[2];
-            if (doanhThu.compareTo(maxValue) > 0) {
-                maxValue = doanhThu;
+        for (Object[] bar : chart) {
+            BigDecimal revenue = (BigDecimal) bar[1];
+            BigDecimal cost = (BigDecimal) bar[2];
+            if (revenue.compareTo(maxValue) > 0) {
+                maxValue = revenue;
             }
-            if (chiPhi.compareTo(maxValue) > 0) {
-                maxValue = chiPhi;
+            if (cost.compareTo(maxValue) > 0) {
+                maxValue = cost;
             }
         }
 
         if (maxValue.signum() == 0) {
-            JLabel lblTrong = new JLabel("Chưa có giao dịch trong khoảng thời gian này",
+            JLabel lblEmpty = new JLabel("Chưa có giao dịch trong kỳ này",
                     SwingConstants.CENTER);
-            lblTrong.setForeground(Color.GRAY);
-            pRevenueChart.add(lblTrong, BorderLayout.CENTER);
+            lblEmpty.setForeground(Color.GRAY);
+            pRevenueChart.add(lblEmpty, BorderLayout.CENTER);
             pRevenueChart.revalidate();
             pRevenueChart.repaint();
             return;
         }
 
-        JPanel pChuThich = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 5));
-        pChuThich.setBackground(Color.WHITE);
-        JLabel lblBan = new JLabel("■ Doanh thu");
-        lblBan.setForeground(new Color(139, 62, 246));
-        JLabel lblNhap = new JLabel("■ Chi phí nhập");
-        lblNhap.setForeground(new Color(242, 150, 170));
-        pChuThich.add(lblBan);
-        pChuThich.add(lblNhap);
-        pRevenueChart.add(pChuThich, BorderLayout.NORTH);
+        JPanel pLegend = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 5));
+        pLegend.setBackground(Color.WHITE);
+        JLabel lblSale = new JLabel("■ Doanh thu");
+        lblSale.setForeground(new Color(139, 62, 246));
+        JLabel lblCost = new JLabel("■ Chi phí nhập kho");
+        lblCost.setForeground(new Color(242, 150, 170));
+        pLegend.add(lblSale);
+        pLegend.add(lblCost);
+        pRevenueChart.add(pLegend, BorderLayout.NORTH);
 
-        JPanel pCacCot = new JPanel(new GridLayout(1, dsCot.size(), 12, 0));
-        pCacCot.setBackground(Color.WHITE);
-        pCacCot.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
+        JPanel pBars = new JPanel(new GridLayout(1, chart.size(), 12, 0));
+        pBars.setBackground(Color.WHITE);
+        pBars.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
         double max = maxValue.doubleValue();
 
-        for (Object[] cot : dsCot) {
-            String nhan = cot[0].toString();
-            BigDecimal doanhThu = (BigDecimal) cot[1];
-            BigDecimal chiPhi = (BigDecimal) cot[2];
+        for (Object[] bar : chart) {
+            String name = bar[0].toString();
+            BigDecimal revenue = (BigDecimal) bar[1];
+            BigDecimal cost = (BigDecimal) bar[2];
 
-            int mucBan = (int) Math.round(doanhThu.doubleValue() / max * 1000);
-            int mucNhap = (int) Math.round(chiPhi.doubleValue() / max * 1000);
+            int saleLevel = (int) Math.round(revenue.doubleValue() / max * 1000);
+            int costLevel = (int) Math.round(cost.doubleValue() / max * 1000);
 
-            JProgressBar barBan = new JProgressBar(SwingConstants.VERTICAL, 0, 1000);
-            barBan.setValue(mucBan);
-            barBan.setForeground(new Color(139, 62, 246));
-            barBan.setBorderPainted(false);
+            JProgressBar barSale = new JProgressBar(SwingConstants.VERTICAL, 0, 1000);
+            barSale.setValue(saleLevel);
+            barSale.setForeground(new Color(139, 62, 246));
+            barSale.setBorderPainted(false);
+            barSale.setToolTipText(name + " - Doanh thu: " + formatMoney(revenue));
 
-            JProgressBar barNhap = new JProgressBar(SwingConstants.VERTICAL, 0, 1000);
-            barNhap.setValue(mucNhap);
-            barNhap.setForeground(new Color(242, 150, 170));
-            barNhap.setBorderPainted(false);
+            JProgressBar barCost = new JProgressBar(SwingConstants.VERTICAL, 0, 1000);
+            barCost.setValue(costLevel);
+            barCost.setForeground(new Color(242, 150, 170));
+            barCost.setBorderPainted(false);
+            barCost.setToolTipText(name + " - Chi phí: " + formatMoney(cost));
 
-            JPanel pHaiCot = new JPanel(new GridLayout(1, 2, 5, 0));
-            pHaiCot.setBackground(Color.WHITE);
-            pHaiCot.add(barBan);
-            pHaiCot.add(barNhap);
+            JPanel pDoubleBar = new JPanel(new GridLayout(1, 2, 5, 0));
+            pDoubleBar.setBackground(Color.WHITE);
+            pDoubleBar.add(barSale);
+            pDoubleBar.add(barCost);
 
-            JPanel pNhom = new JPanel(new BorderLayout(0, 5));
-            pNhom.setBackground(Color.WHITE);
-            pNhom.add(pHaiCot, BorderLayout.CENTER);
-            pNhom.add(new JLabel(nhan, SwingConstants.CENTER), BorderLayout.SOUTH);
-            pCacCot.add(pNhom);
+            JPanel pGroup = new JPanel(new BorderLayout(0, 5));
+            pGroup.setBackground(Color.WHITE);
+            pGroup.add(pDoubleBar, BorderLayout.CENTER);
+            pGroup.add(new JLabel(name, SwingConstants.CENTER), BorderLayout.SOUTH);
+            pBars.add(pGroup);
         }
 
-        pRevenueChart.add(pCacCot, BorderLayout.CENTER);
+        pRevenueChart.add(pBars, BorderLayout.CENTER);
         pRevenueChart.revalidate();
         pRevenueChart.repaint();
     }
@@ -298,6 +347,7 @@ public class ReportUI extends JPanel implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         Object o = e.getSource();
+
         if (o.equals(btnWeek)) {
             theoTuan = true;
             updateButtonStyle();
@@ -305,6 +355,12 @@ public class ReportUI extends JPanel implements ActionListener {
         } else if (o.equals(btnMonth)) {
             theoTuan = false;
             updateButtonStyle();
+            loadReportData();
+        } else if (o.equals(btnPrevious)) {
+            reportDate = theoTuan ? reportDate.minusWeeks(1) : reportDate.minusMonths(1);
+            loadReportData();
+        } else if (o.equals(btnNext)) {
+            reportDate = theoTuan ? reportDate.plusWeeks(1) : reportDate.plusMonths(1);
             loadReportData();
         }
     }
