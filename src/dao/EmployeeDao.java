@@ -147,4 +147,29 @@ public class EmployeeDao {
         }
         return false;
     }
+
+    public ArrayList<Object[]> getEmployeeByPosition(String position)
+    {
+        String sql = "select * from Employee where position = ?";
+        ArrayList<Object[]> list = new ArrayList<Object[]>();
+        Connection con = ConnectDB.getConnection();
+        try {
+            PreparedStatement pst = con.prepareStatement(sql);
+            pst.setString(1, position);
+            ResultSet rs = pst.executeQuery();
+
+            while(rs.next())
+            {
+                Object[] obj = new Object[]{rs.getString("employeeId"),
+                    rs.getString("employeeName")};
+                list.add(obj);
+            }
+
+            return list;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
 }

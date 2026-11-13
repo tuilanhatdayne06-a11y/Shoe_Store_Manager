@@ -49,21 +49,6 @@ public class ProductDAO {
 		return null;
 	}
 	
-	public void removeProduct(String removeId)
-	{
-		String sql = "delete Product where productId = ?";
-		
-		try {
-			Connection con = ConnectDB.getConnection();
-			PreparedStatement pst = con.prepareStatement(sql);
-			
-			pst.setString(1, removeId);
-			pst.executeUpdate();
-			
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
-	}
 	
 	public ArrayList<ProductDetail> getAllProduct()
 	{
@@ -149,12 +134,12 @@ public class ProductDAO {
 		}
 	}
 	
-	public void updateUnitPrice(String productName, String categoryId, String supplierId, double price)
+	public void updateProduct(int stock, String productName, String categoryId, String supplierId, double price)
 	{
 		String sql = """
-				update p set p.unitPrice= ?  from
+				update p set p.unitPrice= ?, p.productName = ? from
 				Product p join ProductDetail pd on p.productId = pd.productId 
-				where p.productName = ? and p.categoryId = ? and p.supplierId = ?
+				where p.categoryId = ? and p.supplierId = ?
 			""";
 		
 		try (
@@ -168,7 +153,7 @@ public class ProductDAO {
 			pst.setString(3, categoryId);
 			pst.setString(4, supplierId);
 
-			
+			System.out.println(pst.executeUpdate());
 			pst.executeUpdate();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -178,7 +163,9 @@ public class ProductDAO {
 	
 	public void addProduct(Product product)
 	{
+
 		String sql = "INSERT INTO Product(productId, productName, unitPrice, categoryId, supplierId) VALUES(?, ?, ?, ?, ?)";
+
 		try {
 			Connection con = ConnectDB.getConnection();
 			PreparedStatement pst = con.prepareStatement(sql);

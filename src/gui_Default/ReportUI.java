@@ -166,8 +166,13 @@ public class ReportUI extends JPanel implements ActionListener {
         return p;
     }
 
+// <<<<<<< HEAD
+//     private String formatMoney(BigDecimal tien) {
+//         NumberFormat format = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("vi-VN"));
+// =======
     private String formatMoney(BigDecimal money) {
         NumberFormat format = NumberFormat.getNumberInstance(new Locale("vi", "VN"));
+// >>>>>>> origin/feature/Customer-Report
         format.setMaximumFractionDigits(0);
         return format.format(money) + " đ";
     }

@@ -139,8 +139,8 @@ public class ProductUI extends JPanel {
 		txtProductStock.setText("");
 		txtProductCost.setText("");
 		cboProductSupplier.setSelectedIndex(0);
-		lblDefaultImg.setText("");
 		lblDefaultImg.setIcon(null);
+		lblDefaultImg.setText("Chưa chọn ảnh");
 	}
 
 	/**
@@ -183,7 +183,6 @@ public class ProductUI extends JPanel {
 			Image scale = icon.getImage().getScaledInstance(80, 80, Image.SCALE_SMOOTH);
 			
 			lblDefaultImg.setIcon(new ImageIcon(scale));
-			lblDefaultImg.setText("");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -366,7 +365,6 @@ public class ProductUI extends JPanel {
 		btnEditProduct.addActionListener(e -> {
 			Component setEditFalse[] = {
 					txtProductCode,
-					txtProductName,
 					txtProductSize,
 					txtProductColor,
 					cboProductCategory,
@@ -382,7 +380,9 @@ public class ProductUI extends JPanel {
 			}
 			if(!isSelectedEdit)
 			{
-				if(JOptionPane.showConfirmDialog(this, "Thông Báo", "Có muốn cập nhập sản phẩm này?"
+
+
+				if(JOptionPane.showConfirmDialog(this, "Thông Báo", "Có muốn cập nhật sản phẩm này?"
 						,JOptionPane.YES_NO_OPTION
 				) == JOptionPane.YES_OPTION)
 				{
@@ -413,6 +413,7 @@ public class ProductUI extends JPanel {
 					.getCategoryByName(cboProductCategory.getSelectedItem().toString());
 			Supplier supplier = supplierDAO
 					.getSupplierByName(cboProductSupplier.getSelectedItem().toString());
+
 			table.setValueAt(newName, sltR, 1);
 		    table.setValueAt(newSize, sltR, 2);
 		    table.setValueAt(newColor, sltR, 3);
@@ -420,16 +421,33 @@ public class ProductUI extends JPanel {
 		    table.setValueAt(newStock, sltR, 5);
 		    table.setValueAt(newCost, sltR, 6);
 		    table.setValueAt(newSupplier, sltR, 7);
-		    table.setValueAt(imgName, sltR, 8);
+
+		    String productName = txtProductName.getText().trim();
+			double price = Double.parseDouble(txtProductCost.getText().trim());
+			for(int i = 0;i < modelTable.getRowCount();i++)
+			{
+				if(table.getValueAt(i, 4).toString().equals(category.getCategoryName())
+					&& table.getValueAt(i, 7).toString().equals(supplier.getSupplierName())
+				)
+				{
+					table.setValueAt(price, i, 6);
+					table.setValueAt(productName, i, 1);
+				}
+			}
+
 			bCard.removeAll();
 			displayProductCardList();
 			
 			bCard.revalidate();
 			bCard.repaint();
 
+
 			JOptionPane.showMessageDialog(this, "Cập nhật thông tin sản phẩm thành công!");
 		    resetForm();
 		    table.clearSelection();
+		    
+			productDAO.updateProduct(newStock, productName,  
+					category.getCategoryId(), supplier.getSupplierId(), price);
 		});
 
 		btnRemoveProduct.addActionListener(e -> {
@@ -498,8 +516,8 @@ public class ProductUI extends JPanel {
 				
 				Image img = originalImg.getImage().getScaledInstance(pnlImage.getPreferredSize().width,
 						pnlImage.getPreferredSize().height, Image.SCALE_SMOOTH);
+				
 				lblDefaultImg.setIcon(new ImageIcon(img));
-				lblDefaultImg.setText("");
 			}
 		});
 	}
@@ -525,7 +543,6 @@ public class ProductUI extends JPanel {
 	// PHẦN UI Ở DƯỚI, CÁC PHẦN XỬ LÝ LOGIC Ở TRÊN
 	
 
-	
 	private JPanel generateProductCard(String pdId, String imgName, String productName, String stock, String price)
 	{
 		JPanel pnlCard = new JPanel(new GridBagLayout());
