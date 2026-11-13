@@ -5,7 +5,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 
-
 import connectDB.ConnectDB;
 import entity.Category;
 import entity.Product;
@@ -179,8 +178,7 @@ public class ProductDAO {
 	
 	public void addProduct(Product product)
 	{
-		String sql = "insert into Product values(?, ?, ?, ?, ?)";
-		
+		String sql = "INSERT INTO Product(productId, productName, unitPrice, categoryId, supplierId) VALUES(?, ?, ?, ?, ?)";
 		try {
 			Connection con = ConnectDB.getConnection();
 			PreparedStatement pst = con.prepareStatement(sql);
