@@ -1,23 +1,22 @@
 package gui_Default;
 
-import dao.SupplierDAO;
+import dao.SupplierManagementDAO;
 import entity.Supplier;
+
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.Image;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.File;
 import java.util.List;
+import java.sql.SQLException;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -26,167 +25,81 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.SwingWorker;
 import javax.swing.table.DefaultTableModel;
-import utils.ImageUtil;
 
 public class SupplierUI extends JPanel implements ActionListener, MouseListener {
     private static final Font FONT = new Font("Arial", Font.PLAIN, 13);
-    private static final Color BACKGROUND_COLOR = new Color(253, 240, 255);
-    private static final Color ACCENT_COLOR = new Color(180, 60, 200);
-    private static final int LOGO_SIZE = 80;
 
     private JTextField txtSupplierId;
     private JTextField txtSupplierName;
     private JTextField txtAddress;
     private JTextField txtPhoneNumber;
     private JTextField txtEmail;
-    private String logoPath = "";
-    private JLabel lblLogoPreview;
-    private JButton btnBrowseLogo;
+    private JTextField txtLogo;
 
     private JButton btnAdd;
     private JButton btnClear;
     private JButton btnUpdate;
     private JButton btnDelete;
 
-    private final SupplierDAO supplierDao = new SupplierDAO();
-    private ImageUtil imgUtil = new ImageUtil();
+    private final SupplierManagementDAO supplierDao = new SupplierManagementDAO();
     private DefaultTableModel supplierTableModel;
     private JTable supplierTable;
     private JComboBox<String> cboSupplierId;
     private boolean updatingSupplierComboBox;
-	private File image;
 
     public SupplierUI() {
         setLayout(new BorderLayout());
-        setBackground(BACKGROUND_COLOR);
+        setBackground(new java.awt.Color(242, 242, 242));
 
         JPanel titleBar = new JPanel(new BorderLayout());
-        titleBar.setBackground(BACKGROUND_COLOR);
-        titleBar.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
-        JLabel title = new JLabel("QUẢN LÝ NHÀ CUNG CẤP", JLabel.CENTER);
+        titleBar.setBackground(new java.awt.Color(235, 231, 250));
+        titleBar.setBorder(BorderFactory.createEmptyBorder(14, 26, 14, 12));
+        JLabel title = new JLabel("Quản lý nhà cung cấp");
         title.setFont(new Font("Arial", Font.BOLD, 24));
-        title.setForeground(ACCENT_COLOR);
+        title.setForeground(new java.awt.Color(91, 62, 145));
         titleBar.add(title, BorderLayout.CENTER);
         add(titleBar, BorderLayout.NORTH);
 
         JPanel mainPanel = new JPanel(new BorderLayout(0, 12));
-        mainPanel.setBackground(BACKGROUND_COLOR);
+        mainPanel.setBackground(new java.awt.Color(242, 242, 242));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(14, 22, 12, 20));
         add(mainPanel, BorderLayout.CENTER);
 
         JPanel editorPanel = new JPanel(new BorderLayout(0, 8));
-        editorPanel.setBackground(BACKGROUND_COLOR);
+        editorPanel.setBackground(new java.awt.Color(242, 242, 242));
         editorPanel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(205, 205, 205)),
+                BorderFactory.createLineBorder(new java.awt.Color(205, 205, 205)),
                 BorderFactory.createEmptyBorder(10, 14, 10, 14)));
         mainPanel.add(editorPanel, BorderLayout.NORTH);
 
         txtSupplierId = new JTextField(25);
+        txtSupplierId.setEditable(false);
         txtSupplierName = new JTextField(25);
         txtAddress = new JTextField(25);
         txtPhoneNumber = new JTextField(25);
         txtEmail = new JTextField(25);
-        txtSupplierId.setFont(FONT);
-        txtSupplierName.setFont(FONT);
-        txtAddress.setFont(FONT);
-        txtPhoneNumber.setFont(FONT);
-        txtEmail.setFont(FONT);
+        txtLogo = new JTextField(25);
 
-        Box b = Box.createVerticalBox();
-        Box bFields = Box.createVerticalBox();
-        Box bContent = Box.createHorizontalBox();
-        Box bTop = Box.createHorizontalBox();
-        Box bBottom = Box.createHorizontalBox();
-        Box bLogo = Box.createVerticalBox();
-        Box b1 = Box.createVerticalBox();
-        Box b2 = Box.createVerticalBox();
-        Box b3 = Box.createVerticalBox();
-        Box b4 = Box.createVerticalBox();
-        Box b5 = Box.createVerticalBox();
-        Box b6 = Box.createVerticalBox();
-        editorPanel.add(b, BorderLayout.CENTER);
+        Box fields = Box.createVerticalBox();
+        JPanel firstRow = new JPanel(new GridLayout(1, 3, 12, 0));
+        firstRow.setOpaque(false);
+        addInputGroup(firstRow, "Mã nhà cung cấp (tự động)", txtSupplierId);
+        addInputGroup(firstRow, "Tên nhà cung cấp *", txtSupplierName);
+        addInputGroup(firstRow, "Địa chỉ", txtAddress);
 
-        JLabel lblSupplierId = new JLabel("Mã nhà cung cấp *");
-        lblSupplierId.setFont(FONT);
-        b1.add(lblSupplierId);
-        b1.add(txtSupplierId);
-
-        JLabel lblSupplierName = new JLabel("Tên nhà cung cấp *");
-        lblSupplierName.setFont(FONT);
-        b2.add(lblSupplierName);
-        b2.add(txtSupplierName);
-
-        JLabel lblAddress = new JLabel("Địa chỉ");
-        lblAddress.setFont(FONT);
-        b3.add(lblAddress);
-        b3.add(txtAddress);
-
-        JLabel lblPhoneNumber = new JLabel("Số điện thoại");
-        lblPhoneNumber.setFont(FONT);
-        b4.add(lblPhoneNumber);
-        b4.add(txtPhoneNumber);
-
-        JLabel lblEmail = new JLabel("Email");
-        lblEmail.setFont(FONT);
-        b5.add(lblEmail);
-        b5.add(txtEmail);
-
-        JLabel lblLogo = new JLabel("Logo");
-        lblLogo.setFont(FONT);
-        b6.add(lblLogo);
-        Box logoInput = Box.createHorizontalBox();
-        btnBrowseLogo = new JButton("Chọn ảnh");
-        btnBrowseLogo.setFont(FONT);
-        JPanel logoPreview = new JPanel(new BorderLayout());
-        logoPreview.setBackground(new Color(229, 237, 255));
-        logoPreview.setPreferredSize(new Dimension(LOGO_SIZE, LOGO_SIZE));
-        logoPreview.setMinimumSize(new Dimension(LOGO_SIZE, LOGO_SIZE));
-        logoPreview.setMaximumSize(new Dimension(LOGO_SIZE, LOGO_SIZE));
-        lblLogoPreview = new JLabel("Chưa có ảnh", JLabel.CENTER);
-        logoPreview.add(lblLogoPreview, BorderLayout.CENTER);
-        logoInput.add(logoPreview);
-        logoInput.add(Box.createHorizontalStrut(30));
-        logoInput.add(btnBrowseLogo);
-        b6.add(logoInput);
-
-        lblSupplierId.setAlignmentX(Component.LEFT_ALIGNMENT);
-        txtSupplierId.setAlignmentX(Component.LEFT_ALIGNMENT);
-        lblSupplierName.setAlignmentX(Component.LEFT_ALIGNMENT);
-        txtSupplierName.setAlignmentX(Component.LEFT_ALIGNMENT);
-        lblAddress.setAlignmentX(Component.LEFT_ALIGNMENT);
-        txtAddress.setAlignmentX(Component.LEFT_ALIGNMENT);
-        lblPhoneNumber.setAlignmentX(Component.LEFT_ALIGNMENT);
-        txtPhoneNumber.setAlignmentX(Component.LEFT_ALIGNMENT);
-        lblEmail.setAlignmentX(Component.LEFT_ALIGNMENT);
-        txtEmail.setAlignmentX(Component.LEFT_ALIGNMENT);
-        lblLogo.setAlignmentX(Component.LEFT_ALIGNMENT);
-        logoInput.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        bTop.add(b1);
-        bTop.add(Box.createHorizontalStrut(10));
-        bTop.add(b2);
-        bTop.add(Box.createHorizontalStrut(10));
-        bTop.add(b3);
-
-        bBottom.add(b4);
-        bBottom.add(Box.createHorizontalStrut(10));
-        bBottom.add(b5);
-        bLogo.add(b6);
-
-        b.add(Box.createVerticalStrut(10));
-        bFields.add(bTop);
-        bFields.add(Box.createVerticalStrut(5));
-        bFields.add(bBottom);
-        bContent.add(bFields);
-        bContent.add(Box.createHorizontalStrut(16));
-        bContent.add(bLogo);
-        b.add(bContent);
-        b.add(Box.createVerticalStrut(5));
-        b.add(Box.createVerticalStrut(10));
+        JPanel secondRow = new JPanel(new GridLayout(1, 3, 12, 0));
+        secondRow.setOpaque(false);
+        addInputGroup(secondRow, "Số điện thoại", txtPhoneNumber);
+        addInputGroup(secondRow, "Email", txtEmail);
+        addInputGroup(secondRow, "Đường dẫn logo", txtLogo);
+        fields.add(firstRow);
+        fields.add(Box.createVerticalStrut(8));
+        fields.add(secondRow);
+        editorPanel.add(fields, BorderLayout.CENTER);
 
         Box actionPanel = Box.createHorizontalBox();
+        actionPanel.add(Box.createHorizontalGlue());
 
         btnAdd = new JButton("Thêm");
         btnUpdate = new JButton("Cập nhật");
@@ -196,7 +109,6 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
         btnUpdate.setFont(FONT);
         btnDelete.setFont(FONT);
         btnClear.setFont(FONT);
-        
         actionPanel.add(btnAdd);
         actionPanel.add(Box.createHorizontalStrut(10));
         actionPanel.add(btnUpdate);
@@ -205,7 +117,6 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
         actionPanel.add(Box.createHorizontalStrut(10));
         actionPanel.add(btnClear);
         actionPanel.add(Box.createHorizontalStrut(24));
-        
         actionPanel.add(new JLabel("Tìm theo mã nhà cung cấp:"));
         cboSupplierId = new JComboBox<>();
         cboSupplierId.setPreferredSize(new Dimension(150, 28));
@@ -217,12 +128,12 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
         editorPanel.add(actionPanel, BorderLayout.SOUTH);
 
         JPanel tablePanel = new JPanel(new BorderLayout());
-        tablePanel.setBackground(BACKGROUND_COLOR);
+        tablePanel.setBackground(java.awt.Color.WHITE);
         mainPanel.add(tablePanel, BorderLayout.CENTER);
 
         String[] columnHeaders = {
                 "Mã nhà cung cấp", "Tên nhà cung cấp", "Địa chỉ",
-                "Số điện thoại", "Email"
+                "Số điện thoại", "Email", "Logo"
         };
         supplierTableModel = new DefaultTableModel(columnHeaders, 0) {
             private static final long serialVersionUID = 1L;
@@ -243,46 +154,33 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
         btnClear.addActionListener(this);
         btnUpdate.addActionListener(this);
         btnDelete.addActionListener(this);
-        btnBrowseLogo.addActionListener(event -> {
-            image = imgUtil.browseImg();
-            if (image != null) {
-                imgUtil.saveImg(image);
-                setLogoPreview(getLogoProjectPath(image.getName()));
-            }
-        });
         cboSupplierId.addActionListener(this);
         supplierTable.addMouseListener(this);
 
-        new SwingWorker<List<Supplier>, Void>() {
-            @Override
-            protected List<Supplier> doInBackground() {
-                return supplierDao.getAll();
-            }
-
-            @Override
-            protected void done() {
-                try {
-                    List<Supplier> suppliers = get();
-                    updateTable(suppliers);
-                    updateSupplierComboBox(suppliers);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    showMessage("Đã bị gián đoạn khi tải danh sách nhà cung cấp.");
-                } catch (java.util.concurrent.ExecutionException e) {
-                    Throwable cause = e.getCause();
-                    showMessage("Không thể tải danh sách nhà cung cấp: "
-                            + cause.getMessage());
-                }
-            }
-        }.execute();
+        try {
+            updateTable();
+            updateSupplierComboBox();
+        } catch (SQLException e) {
+            showMessage("Không tải được nhà cung cấp: " + e.getMessage());
+        }
     }
 
-    // Tạo một nhóm gồm nhãn và ô nhập liệu.
-    // Kiểm tra dữ liệu bắt buộc, độ dài và định dạng email.
+    private void addInputGroup(JPanel row, String labelText, JTextField input) {
+        Box group = Box.createVerticalBox();
+        JLabel label = new JLabel(labelText);
+        label.setFont(FONT);
+        input.setFont(FONT);
+        group.add(label);
+        group.add(Box.createVerticalStrut(5));
+        group.add(input);
+        row.add(group);
+    }
+
+
     private boolean validData() {
         String[] values = readFormValues();
-        if (values[0].isEmpty() || values[1].isEmpty()) {
-            showMessage("Vui lòng nhập mã và tên nhà cung cấp.");
+        if (values[1].isEmpty()) {
+            showMessage("Vui lòng nhập tên nhà cung cấp.");
             return false;
         }
 
@@ -291,7 +189,7 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
                 "Mã nhà cung cấp", "Tên nhà cung cấp", "Địa chỉ",
                 "Số điện thoại", "Email", "Logo"
         };
-        for (int i = 0; i < values.length; i++) {
+        for (int i = 1; i < values.length; i++) {
             if (values[i].length() > maxLengths[i]) {
                 showMessage(fieldNames[i] + " không được vượt quá " + maxLengths[i] + " ký tự.");
                 return false;
@@ -305,7 +203,6 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
         return true;
     }
 
-    // Đọc nội dung các ô nhập và loại bỏ khoảng trắng thừa.
     private String[] readFormValues() {
         return new String[]{
                 txtSupplierId.getText().trim(),
@@ -313,29 +210,25 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
                 txtAddress.getText().trim(),
                 txtPhoneNumber.getText().trim(),
                 txtEmail.getText().trim(),
-                image == null ? getLogoFileName(logoPath) : image.getName()
+                txtLogo.getText().trim()
         };
     }
 
-    // Tạo đối tượng nhà cung cấp từ dữ liệu trên form.
     private Supplier readSupplierFromForm() {
         String[] values = readFormValues();
         return new Supplier(values[0], values[1], values[2], values[3], values[4], values[5]);
     }
 
-    // Nạp lại dữ liệu từ DAO lên bảng.
-    private void updateTable(List<Supplier> suppliers) {
+    private void updateTable() throws SQLException {
         supplierTableModel.setRowCount(0);
-        for (Supplier supplier : suppliers) {
-            Object[] row = supplier.toRow();
-            row[5] = getLogoProjectPath(supplier.getLogo());
-            supplierTableModel.addRow(new Object[]{row[0], row[1], row[2], row[3], row[4]});
+        for (Supplier supplier : supplierDao.getAll()) {
+            supplierTableModel.addRow(new Object[] {supplier.getSupplierId(), supplier.getSupplierName(), supplier.getAddress(), supplier.getPhoneNumber(), supplier.getEmail(), supplier.getLogo()});
         }
     }
 
-    // Cập nhật danh sách mã nhà cung cấp trong combobox tìm kiếm.
-    private void updateSupplierComboBox(List<Supplier> suppliers) {
+    private void updateSupplierComboBox() throws SQLException {
         Object selectedId = cboSupplierId.getSelectedItem();
+        List<Supplier> suppliers = supplierDao.getAll();
         String[] supplierIds = new String[suppliers.size()];
         for (int i = 0; i < suppliers.size(); i++) {
             supplierIds[i] = suppliers.get(i).getSupplierId();
@@ -354,21 +247,13 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
         }
     }
 
-    private void refreshSupplierData() {
-        List<Supplier> suppliers = supplierDao.getAll();
-        updateTable(suppliers);
-        updateSupplierComboBox(suppliers);
-    }
-
-    // Xóa form và bỏ lựa chọn hiện tại trong bảng, combobox.
     private void clearForm() {
         txtSupplierId.setText("");
         txtSupplierName.setText("");
         txtAddress.setText("");
         txtPhoneNumber.setText("");
         txtEmail.setText("");
-        image = null;
-        setLogoPreview(null);
+        txtLogo.setText("");
         supplierTable.clearSelection();
         updatingSupplierComboBox = true;
         try {
@@ -378,137 +263,97 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
         }
     }
 
-    // Hiển thị thông tin một nhà cung cấp lên các ô nhập.
     private void showSupplier(Supplier supplier) {
-        image = null;
-        String name = getLogoFileName(supplier.getLogo());
         txtSupplierId.setText(supplier.getSupplierId());
         txtSupplierName.setText(supplier.getSupplierName());
         txtAddress.setText(supplier.getAddress());
         txtPhoneNumber.setText(supplier.getPhoneNumber());
         txtEmail.setText(supplier.getEmail());
-        setLogoPreview("src/img/" + name);
+        txtLogo.setText(supplier.getLogo());
     }
 
-    private String getLogoProjectPath(String fileName) {
-        String logoFileName = getLogoFileName(fileName);
-        return logoFileName.isEmpty() ? "" : new File("src/img", logoFileName).getName();
-    }
-
-    private String getLogoFileName(String path) {
-        return path == null || path.trim().isEmpty() ? "" : new File(path.trim()).getName();
-    }
-
-    private void setLogoPreview(String path) {
-        logoPath = path == null ? "" : path.trim();
-        lblLogoPreview.setIcon(null);
-        lblLogoPreview.setText("Chưa có ảnh");
-        if (logoPath.isEmpty()) {
-            return;
-        }
-
-        ImageIcon original = new ImageIcon(logoPath);
-        if (original.getIconWidth() <= 0 || original.getIconHeight() <= 0) {
-            return;
-        }
-
-        Image scaled = original.getImage().getScaledInstance(
-                LOGO_SIZE, LOGO_SIZE, Image.SCALE_SMOOTH);
-        lblLogoPreview.setText("");
-        lblLogoPreview.setIcon(new ImageIcon(scaled));
-    }
-
-    // Hiển thị thông báo cho người dùng.
     private void showMessage(String message) {
         JOptionPane.showMessageDialog(this, message);
     }
 
-    // Xử lý thao tác thêm, sửa, xóa, làm mới và tìm mã.
     @Override
     public void actionPerformed(ActionEvent event) {
-        handleAction(event);
-    }
-
-    private void handleAction(ActionEvent event) {
         Object source = event.getSource();
-        if (source == btnAdd) {
-            if (!validData()) {
-                return;
-            }
-            Supplier supplier = readSupplierFromForm();
-            if (supplierDao.findById(supplier.getSupplierId()) != null) {
-                showMessage("Mã nhà cung cấp đã tồn tại.");
-                return;
-            }
-
-            if (!supplierDao.insertSupplier(supplier)) {
-                showMessage("Nhà cung cấp đã tồn tại.");
-                return;
-            }
-            refreshSupplierData();
-            clearForm();
-        } else if (source == btnClear) {
-            clearForm();
-        } else if (source == btnDelete) {
-            String supplierId = txtSupplierId.getText().trim();
-            Supplier supplier = supplierDao.findById(supplierId);
-            if (supplier == null) {
-                showMessage("Không tìm thấy mã nhà cung cấp cần xóa.");
-                return;
-            }
-            int confirm = JOptionPane.showConfirmDialog(this,
-                    "Bạn có chắc muốn xóa nhà cung cấp " + supplierId + "?",
-                    "Xác nhận xóa", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-            if (confirm == JOptionPane.YES_OPTION) {
-                if (supplierDao.deleteSupplier(supplierId)) {
-                    refreshSupplierData();
-                    clearForm();
-                } else {
-                    showMessage("Nhà cung cấp không còn tồn tại hoặc không thể xóa.");
+        try {
+            if (source == btnAdd) {
+                if (supplierTable.getSelectedRow() >= 0) {
+                    showMessage("Hãy làm mới trước khi thêm nhà cung cấp mới.");
+                    return;
                 }
-            }
-        } else if (source == btnUpdate) {
-            int row = supplierTable.getSelectedRow();
-            if (row < 0) {
-                showMessage("Vui lòng chọn nhà cung cấp cần sửa trong bảng.");
-                return;
-            }
-            if (!validData()) {
-                return;
-            }
+                if (!validData()) {
+                    return;
+                }
+                Supplier supplier = readSupplierFromForm();
+                if (!supplierDao.insert(supplier)) {
+                    showMessage("Không thể thêm nhà cung cấp.");
+                    return;
+                }
+                updateTable();
+                updateSupplierComboBox();
+                clearForm();
+                showMessage("Đã thêm nhà cung cấp " + supplier.getSupplierId());
+            } else if (source == btnClear) {
+                clearForm();
+            } else if (source == btnDelete) {
+                String supplierId = txtSupplierId.getText().trim();
+                Supplier supplier = supplierDao.findById(supplierId);
+                if (supplier == null) {
+                    showMessage("Không tìm thấy mã nhà cung cấp cần xóa.");
+                    return;
+                }
+                int confirm = JOptionPane.showConfirmDialog(this,
+                        "Bạn có chắc muốn xóa nhà cung cấp " + supplierId + "?",
+                        "Xác nhận xóa", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+                if (confirm == JOptionPane.YES_OPTION) {
+                    if (supplierDao.delete(supplierId)) {
+                        updateTable();
+                        updateSupplierComboBox();
+                        clearForm();
+                    }
+                }
+            } else if (source == btnUpdate) {
+                int row = supplierTable.getSelectedRow();
+                if (row < 0) {
+                    showMessage("Vui lòng chọn nhà cung cấp cần sửa trong bảng.");
+                    return;
+                }
+                if (!validData()) {
+                    return;
+                }
 
-            String oldId = supplierTableModel.getValueAt(row, 0).toString();
-            Supplier updatedSupplier = readSupplierFromForm();
-            if (!oldId.equalsIgnoreCase(updatedSupplier.getSupplierId())
-                    && supplierDao.findById(updatedSupplier.getSupplierId()) != null) {
-                showMessage("Mã nhà cung cấp đã tồn tại.");
-                return;
-            }
-
-            if (!supplierDao.updateSupplier(oldId, updatedSupplier)) {
-
-                if (supplierDao.findById(oldId) == null) {
+                String oldId = supplierTableModel.getValueAt(row, 0).toString();
+                Supplier updatedSupplier = readSupplierFromForm();
+                if (!supplierDao.update(oldId, updatedSupplier)) {
                     showMessage("Không tìm thấy nhà cung cấp cần cập nhật.");
-                } else {
-                    showMessage("Mã nhà cung cấp đã tồn tại.");
+                    return;
                 }
-                return;
+                updateTable();
+                updateSupplierComboBox();
+                clearForm();
+            } else if (source == cboSupplierId && !updatingSupplierComboBox) {
+                Object selectedId = cboSupplierId.getSelectedItem();
+                if (selectedId != null) {
+                    Supplier supplier = supplierDao.findById(selectedId.toString());
+                    if (supplier != null) {
+                        showSupplier(supplier);
+                        selectSupplierInTable(supplier.getSupplierId());
+                    }
+                }
             }
-            refreshSupplierData();
-            clearForm();
-        } else if (source == cboSupplierId && !updatingSupplierComboBox) {
-            Object selectedId = cboSupplierId.getSelectedItem();
-            if (selectedId != null) {
-                Supplier supplier = supplierDao.findById(selectedId.toString());
-                if (supplier != null) {
-                    showSupplier(supplier);
-                    selectSupplierInTable(supplier.getSupplierId());
-                }
+        } catch (SQLException e) {
+            if (e.getErrorCode() == 547 && source == btnDelete) {
+                showMessage("Không thể xóa nhà cung cấp đã có sản phẩm hoặc phiếu nhập.");
+            } else {
+                showMessage("Lỗi dữ liệu nhà cung cấp: " + e.getMessage());
             }
         }
     }
 
-    // Chọn dòng tương ứng với mã nhà cung cấp trong bảng.
     private void selectSupplierInTable(String supplierId) {
         for (int row = 0; row < supplierTableModel.getRowCount(); row++) {
             if (supplierId.equals(supplierTableModel.getValueAt(row, 0).toString())) {
@@ -519,7 +364,6 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
         }
     }
 
-    // Nạp thông tin lên form khi người dùng nhấp vào một dòng trong bảng.
     @Override
     public void mouseClicked(MouseEvent event) {
         int row = supplierTable.getSelectedRow();
@@ -530,9 +374,8 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
                 if (supplier != null) {
                     showSupplier(supplier);
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-                showMessage("Không thể tải thông tin nhà cung cấp: " + e.getMessage());
+            } catch (SQLException e) {
+                showMessage("Không tải được nhà cung cấp: " + e.getMessage());
             }
         }
     }
@@ -552,4 +395,5 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
     @Override
     public void mouseExited(MouseEvent event) {
     }
+
 }
