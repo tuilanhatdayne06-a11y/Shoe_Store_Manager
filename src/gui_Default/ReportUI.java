@@ -154,7 +154,7 @@ public class ReportUI extends JPanel implements ActionListener {
     }
 
     private String formatMoney(BigDecimal tien) {
-        NumberFormat format = NumberFormat.getNumberInstance(new Locale("vi", "VN"));
+        NumberFormat format = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("vi-VN"));
         format.setMaximumFractionDigits(0);
         return format.format(tien) + " đ";
     }

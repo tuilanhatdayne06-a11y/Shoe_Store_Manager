@@ -50,21 +50,6 @@ public class ProductDAO {
 		return null;
 	}
 	
-	public void removeProduct(String removeId)
-	{
-		String sql = "delete Product where productId = ?";
-		
-		try {
-			Connection con = ConnectDB.getConnection();
-			PreparedStatement pst = con.prepareStatement(sql);
-			
-			pst.setString(1, removeId);
-			pst.executeUpdate();
-			
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
-	}
 	
 	public ArrayList<ProductDetail> getAllProduct()
 	{
