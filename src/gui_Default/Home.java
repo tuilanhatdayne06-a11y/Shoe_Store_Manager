@@ -75,12 +75,12 @@ public class Home extends JScrollPane implements ActionListener, MouseListener {
         pnlGrid.setBackground(Color.WHITE);
         pnlGrid.setMaximumSize(new Dimension(1100, 500));
 
-        pnlGrid.add(createSportCard("GIÀY BÓNG ĐÁ", "Sân cỏ tự nhiên & nhân tạo", "Nike, Adidas, Puma", "/img/soccer.png"));
-        pnlGrid.add(createSportCard("GIÀY BÓNG CHUYỀN", "Đệm giảm chấn, bám sân cực tốt", "Mizuno, Asics, VHD", "/img/Asics.png"));
-        pnlGrid.add(createSportCard("GIÀY CẦU LÔNG", "Đế kếp dẻo, chống lật cổ chân", "Yonex, Lining, Victor", "/img/Yonex.png"));
-        pnlGrid.add(createSportCard("GIÀY THỜI TRANG", "Phong cách trẻ trung, đi hàng ngày", "Vans, Converse, MLB", "/img/moon.png"));
-        pnlGrid.add(createSportCard("GIÀY BÓNG RỔ", "Cổ cao bảo vệ khớp, bám sân", "Nike Jordan, Peak", "/img/basketball.png"));
-        pnlGrid.add(createSportCard("GIÀY CHẠY BỘ", "Siêu nhẹ, êm ái, tối ưu lực đẩy", "Adidas, Hoka, Puma", "/img/running.png"));
+        pnlGrid.add(createSportCard(" Adidas Predator Elite Fold-over Tongue FG", "Sân cỏ tự nhiên & nhân tạo", " ADIDAS", "/img/soccer.png"));
+        pnlGrid.add(createSportCard("Asics Sky Elite FF MT 3 White Dragon Fruit", "Đệm giảm chấn, bám sân cực tốt", "ASIC", "/img/Asics.png"));
+        pnlGrid.add(createSportCard("Yonex Power Cushion Infinity 2", "Đế kếp dẻo, chống lật cổ chân", "YONEX", "/img/Yonex.png"));
+        pnlGrid.add(createSportCard("LOW BASKET G BEG/SAX", "Phong cách trẻ trung, đi hàng ngày", "MOONSTAR", "/img/moon.png"));
+        pnlGrid.add(createSportCard("Ja 4 'Deep Water' EP", "Cổ cao bảo vệ khớp, bám sân", "NIKE", "/img/basketball.png"));
+        pnlGrid.add(createSportCard("Adizero Adios Pro EVO 1", "Siêu nhẹ, êm ái, tối ưu lực đẩy", "Adidas", "/img/running.png"));
 
         pnlContent.add(pnlGrid);
         
@@ -246,7 +246,7 @@ public class Home extends JScrollPane implements ActionListener, MouseListener {
             java.net.URL imgUrl = getClass().getResource(imgPath);
             if (imgUrl != null) {
                 Image img = new ImageIcon(imgUrl).getImage();
-                Image scaledImg = img.getScaledInstance(350, 130, Image.SCALE_SMOOTH);
+                Image scaledImg = img.getScaledInstance(250, 130, Image.SCALE_SMOOTH);
                 lblImg.setIcon(new ImageIcon(scaledImg));
             } else {
                 lblImg.setText("[ " + title + " ]");

@@ -128,18 +128,18 @@ public class GUI extends JFrame implements ActionListener {
 
         pnlHeader.add(pnlRight, BorderLayout.EAST);
 
-        JPanel pnlMenu = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 12));
+        JPanel pnlMenu = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 25));
         pnlMenu.setBackground(bgLight);
         pnlMenu.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, new Color(230, 200, 240)));
 
-        btnHome = createMenuButton("TRANG CHỦ");
-        btnSupplier = createMenuButton("NHÀ CUNG CẤP");
-        btnProduct = createMenuButton("SẢN PHẨM");
-        btnEmployee = createMenuButton("NHÂN VIÊN");
-        btnCustomer = createMenuButton("KHÁCH HÀNG");
-        btnImport = createMenuButton("NHẬP HÀNG");
-        btnPOS = createMenuButton("BÁN HÀNG");
-        btnReport = createMenuButton("BÁO CÁO");
+        btnHome = createMenuButton("TRANG CHỦ", "home.png");
+        btnSupplier = createMenuButton("NHÀ CUNG CẤP", "supplier.png");
+        btnProduct = createMenuButton("SẢN PHẨM", "product.png");
+        btnEmployee = createMenuButton("NHÂN VIÊN", "UIEmployee.png");
+        btnCustomer = createMenuButton("KHÁCH HÀNG", "customer.png");
+        btnImport = createMenuButton("NHẬP HÀNG", "import.png");
+        btnPOS = createMenuButton("BÁN HÀNG", "sale.png");
+        btnReport = createMenuButton("BÁO CÁO", "report.jpg");
 
         btnHome.addActionListener(this);
         btnSupplier.addActionListener(this);
@@ -182,7 +182,7 @@ public class GUI extends JFrame implements ActionListener {
         add(pnlCenter, BorderLayout.CENTER);
     }
 
-    private JButton createMenuButton(String text) {
+    private JButton createMenuButton(String text, String iconFileName) {
         JButton btn = new JButton(text);
         btn.setFont(new Font("Arial", Font.BOLD, 13));
         btn.setForeground(primaryColor);
@@ -190,6 +190,20 @@ public class GUI extends JFrame implements ActionListener {
         btn.setBorderPainted(false);
         btn.setFocusPainted(false);
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        try {
+            java.net.URL iconUrl = getClass().getResource("/img/" + iconFileName);
+            if (iconUrl != null) {
+                ImageIcon originalIcon = new ImageIcon(iconUrl);
+
+                Image scaledImage = originalIcon.getImage().getScaledInstance(20, 30, Image.SCALE_SMOOTH);
+                btn.setIcon(new ImageIcon(scaledImage));
+                btn.setIconTextGap(8); 
+                btn.setHorizontalTextPosition(SwingConstants.RIGHT);
+                btn.setVerticalTextPosition(SwingConstants.CENTER);
+            }
+        } catch (Exception e) {
+            System.err.println("Không tìm thấy icon: " + iconFileName);
+        }
 
         btn.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
