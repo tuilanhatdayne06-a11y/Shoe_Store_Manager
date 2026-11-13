@@ -222,7 +222,7 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
 
         String[] columnHeaders = {
                 "Mã nhà cung cấp", "Tên nhà cung cấp", "Địa chỉ",
-                "Số điện thoại", "Email", "Logo"
+                "Số điện thoại", "Email"
         };
         supplierTableModel = new DefaultTableModel(columnHeaders, 0) {
             private static final long serialVersionUID = 1L;
@@ -381,18 +381,18 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
     // Hiển thị thông tin một nhà cung cấp lên các ô nhập.
     private void showSupplier(Supplier supplier) {
         image = null;
-        String path = getLogoProjectPath(supplier.getLogo());
+        String name = getLogoFileName(supplier.getLogo());
         txtSupplierId.setText(supplier.getSupplierId());
         txtSupplierName.setText(supplier.getSupplierName());
         txtAddress.setText(supplier.getAddress());
         txtPhoneNumber.setText(supplier.getPhoneNumber());
         txtEmail.setText(supplier.getEmail());
-        setLogoPreview(path);
+        setLogoPreview("src/img/" + name);
     }
 
     private String getLogoProjectPath(String fileName) {
         String logoFileName = getLogoFileName(fileName);
-        return logoFileName.isEmpty() ? "" : new File("src/img", logoFileName).getPath();
+        return logoFileName.isEmpty() ? "" : new File("src/img", logoFileName).getName();
     }
 
     private String getLogoFileName(String path) {
@@ -442,7 +442,7 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
             }
 
             if (!supplierDao.insertSupplier(supplier)) {
-                showMessage("Mã nhà cung cấp đã tồn tại.");
+                showMessage("Nhà cung cấp đã tồn tại.");
                 return;
             }
             refreshSupplierData();
@@ -552,9 +552,4 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
     @Override
     public void mouseExited(MouseEvent event) {
     }
-
-    public static void main(String[] args) {
-        GUI.main(args);
-    }
-
 }
