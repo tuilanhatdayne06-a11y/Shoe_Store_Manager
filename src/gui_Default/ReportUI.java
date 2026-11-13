@@ -60,7 +60,6 @@ public class ReportUI extends JPanel implements ActionListener {
         pNorth.add(lblTieuDe);
         add(pNorth, BorderLayout.NORTH);
 
-        // Ba o thong ke
         JPanel pKPI = new JPanel(new GridLayout(1, 3, 12, 0));
         pKPI.setBackground(bgColor);
 
@@ -72,7 +71,6 @@ public class ReportUI extends JPanel implements ActionListener {
         pKPI.add(createSummaryCard("CHI PHÍ NHẬP KHO", lblImportCost));
         pKPI.add(createSummaryCard("LỢI NHUẬN TẠM TÍNH", lblProfit));
 
-        // Hai nut loc tuan va thang
         JPanel pLoc = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 8));
         pLoc.setBackground(new Color(230, 216, 255));
 
@@ -91,7 +89,6 @@ public class ReportUI extends JPanel implements ActionListener {
         pLoc.add(btnWeek);
         pLoc.add(btnMonth);
 
-        // Bieu do
         pRevenueChart = new JPanel(new BorderLayout());
         pRevenueChart.setBackground(Color.WHITE);
 
@@ -109,7 +106,6 @@ public class ReportUI extends JPanel implements ActionListener {
         pCenter.add(pChart, BorderLayout.CENTER);
         add(pCenter, BorderLayout.CENTER);
 
-        // Top 5 mau giay ban chay
         String[] cols = {"STT", "Mã giày", "Tên mẫu giày", "Số lượng bán"};
         modelTable = new DefaultTableModel(cols, 0);
         table = new JTable(modelTable);
@@ -135,7 +131,7 @@ public class ReportUI extends JPanel implements ActionListener {
         btnMonth.addActionListener(this);
 
         updateButtonStyle();
-        loadReportData(); // Tu dong hien thong ke khi mo giao dien
+        loadReportData(); 
     }
 
     private JPanel createSummaryCard(String tieuDe, JLabel lblSoLieu) {
@@ -173,7 +169,6 @@ public class ReportUI extends JPanel implements ActionListener {
         }
     }
 
-    // Lay du lieu tu database va hien thi ra giao dien
     private void loadReportData() {
         try {
             LocalDate ngayGanNhat = reportDAO.getLatestTransactionDate();
@@ -225,7 +220,6 @@ public class ReportUI extends JPanel implements ActionListener {
         }
     }
 
-    // Ve cac cot thong ke bang JProgressBar
     private void showReportChart(ArrayList<Object[]> dsCot) {
         pRevenueChart.removeAll();
 
@@ -315,12 +309,4 @@ public class ReportUI extends JPanel implements ActionListener {
         }
     }
 
-    public static void main(String[] args) {
-        JFrame frame = new JFrame("Báo cáo - Shoe Store");
-        frame.setSize(1150, 680);
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.setLocationRelativeTo(null);
-        frame.add(new ReportUI());
-        frame.setVisible(true);
-    }
 }
