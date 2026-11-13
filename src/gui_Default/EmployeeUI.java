@@ -191,7 +191,15 @@ public class EmployeeUI extends JPanel implements ActionListener {
             modelNhanVien.addRow(row);
         }
     }
-
+    /**
+    * Tự động phát sinh mã nhân viên mới đảm bảo không bị trùng lặp.
+    * Phương thức này thực hiện quét toàn bộ dữ liệu mã nhân viên hiện có trên JTable (thông qua {@code modelNhanVien}), 
+    * trích xuất phần số từ các mã này (loại bỏ các ký tự chữ) và lưu vào danh sách. 
+    * Sau đó, thuật toán sẽ tìm kiếm số nguyên dương nhỏ nhất (bắt đầu từ 1) chưa từng xuất hiện trong danh sách. 
+    * Cách làm này giúp tự động lấp đầy các khoảng trống của những mã nhân viên đã bị xóa trước đó (nếu có),
+    * hoặc tạo ra số thứ tự tiếp theo một cách liền mạch.
+    * @return Chuỗi định danh mã nhân viên mới, bao gồm tiền tố "NV" kết hợp với phần số được định dạng 3 chữ số (Ví dụ: "NV001", "NV015").
+    */
     private String phatSinhMaNV() {
         ArrayList<Integer> danhSachSo = new ArrayList<>();
         for (int i = 0; i < modelNhanVien.getRowCount(); i++) {
