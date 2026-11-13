@@ -501,7 +501,7 @@ public class ProductUI extends JPanel {
 				cboProductCategory.setEnabled(true);
 				txtProductStock.setEnabled(true);
 				cboProductSupplier.setEnabled(true);
-				txtProductCost.setEnabled(false);
+				txtProductCost.setEnabled(true);
 				handleClicked(0, true);
 			}
 		});
