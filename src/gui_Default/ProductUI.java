@@ -139,8 +139,8 @@ public class ProductUI extends JPanel {
 		txtProductStock.setText("");
 		txtProductCost.setText("");
 		cboProductSupplier.setSelectedIndex(0);
-		lblDefaultImg.setText("");
 		lblDefaultImg.setIcon(null);
+		lblDefaultImg.setText("Chưa chọn ảnh");
 	}
 
 	/**
@@ -183,7 +183,6 @@ public class ProductUI extends JPanel {
 			Image scale = icon.getImage().getScaledInstance(80, 80, Image.SCALE_SMOOTH);
 			
 			lblDefaultImg.setIcon(new ImageIcon(scale));
-			lblDefaultImg.setText("");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -366,7 +365,6 @@ public class ProductUI extends JPanel {
 		btnEditProduct.addActionListener(e -> {
 			Component setEditFalse[] = {
 					txtProductCode,
-					txtProductName,
 					txtProductSize,
 					txtProductColor,
 					cboProductCategory,
@@ -382,7 +380,7 @@ public class ProductUI extends JPanel {
 			}
 			if(!isSelectedEdit)
 			{
-				if(JOptionPane.showConfirmDialog(this, "Thông Báo", "Có muốn sửa giá sản phẩm này?"
+				if(JOptionPane.showConfirmDialog(this, "Thông Báo", "Có muốn cập nhật sản phẩm này?"
 						,JOptionPane.YES_NO_OPTION
 				) == JOptionPane.YES_OPTION)
 				{
@@ -403,12 +401,12 @@ public class ProductUI extends JPanel {
 			double price = Double.parseDouble(txtProductCost.getText().trim());
 			for(int i = 0;i < modelTable.getRowCount();i++)
 			{
-				if(table.getValueAt(i, 1).toString().equals(productName)
-					&& table.getValueAt(i, 4).toString().equals(category.getCategoryName())
+				if(table.getValueAt(i, 4).toString().equals(category.getCategoryName())
 					&& table.getValueAt(i, 7).toString().equals(supplier.getSupplierName())
 				)
 				{
 					table.setValueAt(price, i, 6);
+					table.setValueAt(productName, i, 1);
 				}
 			}
 			bCard.removeAll();
@@ -417,7 +415,7 @@ public class ProductUI extends JPanel {
 			bCard.revalidate();
 			bCard.repaint();
 
-			productDAO.updateUnitPrice(productName, 
+			productDAO.updateProduct(productName, 
 					category.getCategoryId(), supplier.getSupplierId(), price);
 
 		});
@@ -488,17 +486,15 @@ public class ProductUI extends JPanel {
 				
 				Image img = originalImg.getImage().getScaledInstance(pnlImage.getPreferredSize().width,
 						pnlImage.getPreferredSize().height, Image.SCALE_SMOOTH);
+				
 				lblDefaultImg.setIcon(new ImageIcon(img));
-				lblDefaultImg.setText("");
 			}
 		});
 	}
-	
-	
+
 	// PHẦN UI Ở DƯỚI, CÁC PHẦN XỬ LÝ LOGIC Ở TRÊN
 	
 
-	
 	private JPanel generateProductCard(String pdId, String imgName, String productName, String stock, String price)
 	{
 		JPanel pnlCard = new JPanel(new GridBagLayout());

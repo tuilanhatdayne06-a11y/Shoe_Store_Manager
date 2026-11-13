@@ -135,12 +135,12 @@ public class ProductDAO {
 		}
 	}
 	
-	public void updateUnitPrice(String productName, String categoryId, String supplierId, double price)
+	public void updateProduct(String productName, String categoryId, String supplierId, double price)
 	{
 		String sql = """
-				update p set p.unitPrice= ?  from
+				update p set p.unitPrice= ?, p.productName = ? from
 				Product p join ProductDetail pd on p.productId = pd.productId 
-				where p.productName = ? and p.categoryId = ? and p.supplierId = ?
+				where p.categoryId = ? and p.supplierId = ?
 			""";
 		
 		try (
@@ -154,7 +154,7 @@ public class ProductDAO {
 			pst.setString(3, categoryId);
 			pst.setString(4, supplierId);
 
-			
+			System.out.println(pst.executeUpdate());
 			pst.executeUpdate();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -164,7 +164,9 @@ public class ProductDAO {
 	
 	public void addProduct(Product product)
 	{
-		String sql = "insert into Product values(?, ?, ?, ?, ?)";
+		String sql = """
+			insert into Product(productId, productName, unitPrice, categoryId, supplierId) values(?, ?, ?, ?, ?)
+		""";
 		
 		try {
 			Connection con = ConnectDB.getConnection();

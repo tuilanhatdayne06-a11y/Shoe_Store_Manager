@@ -212,12 +212,12 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
         for (Customer kh : ds) {
 
             modelTable.addRow(new Object[] {
-            		kh.getCustomerId(),
-            		kh.getCustomerName(),
-            		kh.getPhoneNumber(),
-            		kh.getAddress(),
-            		kh.getLoyaltyPoints(),
-            		kh.getImgCustomer()
+                kh.getCustomerId(),
+                kh.getCustomerName(),
+                kh.getPhoneNumber(),
+                kh.getAddress(),
+                kh.getLoyaltyPoints(),
+                kh.getImgCustomer()
             });
         }
     }

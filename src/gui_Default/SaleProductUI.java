@@ -20,6 +20,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -31,6 +32,7 @@ import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
 import dao.CustomerDAO;
+import dao.EmployeeDao;
 import dao.ProductDAO;
 import dao.ProductDetailDAO;
 import entity.Customer;
@@ -44,6 +46,7 @@ public class SaleProductUI extends JPanel{
 	private AppUtils appUtils = new AppUtils();
 	private ProductDAO productDao = new ProductDAO();
 	private CustomerDAO customerDao = new CustomerDAO();
+	private EmployeeDao employeeDao = new EmployeeDao();
 	private JPanel pnlDisplayCard;
 	private ProductDetailDAO productDetailDao = new ProductDetailDAO();
 	private JButton btnResetFilter;
@@ -64,6 +67,7 @@ public class SaleProductUI extends JPanel{
 	private JTextField txtPaid;
 	private JTextField txtTake;
 	private JTextField txtChange;
+	private JComboBox<String> cboEmployee;
 	
 	private void triggerEvent()
 	{
@@ -81,6 +85,18 @@ public class SaleProductUI extends JPanel{
 		});
 		
 		btnPhone.addActionListener(e -> {
+			String input = txtPhone.getText().trim();
+			if(input == null || input.isEmpty())
+				JOptionPane.showMessageDialog(this, "Chưa điền số điện thoại");
+			else
+			{
+				Customer customer = findByPhone(input);
+				txtName.setText(customer.getCustomerName());
+				txtPoint.setText(Integer.toString(customer.getLoyaltyPoints()));
+			}
+		});
+		
+		txtPhone.addActionListener(e -> {
 			String input = txtPhone.getText().trim();
 			if(input == null || input.isEmpty())
 				JOptionPane.showMessageDialog(this, "Chưa điền số điện thoại");
@@ -353,6 +369,17 @@ public class SaleProductUI extends JPanel{
 		pnlDisplayCard.repaint();
 	}
 
+	private void addToEmployeeCombobox()
+	{
+		ArrayList<Object[]> list = new ArrayList<Object[]>();
+		for(Object[] obj : list)
+		{
+			String employee = (String) obj[0];
+			System.out.println(employee);
+			cboEmployee.addItem(employee);
+		}
+	}
+
 	public SaleProductUI() {
 		this.setLayout(new BorderLayout());
 		
@@ -402,26 +429,41 @@ public class SaleProductUI extends JPanel{
 		pnlTop.setBackground(new Color(15, 10, 26));
 		
 		
-		pnlTop.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-		JPanel pnlSearch = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		pnlSearch.setOpaque(false);
+		pnlTop.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 10));
+		JPanel pnlSearch = new JPanel(new BorderLayout());
+		pnlSearch.setBackground(new Color(15, 10, 26));
 		pnlSearch.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
 		JLabel lblPhone = new JLabel("SĐT");
 		txtPhone = new JTextField(12);
 		btnPhone = new JButton("Tìm");
+
+		JPanel pnlSearchPhone = new JPanel();
+		pnlSearchPhone.setOpaque(false);
+		pnlSearchPhone.add(lblPhone);
+		pnlSearchPhone.add(txtPhone);
+		pnlSearchPhone.add(btnPhone);
+	
+		pnlSearch.add(pnlSearchPhone, BorderLayout.WEST);
 		
-		pnlSearch.add(lblPhone);
-		pnlSearch.add(txtPhone);
-		pnlSearch.add(btnPhone);
-		
-		
+		cboEmployee = new JComboBox<String>();
+
+		addToEmployeeCombobox();
+		pnlSearch.add(cboEmployee, BorderLayout.EAST);
+
+
 		pnlTop.add(pnlSearch, BorderLayout.NORTH);
 		
 		JPanel pnlInfo = new JPanel(new BorderLayout());
-		pnlInfo.setBorder(BorderFactory
-				.createTitledBorder("Thông tin khách hàng")
-		);
+
+		
 		pnlInfo.setOpaque(false);
+
+		JLabel lblCustomerInfo = new JLabel("THÔNG TIN KHÁCH HÀNG");
+		lblCustomerInfo.setForeground(new Color(157, 78, 221));
+		lblCustomerInfo.setFont(new Font(lblCustomerInfo.getFont().getName(), Font.BOLD, 12));
+		lblCustomerInfo.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
+		
+		pnlInfo.add(lblCustomerInfo, BorderLayout.NORTH);
 		
 		JPanel pnlName = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		pnlName.setOpaque(false);
@@ -431,18 +473,19 @@ public class SaleProductUI extends JPanel{
 		pnlName.add(lblName);
 		pnlName.add(txtName);
 		
-		pnlInfo.add(pnlName, BorderLayout.NORTH);
+		pnlInfo.add(pnlName, BorderLayout.CENTER);
 		
 		JPanel pnlPoint = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		pnlPoint.setOpaque(false);
 		JLabel lblPoint = new JLabel("Điểm tích lũy");
-		lblName.setPreferredSize(new Dimension(lblPoint.getPreferredSize()));
+		lblName.setPreferredSize(new Dimension(80, 13));
+		lblPoint.setPreferredSize(new Dimension(80, 13));
 		txtPoint = new JTextField(12);
 		txtPoint.setEnabled(false);
 		pnlPoint.add(lblPoint);
 		pnlPoint.add(txtPoint);
 		
-		pnlInfo.add(pnlPoint, BorderLayout.CENTER);
+		pnlInfo.add(pnlPoint, BorderLayout.SOUTH);
 		
 		pnlTop.add(pnlInfo, BorderLayout.CENTER);
 		
@@ -489,6 +532,7 @@ public class SaleProductUI extends JPanel{
 		JPanel pnlBottom = new JPanel(new BorderLayout());
 		JPanel pnlTitle = new JPanel(new BorderLayout());
 		JLabel lblDetailCheckout = new JLabel("CHI TIẾT THANH TOÁN");
+		pnlTitle.setBorder(BorderFactory.createEmptyBorder(10, 10, 0, 0));
 		radUsePoint = new JRadioButton("Dùng điểm tích lũy");
 		
 		lblDetailCheckout.setForeground(new Color(157, 78, 221));

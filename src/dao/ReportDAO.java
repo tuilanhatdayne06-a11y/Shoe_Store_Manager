@@ -13,10 +13,9 @@ import java.util.ArrayList;
 
 import connectDB.ConnectDB;
 
-
 public class ReportDAO {
 
-    // Lay ngay co giao dich moi nhat de hien thi thong ke khi mo giao dien
+    // Lay ngay giao dich gan nhat de hien thi du lieu ngay khi mo bao cao
     public LocalDate getLatestTransactionDate() throws SQLException {
         String sql = "SELECT MAX(ngay) AS ngayCuoi FROM ("
                    + "SELECT MAX(creationDate) AS ngay FROM dbo.Invoice "
@@ -41,7 +40,7 @@ public class ReportDAO {
         return LocalDate.now();
     }
 
-    // Tong doanh thu hoa don trong khoang ngay
+    // Doanh thu cua cac hoa don trong ky
     public BigDecimal getTotalRevenue(LocalDate tuNgay, LocalDate denNgay)
             throws SQLException {
         String sql = "SELECT COALESCE(SUM(totalAmount), 0) AS tong "
@@ -64,17 +63,16 @@ public class ReportDAO {
         return BigDecimal.ZERO;
     }
 
-    // Chi phi cac phieu nhap da nhap kho
+    // Chi tinh phieu nhap co trang thai "Da nhap"
     public BigDecimal getTotalImportCost(LocalDate tuNgay, LocalDate denNgay)
             throws SQLException {
-        String sql = "SELECT COALESCE(SUM(d.quantity * d.importPrice), 0) AS tong "
-                   + "FROM dbo.PurchaseOrderDetail d "
-                   + "JOIN dbo.PurchaseOrder p ON d.purchaseOrderId = p.purchaseOrderId "
-                   + "WHERE p.status = 'Da nhap' "
-                   + "AND p.orderDate >= ? AND p.orderDate < ?";
+            String sql = "SELECT COALESCE(SUM(d.quantity * d.importPrice), 0) AS tong "
+                    + "FROM dbo.PurchaseOrderDetail d "
+                    + "JOIN dbo.PurchaseOrder p ON d.purchaseOrderId = p.purchaseOrderId "
+                    + "WHERE p.status = 'Da nhap' "
+                    + "AND p.orderDate >= ? AND p.orderDate < ?";
 
         Connection con = ConnectDB.getConnection();
-
         if (con == null || con.isClosed()) {
             throw new SQLException("Khong ket noi duoc database ShoeStore");
         }
@@ -91,7 +89,50 @@ public class ReportDAO {
         return BigDecimal.ZERO;
     }
 
-    // Top 5 giay ban chay, moi dong gom: ma, ten, so luong
+    // Danh sach phieu nhap kho trong ky
+    // Moi dong: ma phieu, ngay lap, nha cung cap, so luong, tong chi phi
+    public ArrayList<Object[]> getImportOrders(LocalDate tuNgay, LocalDate denNgay)
+            throws SQLException {
+        ArrayList<Object[]> list = new ArrayList<Object[]>();
+
+        String sql = "SELECT p.purchaseOrderId, p.orderDate, s.supplierName, "
+                   + "SUM(d.quantity) AS totalQuantity, "
+                   + "SUM(d.quantity * d.importPrice) AS totalCost "
+                   + "FROM dbo.PurchaseOrder p "
+                   + "JOIN dbo.PurchaseOrderDetail d ON p.purchaseOrderId = d.purchaseOrderId "
+                   + "LEFT JOIN dbo.Supplier s ON p.supplierId = s.supplierId "
+                   + "WHERE p.status = 'Da nhap' "
+                   + "AND p.orderDate >= ? AND p.orderDate < ? "
+                   + "GROUP BY p.purchaseOrderId, p.orderDate, s.supplierName "
+                   + "ORDER BY p.orderDate DESC, p.purchaseOrderId DESC";
+
+        Connection con = ConnectDB.getConnection();
+        if (con == null || con.isClosed()) {
+            throw new SQLException("Khong ket noi duoc database ShoeStore");
+        }
+
+        try (PreparedStatement pst = con.prepareStatement(sql)) {
+            pst.setTimestamp(1, Timestamp.valueOf(tuNgay.atStartOfDay()));
+            pst.setTimestamp(2, Timestamp.valueOf(denNgay.atStartOfDay()));
+            try (ResultSet rs = pst.executeQuery()) {
+                while (rs.next()) {
+                    Timestamp ngayLap = rs.getTimestamp("orderDate");
+                    Object[] phieu = {
+                        rs.getString("purchaseOrderId"),
+                        ngayLap == null ? null : ngayLap.toLocalDateTime().toLocalDate(),
+                        rs.getString("supplierName"),
+                        rs.getInt("totalQuantity"),
+                        rs.getBigDecimal("totalCost")
+                    };
+                    list.add(phieu);
+                }
+            }
+        }
+        return list;
+    }
+
+    // Top 5 mau giay ban chay
+    // Moi dong: ma san pham, ten san pham, so luong
     public ArrayList<Object[]> getTop5SellingShoes(LocalDate tuNgay, LocalDate denNgay)
             throws SQLException {
         ArrayList<Object[]> list = new ArrayList<Object[]>();
@@ -127,16 +168,16 @@ public class ReportDAO {
         return list;
     }
 
-    // Du lieu bieu do: ngay/tuan, doanh thu, chi phi
-    public ArrayList<Object[]> getChartData(LocalDate ngayThamChieu, boolean theoTuan)
+    // Du lieu bieu do: nhan ngay/tuan, doanh thu, chi phi nhap
+    public ArrayList<Object[]> getChartData(LocalDate ngayThongKe, boolean theoTuan)
             throws SQLException {
         ArrayList<Object[]> list = new ArrayList<Object[]>();
-        LocalDate batDau = getStartDate(ngayThamChieu, theoTuan);
+        LocalDate batDau = getStartDate(ngayThongKe, theoTuan);
 
         if (theoTuan) {
             for (int i = 0; i < 7; i++) {
                 LocalDate ngay = batDau.plusDays(i);
-                String nhan = (i == 6) ? "CN" : "T" + (i + 2);
+                String nhan = i == 6 ? "CN" : "T" + (i + 2);
                 Object[] cot = {
                     nhan,
                     getTotalRevenue(ngay, ngay.plusDays(1)),

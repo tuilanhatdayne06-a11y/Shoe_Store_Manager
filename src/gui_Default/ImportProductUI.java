@@ -212,7 +212,7 @@ public class ImportProductUI extends JPanel {
 
     private void loadEmployees() {
         DefaultComboBoxModel<EmployeeOption> model = new DefaultComboBoxModel<>();
-        for (Object[] employee : new EmployeeDao().getAllEmployee()) {
+        for (Object[] employee : new EmployeeDao().getEmployeeByPosition("Nhân viên kho")) {
             model.addElement(new EmployeeOption(
                     (String) employee[0], (String) employee[1]));
         }
@@ -310,7 +310,7 @@ public class ImportProductUI extends JPanel {
 
             PurchaseOrder order = new PurchaseOrder(
                     null, null, new Employee(employee.employeeId),
-                    new Supplier(supplier.supplierId));
+                    new Supplier(supplier.supplierId), "Da nhap");
             PurchaseOrderDetail detail = new PurchaseOrderDetail(
                     order, new ProductDetail(product.getProductDetailId()),
                     quantity, importPrice);

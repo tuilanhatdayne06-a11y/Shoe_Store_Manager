@@ -8,20 +8,22 @@ public class PurchaseOrder {
     private Timestamp orderDate;
     private Employee employeeId;
     private Supplier supplierId;
+    private String status;
 
     public PurchaseOrder() {
     }
 
-    public PurchaseOrder(String purchaseOrderId, Timestamp orderDate,
-            Employee employeeId, Supplier supplierId) {
+    public PurchaseOrder(String purchaseOrderId) {
+        this.purchaseOrderId = purchaseOrderId;
+    }
+
+    public PurchaseOrder(String purchaseOrderId, Timestamp orderDate, Employee employeeId, Supplier supplierId,
+            String status) {
         this.purchaseOrderId = purchaseOrderId;
         this.orderDate = orderDate;
         this.employeeId = employeeId;
         this.supplierId = supplierId;
-    }
-
-    public PurchaseOrder(String purchaseOrderId) {
-        this.purchaseOrderId = purchaseOrderId;
+        this.status = status;
     }
 
     public String getPurchaseOrderId() {
@@ -55,4 +57,20 @@ public class PurchaseOrder {
     public void setSupplierId(Supplier supplierId) {
         this.supplierId = supplierId;
     }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    @Override
+    public String toString() {
+        return "PurchaseOrder [purchaseOrderId=" + purchaseOrderId + ", orderDate=" + orderDate + ", employeeId="
+                + employeeId + ", supplierId=" + supplierId + ", status=" + status + "]";
+    }
+
+    
 }
