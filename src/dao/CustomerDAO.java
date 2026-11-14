@@ -156,27 +156,6 @@ public class CustomerDAO {
             return pst.executeUpdate() > 0;
         }
     }
-
-
-    // Lay ma KH tu IDCounter va them khach hang trong cung giao dich
-//    public String addCustomerWithGeneratedId(String ten, String diaChi, String sdt) {
-//            throws SQLException {
-//        String sqlLayMa = "UPDATE dbo.IDCounter SET currentValue = currentValue + 1 "
-//                         + "OUTPUT INSERTED.currentValue WHERE prefix = ?";
-//        String sqlThem = "INSERT INTO dbo.Customer "
-//                       + "(customerId, customerName, address, phoneNumber, loyaltyPoints) "
-//                       + "VALUES (?, ?, ?, ?, 0)";
-//
-//        Connection con = ConnectDB.getConnection();
-//        if (con == null || con.isClosed()) {
-//            throw new SQLException("Khong ket noi duoc database ShoeStore");
-//        }
-//        if (!con.getAutoCommit()) {
-//            throw new SQLException("Ket noi dang co giao dich chua hoan tat");
-//        }
-//
-//        con.setAutoCommit(false);
-
     public void addCustomer(Customer customer){
         String sql = "insert into Customer values(?, ?, ?, ?, ?, ?)";
         

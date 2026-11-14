@@ -329,7 +329,7 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
         for (Supplier supplier : suppliers) {
             Object[] row = supplier.toRow();
             row[5] = getLogoProjectPath(supplier.getLogo());
-            supplierTableModel.addRow(row);
+            supplierTableModel.addRow(new Object[]{row[0], row[1], row[2], row[3], row[4]});
         }
     }
 
