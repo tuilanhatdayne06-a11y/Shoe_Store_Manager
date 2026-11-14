@@ -131,7 +131,7 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
         pInput.setPreferredSize(new Dimension(375, 0));
         pInput.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        txtCustomerCode = new JTextField("Tự sinh khi thêm", 15);
+        txtCustomerCode = new JTextField("KH001", 15);
         txtCustomerCode.setEditable(false);
         txtCustomerName = new JTextField(15);
         txtCustomerPhone = new JTextField(15);
