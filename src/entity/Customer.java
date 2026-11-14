@@ -8,6 +8,7 @@ public class Customer {
     private String phoneNumber;
     private int loyaltyPoints;
     private String imgCustomer;
+    private boolean gender;
 
     
     public Customer() {
@@ -23,16 +24,37 @@ public class Customer {
 	
 
 
-	public Customer(String customerId, String customerName, String address, String phoneNumber, int loyaltyPoints,
-			String imgCustomer) {
+	public Customer(String customerId, String customerName, String address, String phoneNumber, int loyaltyPoints) {
 		setCustomerId(customerId);
 		setCustomerName(customerName);
 		setAddress(address);
 		setPhoneNumber(phoneNumber);
 		setLoyaltyPoints(loyaltyPoints);
-		setImgCustomer(imgCustomer);
 	}
 
+
+    public Customer(String customerId, String customerName, String address,
+            String phoneNumber, int loyaltyPoints, String imgCustomer, boolean gender) {
+        this(customerId, customerName, address, phoneNumber, loyaltyPoints);
+        this.imgCustomer = imgCustomer;
+        this.gender = gender;
+    }
+
+    public String getImgCustomer() {
+        return imgCustomer;
+    }
+
+    public void setImgCustomer(String imgCustomer) {
+        this.imgCustomer = imgCustomer;
+    }
+
+    public boolean isGender() {
+        return gender;
+    }
+
+    public void setGender(boolean gender) {
+        this.gender = gender;
+    }
 
 	public String getCustomerId() {
 		return customerId;
@@ -84,20 +106,10 @@ public class Customer {
 	}
 
 
-	public String getImgCustomer() {
-		return imgCustomer;
-	}
-
-
-	public void setImgCustomer(String imgCustomer) {
-		this.imgCustomer = imgCustomer;
-	}
-
-
 	@Override
 	public String toString() {
 		return "Customer [customerId=" + customerId + ", customerName=" + customerName + ", address=" + address
-				+ ", phoneNumber=" + phoneNumber + ", loyaltyPoints=" + loyaltyPoints + ", imgCustomer=" + imgCustomer
+				+ ", phoneNumber=" + phoneNumber + ", loyaltyPoints=" + loyaltyPoints
 				+ "]";
 	}
 }

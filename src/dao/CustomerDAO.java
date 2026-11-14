@@ -16,7 +16,7 @@ public class CustomerDAO {
     public ArrayList<Customer> getAllCustomers() throws SQLException {
         ArrayList<Customer> list = new ArrayList<Customer>();
 
-        String sql = "SELECT customerId, customerName, address, phoneNumber, loyaltyPoints, imgCustomer "
+        String sql = "SELECT customerId, customerName, address, phoneNumber, loyaltyPoints, imgCustomer, gender "
                    + "FROM dbo.Customer ORDER BY customerId";
 
         Connection con = ConnectDB.getConnection();
@@ -33,7 +33,8 @@ public class CustomerDAO {
                         rs.getString("address"),
                         rs.getString("phoneNumber"),
                         rs.getInt("loyaltyPoints"),
-                        rs.getString("imgCustomer")
+                        rs.getString("imgCustomer"),
+                        rs.getBoolean("gender")
                 );
                 list.add(kh);
             }
@@ -44,7 +45,7 @@ public class CustomerDAO {
     // Tim kiem khach hang theo so dien thoai
     public ArrayList<Customer> findCustomersByPhone(String sdt) throws SQLException {
         ArrayList<Customer> list = new ArrayList<Customer>();
-        String sql = "SELECT customerId, customerName, address, phoneNumber, loyaltyPoints, imgCustomer "
+        String sql = "SELECT customerId, customerName, address, phoneNumber, loyaltyPoints, imgCustomer, gender "
                    + "FROM dbo.Customer WHERE phoneNumber LIKE ? ORDER BY customerId";
 
         Connection con = ConnectDB.getConnection();
@@ -62,7 +63,8 @@ public class CustomerDAO {
                             rs.getString("address"),
                             rs.getString("phoneNumber"),
                             rs.getInt("loyaltyPoints"),
-                            rs.getString("imgCustomer")
+                        rs.getString("imgCustomer"),
+                        rs.getBoolean("gender")
                     );
                     list.add(kh);
                 }
@@ -70,34 +72,30 @@ public class CustomerDAO {
         }
         return list;
     }
-    public Customer findById(String customerId)
-    {
-    	String sql = "select * from Customer where customerId = ?";
-    	
-    	try {
-			Connection con = ConnectDB.getConnection();
-			PreparedStatement pst = con.prepareStatement(sql);
-			
-			pst.setString(1, customerId);
-			
-			ResultSet rs = pst.executeQuery();
-			
-			if(rs.next())
-			{
-				return new Customer(
-						rs.getString("customerId"),
-						rs.getString("customerName"),
-						rs.getString("address"),
-						rs.getString("phoneNumber"),
-						rs.getInt("loyaltyPoints"),
-						rs.getString("imgCustomer")
-				);
-			}
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
-    	
-    	return null;
+    public Customer findById(String customerId) throws SQLException {
+        String sql = "SELECT customerId, customerName, address, phoneNumber, loyaltyPoints, imgCustomer, gender "
+                   + "FROM dbo.Customer WHERE customerId = ?";
+        Connection con = ConnectDB.getConnection();
+        if (con == null || con.isClosed()) {
+            throw new SQLException("Khong ket noi duoc database ShoeStore");
+        }
+
+        try (PreparedStatement pst = con.prepareStatement(sql)) {
+            pst.setString(1, customerId);
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    return new Customer(
+                            rs.getString("customerId"),
+                            rs.getString("customerName"),
+                            rs.getString("address"),
+                            rs.getString("phoneNumber"),
+                            rs.getInt("loyaltyPoints"),
+                        rs.getString("imgCustomer"),
+                        rs.getBoolean("gender"));
+                }
+            }
+        }
+        return null;
     }
 
     // Kiem tra SDT da duoc su dung boi khach hang khac
@@ -125,7 +123,7 @@ public class CustomerDAO {
     // Sua thong tin, khong sua diem tich luy
     public boolean updateCustomer(Customer kh) throws SQLException {
         String sql = "UPDATE dbo.Customer SET customerName = ?, address = ?, "
-                   + "phoneNumber = ? WHERE customerId = ?";
+                   + "phoneNumber = ?, imgCustomer = ?, gender = ? WHERE customerId = ?";
 
         Connection con = ConnectDB.getConnection();
 
@@ -137,7 +135,9 @@ public class CustomerDAO {
             pst.setString(1, kh.getCustomerName());
             pst.setString(2, kh.getAddress());
             pst.setString(3, kh.getPhoneNumber());
-            pst.setString(4, kh.getCustomerId());
+            pst.setString(4, kh.getImgCustomer());
+            pst.setBoolean(5, kh.isGender());
+            pst.setString(6, kh.getCustomerId());
             return pst.executeUpdate() > 0;
         }
     }
@@ -156,26 +156,22 @@ public class CustomerDAO {
             return pst.executeUpdate() > 0;
         }
     }
-    public void addCustomer(Customer customer){
-        String sql = "insert into Customer values(?, ?, ?, ?, ?, ?)";
-        
-        try {
-        	Connection con = ConnectDB.getConnection();
-            
-            PreparedStatement pst = con.prepareStatement(sql);
-            
+    public boolean addCustomer(Customer customer) throws SQLException {
+        String sql = "INSERT INTO dbo.Customer "
+                   + "(customerId, customerName, address, phoneNumber, loyaltyPoints, imgCustomer, gender) "
+                   + "VALUES (?, ?, ?, ?, 0, ?, ?)";
+        Connection con = ConnectDB.getConnection();
+        if (con == null || con.isClosed()) {
+            throw new SQLException("Khong ket noi duoc database ShoeStore");
+        }
+        try (PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, customer.getCustomerId());
             pst.setString(2, customer.getCustomerName());
             pst.setString(3, customer.getAddress());
             pst.setString(4, customer.getPhoneNumber());
-            pst.setInt(5, customer.getLoyaltyPoints());
-            pst.setString(6, customer.getImgCustomer());
-            
-            pst.executeUpdate();
-            
-            
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
+            pst.setString(5, customer.getImgCustomer());
+            pst.setBoolean(6, customer.isGender());
+            return pst.executeUpdate() > 0;
+        }
     }
 }
