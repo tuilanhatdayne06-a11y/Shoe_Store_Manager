@@ -15,31 +15,30 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.nio.file.StandardCopyOption;
 
 import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
-
 import javax.swing.table.DefaultTableModel;
 
 import dao.CustomerDAO;
 import entity.Customer;
-
 import utils.AppUtils;
 import utils.ImageUtil;
+
 public class CustomerUI extends JPanel implements ActionListener, MouseListener {
 
     private JTextField txtCustomerCode;
@@ -48,6 +47,9 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
     private JTextField txtCustomerAddress;
     private JTextField txtCustomerPoints;
     private JTextField txtFind;
+    private JRadioButton radNam;
+    private JRadioButton radNu;
+    private ButtonGroup groupGender;
     private JButton btnAddCustomer;
     private JButton btnEditCustomer;
     private JButton btnRemoveCustomer;
@@ -63,13 +65,13 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
 
     private Color bgColor = new Color(248, 247, 255);
     private Color primaryColor = new Color(94, 53, 165);
-	private ImageUtil imgUtil = new ImageUtil();
-	private AppUtils appUtil = new AppUtils();
-
+    private ImageUtil imgUtil = new ImageUtil();
+    private AppUtils appUtil = new AppUtils();
 
     public CustomerUI() {
         setLayout(new BorderLayout(10, 10));
         setBackground(bgColor);
+
 
         JPanel pNorth = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 12));
         pNorth.setBackground(new Color(234, 230, 250));
@@ -85,6 +87,7 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
         }
         pNorth.add(lblTieuDe);
         add(pNorth, BorderLayout.NORTH);
+
 
         JPanel pCenter = new JPanel(new BorderLayout(12, 0));
         pCenter.setBackground(bgColor);
@@ -103,15 +106,23 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
         pTim.add(btnFind);
         pDanhSach.add(pTim, BorderLayout.NORTH);
 
-        String[] cols = {"Mã KH", "Tên khách hàng", "SĐT", "Địa chỉ", "Điểm tích lũy"};
-        modelTable = new DefaultTableModel(cols, 0);
+        String[] cols = {"Mã KH", "Tên khách hàng", "SĐT", "Địa chỉ", "Điểm tích lũy", "Giới tính", "Ảnh"};
+        modelTable = new DefaultTableModel(cols, 0) {
+            @Override
+            public Class<?> getColumnClass(int column) {
+                if (column == 6) return ImageIcon.class;
+                return Object.class;
+            }
+        };
         table = new JTable(modelTable);
-        table.setRowHeight(28);
+        table.setRowHeight(52);
         table.setDefaultEditor(Object.class, null);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.getTableHeader().setBackground(new Color(230, 216, 255));
+        table.getColumnModel().getColumn(6).setPreferredWidth(60);
         pDanhSach.add(new JScrollPane(table), BorderLayout.CENTER);
         pCenter.add(pDanhSach, BorderLayout.CENTER);
+
 
         JPanel pInput = new JPanel(new GridBagLayout());
         pInput.setBackground(new Color(230, 216, 255));
@@ -123,38 +134,39 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
         txtCustomerName = new JTextField(15);
         txtCustomerPhone = new JTextField(15);
         txtCustomerAddress = new JTextField(15);
+        radNam = new JRadioButton("Nam");
+        radNu = new JRadioButton("Nữ");
+        radNam.setOpaque(false);
+        radNu.setOpaque(false);
+        groupGender = new ButtonGroup();
+        groupGender.add(radNam);
+        groupGender.add(radNu);
+        JPanel pGender = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 0));
+        pGender.setOpaque(false);
+        pGender.add(radNam);
+        pGender.add(radNu);
         txtCustomerPoints = new JTextField("0", 15);
         txtCustomerPoints.setEditable(false);
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(8, 5, 8, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
+        
         gbc.weightx = 0.35;
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        pInput.add(new JLabel("Mã khách hàng:"), gbc);
-        gbc.gridy = 1;
-        pInput.add(new JLabel("Tên khách hàng:"), gbc);
-        gbc.gridy = 2;
-        pInput.add(new JLabel("Số điện thoại:"), gbc);
-        gbc.gridy = 3;
-        pInput.add(new JLabel("Địa chỉ:"), gbc);
-        gbc.gridy = 4;
-        pInput.add(new JLabel("Điểm tích lũy:"), gbc);
+        gbc.gridx = 0; gbc.gridy = 0; pInput.add(new JLabel("Mã khách hàng:"), gbc);
+        gbc.gridy = 1; pInput.add(new JLabel("Tên khách hàng:"), gbc);
+        gbc.gridy = 2; pInput.add(new JLabel("Số điện thoại:"), gbc);
+        gbc.gridy = 3; pInput.add(new JLabel("Địa chỉ:"), gbc);
+        gbc.gridy = 4; pInput.add(new JLabel("Giới tính:"), gbc);
+        gbc.gridy = 5; pInput.add(new JLabel("Điểm tích lũy:"), gbc);
 
         gbc.weightx = 0.65;
-        gbc.gridx = 1;
-        gbc.gridy = 0;
-        pInput.add(txtCustomerCode, gbc);
-        gbc.gridy = 1;
-        pInput.add(txtCustomerName, gbc);
-        gbc.gridy = 2;
-        pInput.add(txtCustomerPhone, gbc);
-        gbc.gridy = 3;
-        pInput.add(txtCustomerAddress, gbc);
-        gbc.gridy = 4;
-        pInput.add(txtCustomerPoints, gbc);
-
+        gbc.gridx = 1; gbc.gridy = 0; pInput.add(txtCustomerCode, gbc);
+        gbc.gridy = 1; pInput.add(txtCustomerName, gbc);
+        gbc.gridy = 2; pInput.add(txtCustomerPhone, gbc);
+        gbc.gridy = 3; pInput.add(txtCustomerAddress, gbc);
+        gbc.gridy = 4; pInput.add(pGender, gbc);
+        gbc.gridy = 5; pInput.add(txtCustomerPoints, gbc);
 
         JPanel pAnh = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 4));
         pAnh.setOpaque(false);
@@ -163,13 +175,9 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
         lblCustomerImg.setBorder(BorderFactory.createLineBorder(new Color(175, 145, 210)));
         btnBrowseImg = new JButton("Chọn ảnh");
         pAnh.add(lblCustomerImg);
-
         pAnh.add(btnBrowseImg);
 
-        gbc.gridx = 0;
-        gbc.gridy = 5;
-        gbc.gridwidth = 2;
-        gbc.weightx = 1;
+        gbc.gridx = 0; gbc.gridy = 6; gbc.gridwidth = 2; gbc.weightx = 1;
         pInput.add(pAnh, gbc);
 
         JPanel pButton = new JPanel(new FlowLayout(FlowLayout.CENTER, 7, 5));
@@ -183,8 +191,7 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
         pButton.add(btnRemoveCustomer);
         pButton.add(btnClear);
 
-        gbc.gridy = 6;
-        gbc.anchor = GridBagConstraints.NORTH;
+        gbc.gridy = 7; gbc.anchor = GridBagConstraints.NORTH;
         pInput.add(pButton, gbc);
         pCenter.add(pInput, BorderLayout.EAST);
         add(pCenter, BorderLayout.CENTER);
@@ -195,9 +202,12 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
         btnClear.addActionListener(this);
         btnFind.addActionListener(this);
         btnBrowseImg.addActionListener(this);
+        radNam.addActionListener(this);
+        radNu.addActionListener(this);
         txtFind.addActionListener(this);
         table.addMouseListener(this);
 
+        hienThiAnhKhachHang(null);
         loadDataToTable();
     }
 
@@ -206,21 +216,21 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
             ArrayList<Customer> ds = customerDAO.getAllCustomers();
             showCustomerList(ds);
         } catch (SQLException e) {
-            showMessage(
-                    "Không tải được danh sách khách hàng: " + e.getMessage());
+            showMessage("Không tải được danh sách khách hàng: " + e.getMessage());
         }
     }
 
     private void showCustomerList(ArrayList<Customer> ds) {
         modelTable.setRowCount(0);
         for (Customer kh : ds) {
-
             modelTable.addRow(new Object[] {
-            		kh.getCustomerId(),
-            		kh.getCustomerName(),
-            		kh.getPhoneNumber(),
-            		kh.getAddress(),
-            		kh.getLoyaltyPoints()
+                kh.getCustomerId(),
+                kh.getCustomerName(),
+                kh.getPhoneNumber(),
+                kh.getAddress(),
+                kh.getLoyaltyPoints(),
+                kh.isGender() ? "Nam" : "Nữ",
+                getCustomerAvatar(kh.getCustomerId(), kh.isGender(), 44)
             });
         }
     }
@@ -245,6 +255,10 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
             txtCustomerAddress.requestFocus();
             return false;
         }
+        if (!radNam.isSelected() && !radNu.isSelected()) {
+            showMessage("Vui lòng chọn giới tính khách hàng!");
+            return false;
+        }
         return true;
     }
 
@@ -252,13 +266,19 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
         JOptionPane.showMessageDialog(this, message);
     }
 
-    private Customer getCustomerFromForm() {
+    private Customer getCustomerFromForm(String id) {
+        int points = 0;
+        try {
+            points = Integer.parseInt(txtCustomerPoints.getText().trim());
+        } catch (Exception e) {}
+        
         return new Customer(
-                txtCustomerCode.getText().trim(),
+                id,
                 txtCustomerName.getText().trim(),
                 txtCustomerAddress.getText().trim(),
                 txtCustomerPhone.getText().trim(),
-                0);
+                points,
+                radNam.isSelected());
     }
 
     private void themKhachHang() {
@@ -279,13 +299,8 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
                 showMessage("Không thể sinh mã khách hàng!");
                 return;
             }
-
-            Customer customer = new Customer(
-                    customerId,
-                    txtCustomerName.getText().trim(),
-                    txtCustomerAddress.getText().trim(),
-                    txtCustomerPhone.getText().trim(),
-                    0);
+            
+            Customer customer = getCustomerFromForm(customerId);
 
             if (customerDAO.addCustomer(customer)) {
                 if (selectedImg != null) {
@@ -296,15 +311,7 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
                     }
                 }
                 loadDataToTable();
-                txtCustomerCode.setText(customerId);
-                selectedImg = null;
-                for (int i = 0; i < modelTable.getRowCount(); i++) {
-                    if (customerId.equals(modelTable.getValueAt(i, 0))) {
-                        table.setRowSelectionInterval(i, i);
-                        table.scrollRectToVisible(table.getCellRect(i, 0, true));
-                        break;
-                    }
-                }
+                clearForm();
                 showMessage("Thêm khách hàng thành công! Mã: " + customerId);
             }
         } catch (SQLException e) {
@@ -326,12 +333,14 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
                 return;
             }
 
-            if (customerDAO.updateCustomer(getCustomerFromForm())) {
-                try {
-                    luuAnhKhachHang(ma);
-                } catch (Exception e) {
-                    showMessage(
-                            "Đã sửa khách hàng nhưng không lưu được ảnh: " + e.getMessage());
+            Customer customer = getCustomerFromForm(ma);
+            if (customerDAO.updateCustomer(customer)) {
+                if (selectedImg != null) {
+                    try {
+                        luuAnhKhachHang(ma);
+                    } catch (Exception e) {
+                        showMessage("Đã sửa khách hàng nhưng không lưu được ảnh: " + e.getMessage());
+                    }
                 }
                 loadDataToTable();
                 clearForm();
@@ -350,10 +359,7 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
         }
 
         String ma = txtCustomerCode.getText().trim();
-
-        int chon = JOptionPane.showConfirmDialog(this,
-                "Bạn có muốn xóa khách hàng " + ma + "?",
-                "Xác nhận", JOptionPane.YES_NO_OPTION);
+        int chon = JOptionPane.showConfirmDialog(this, "Bạn có muốn xóa khách hàng " + ma + "?", "Xác nhận", JOptionPane.YES_NO_OPTION);
         if (chon != JOptionPane.YES_OPTION) return;
 
         try {
@@ -364,16 +370,14 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
                 showMessage("Xóa khách hàng thành công!");
             }
         } catch (SQLException e) {
-            showMessage(
-                    "Không thể xóa khách hàng (có thể đã phát sinh hóa đơn): " + e.getMessage());
+            showMessage("Không thể xóa khách hàng (có thể đã phát sinh hóa đơn): " + e.getMessage());
         }
     }
 
     private void timKhachHang() {
         String sdt = txtFind.getText().trim();
         if (sdt.isEmpty()) {
-        	JOptionPane.showMessageDialog(this, "Số điện thoại chưa điền");
-
+            JOptionPane.showMessageDialog(this, "Số điện thoại chưa điền");
             return;
         }
         try {
@@ -394,12 +398,49 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
         txtCustomerPhone.setText("");
         txtCustomerAddress.setText("");
         txtCustomerPoints.setText("0");
+        groupGender.clearSelection();
         txtFind.setText("");
         selectedImg = null;
+        lblCustomerImg.setToolTipText(null);
         hienThiAnhKhachHang(null);
         txtCustomerName.requestFocus();
     }
 
+    private void fillFormFromTable() {
+        int row = table.getSelectedRow();
+        if (row == -1) return;
+
+        row = table.convertRowIndexToModel(row);
+        String ma = modelTable.getValueAt(row, 0).toString();
+
+        try {
+            Customer kh = customerDAO.findById(ma);
+            if (kh == null) return;
+
+            txtCustomerCode.setText(kh.getCustomerId());
+            txtCustomerName.setText(kh.getCustomerName());
+            txtCustomerPhone.setText(kh.getPhoneNumber());
+            txtCustomerAddress.setText(kh.getAddress() == null ? "" : kh.getAddress());
+            txtCustomerPoints.setText(String.valueOf(kh.getLoyaltyPoints()));
+            
+            if (kh.isGender()) {
+                radNam.setSelected(true);
+            } else {
+                radNu.setSelected(true);
+            }
+
+            selectedImg = null;
+            hienThiAnhKhachHang(null); 
+            lblCustomerImg.setToolTipText("<html><b>Họ tên:</b> " + kh.getCustomerName()
+                    + "<br><b>Giới tính:</b> " + (kh.isGender() ? "Nam" : "Nữ")
+                    + "<br><b>SĐT:</b> " + kh.getPhoneNumber() + "</html>");
+        } catch (SQLException e) {
+            showMessage("Không lấy được thông tin khách hàng: " + e.getMessage());
+        }
+    }
+
+  
+    
     private void chonAnhKhachHang() {
         File file = imgUtil.browseImg();
         if (file == null) return;
@@ -421,11 +462,12 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
         else if (!fileName.endsWith(".png")) {
             throw new Exception("Chỉ hỗ trợ ảnh JPG, JPEG hoặc PNG");
         }
-
+        
         File folder = new File("src/img");
         Files.createDirectories(folder.toPath());
         File target = new File(folder, "customer_" + ma + ext);
         Files.copy(selectedImg.toPath(), target.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        
         for (String other : new String[] {".jpg", ".jpeg", ".png"}) {
             if (!other.equals(ext)) {
                 new File(folder, "customer_" + ma + other).delete();
@@ -434,6 +476,7 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
     }
 
     private File findCustomerImage(String ma) {
+        if (ma == null || ma.isEmpty() || ma.equals("Tự sinh khi thêm")) return null;
         for (String ext : new String[] {".jpg", ".jpeg", ".png"}) {
             File img = new File("src/img/customer_" + ma + ext);
             if (img.isFile()) return img;
@@ -448,34 +491,53 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
         }
     }
 
-    private void hienThiAnhKhachHang(File file) {
-        lblCustomerImg.setIcon(null);
-        lblCustomerImg.setText("Chưa có ảnh");
-        if (file == null) return;
+    private ImageIcon getCustomerAvatar(String ma, boolean isGender, int size) {
+        ImageIcon icon = null;
+        File file = findCustomerImage(ma);
+        
+        if (file != null && file.isFile()) {
+            icon = new ImageIcon(file.getAbsolutePath());
+        } else {
+            String path = isGender ? "/img/employee_male.png" : "/img/employee_female.png";
+            java.net.URL url = getClass().getResource(path);
+            if (url != null) icon = new ImageIcon(url);
+        }
 
-        ImageIcon icon = new ImageIcon(file.getAbsolutePath());
-        if (icon.getIconWidth() <= 0) return;
-        Image img = icon.getImage().getScaledInstance(90, 90, Image.SCALE_SMOOTH);
-        lblCustomerImg.setIcon(new ImageIcon(img));
-        lblCustomerImg.setText("");
+        if (icon == null || icon.getIconWidth() <= 0) return null;
+        Image img = icon.getImage().getScaledInstance(size, size, Image.SCALE_SMOOTH);
+        return new ImageIcon(img);
     }
 
-    private void fillFormFromTable() {
-        int row = table.getSelectedRow();
-        if (row == -1) return;
-        txtCustomerCode.setText(modelTable.getValueAt(row, 0).toString());
-        txtCustomerName.setText(modelTable.getValueAt(row, 1).toString());
-        txtCustomerPhone.setText(modelTable.getValueAt(row, 2).toString());
-        Object diaChi = modelTable.getValueAt(row, 3);
-        txtCustomerAddress.setText(diaChi == null ? "" : diaChi.toString());
-        txtCustomerPoints.setText(modelTable.getValueAt(row, 4).toString());
-        selectedImg = null;
-        hienThiAnhKhachHang(findCustomerImage(txtCustomerCode.getText()));
+    private void hienThiAnhKhachHang(File file) {
+        ImageIcon icon = null;
+        if (file != null) {
+            ImageIcon anh = new ImageIcon(file.getAbsolutePath());
+            if (anh.getIconWidth() > 0) {
+                Image img = anh.getImage().getScaledInstance(90, 90, Image.SCALE_SMOOTH);
+                icon = new ImageIcon(img);
+            }
+        } else {
+            String ma = txtCustomerCode.getText().trim();
+            boolean gender = radNam.isSelected();
+            
+            if (!radNam.isSelected() && !radNu.isSelected() && (ma.isEmpty() || ma.equals("Tự sinh khi thêm"))) {
+                java.net.URL url = getClass().getResource("/img/customer.png");
+                if (url != null) {
+                    Image img = new ImageIcon(url).getImage().getScaledInstance(90, 90, Image.SCALE_SMOOTH);
+                    icon = new ImageIcon(img);
+                }
+            } else {
+                icon = getCustomerAvatar(ma, gender, 90);
+            }
+        }
+
+        lblCustomerImg.setIcon(icon);
+        lblCustomerImg.setText(icon == null ? "Chưa có ảnh" : "");
     }
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        fillFormFromTable();
+        if (e.getSource() == table) fillFormFromTable();
     }
 
     @Override
@@ -494,6 +556,8 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
             timKhachHang();
         } else if (o.equals(btnBrowseImg)) {
             chonAnhKhachHang();
+        } else if (o.equals(radNam) || o.equals(radNu)) {
+            if (selectedImg == null) hienThiAnhKhachHang(null);
         }
     }
 
@@ -501,5 +565,4 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
     @Override public void mouseReleased(MouseEvent e) {}
     @Override public void mouseEntered(MouseEvent e) {}
     @Override public void mouseExited(MouseEvent e) {}
-
 }

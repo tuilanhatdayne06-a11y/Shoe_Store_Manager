@@ -142,7 +142,6 @@ public class FrmLogin extends JFrame {
             Employee nv = dao.dangNhap(ma, pass);
 
             if (nv != null) {
-                JOptionPane.showMessageDialog(this, "Đăng nhập thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
                 if (this.onLoginSuccess != null) {
                     this.onLoginSuccess.accept(nv);
                 }
@@ -153,7 +152,7 @@ public class FrmLogin extends JFrame {
         });
     }
 
-    private JLabel taoLabel(String text) {
+	private JLabel taoLabel(String text) {
         JLabel lbl = new JLabel(text);
         lbl.setFont(new Font("Arial", Font.BOLD, 13));
         lbl.setForeground(textDark);

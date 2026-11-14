@@ -7,6 +7,8 @@ public class Customer {
     private String address;
     private String phoneNumber;
     private int loyaltyPoints;
+    private boolean gender;
+
 
     
     public Customer() {
@@ -22,14 +24,29 @@ public class Customer {
 	
 
 
-	public Customer(String customerId, String customerName, String address, String phoneNumber, int loyaltyPoints) {
+	public Customer(String customerId, String customerName, String address, String phoneNumber, int loyaltyPoints, Boolean gender) {
 		setCustomerId(customerId);
 		setCustomerName(customerName);
 		setAddress(address);
 		setPhoneNumber(phoneNumber);
 		setLoyaltyPoints(loyaltyPoints);
+		setGender(isGender());
 	}
 
+
+    public Customer(String customerId, String customerName, String address,
+            String phoneNumber, int loyaltyPoints, String imgCustomer, boolean gender) {
+        this(customerId, customerName, address, phoneNumber, loyaltyPoints, gender);
+        this.gender = gender;
+    }
+
+    public boolean isGender() {
+        return gender;
+    }
+
+    public void setGender(boolean gender) {
+        this.gender = gender;
+    }
 
 	public String getCustomerId() {
 		return customerId;
@@ -85,6 +102,6 @@ public class Customer {
 	public String toString() {
 		return "Customer [customerId=" + customerId + ", customerName=" + customerName + ", address=" + address
 				+ ", phoneNumber=" + phoneNumber + ", loyaltyPoints=" + loyaltyPoints
-				+ "]";
+				+ ", gender=" + gender + "];";
 	}
 }

@@ -37,10 +37,9 @@ public class GUI extends JFrame implements ActionListener {
 
     public GUI() {
         setTitle("Phần Mềm Quản Lý Cửa Hàng Giày Dép - Nhóm 10");
-        setSize(1200, 750);
+        setSize(1200, 800);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
         setLayout(new BorderLayout());
 
         JPanel pnlNorth = new JPanel();
@@ -150,6 +149,7 @@ public class GUI extends JFrame implements ActionListener {
         btnImport.addActionListener(this);
         btnPOS.addActionListener(this);
         btnReport.addActionListener(this);
+        phanQuyenMenu(false);
 
         pnlMenu.add(btnHome);
         pnlMenu.add(btnSupplier);
@@ -182,7 +182,18 @@ public class GUI extends JFrame implements ActionListener {
 
         add(pnlCenter, BorderLayout.CENTER);
     }
+    public void phanQuyenMenu(boolean isLogin) {
+       
+        btnEmployee.setEnabled(isLogin);
+        btnCustomer.setEnabled(isLogin);
+        btnImport.setEnabled(isLogin);
+        btnPOS.setEnabled(isLogin);
+        btnReport.setEnabled(isLogin);
+        btnProduct.setEnabled(isLogin);
+        btnSupplier.setEnabled(isLogin);
 
+        btnHome.setEnabled(true); 
+    }
     private JButton createMenuButton(String text, String iconFileName) {
         JButton btn = new JButton(text);
         btn.setFont(new Font("Arial", Font.BOLD, 13));
@@ -243,13 +254,15 @@ public class GUI extends JFrame implements ActionListener {
             new FrmLogin(nv -> {
                 String iconPath = nv.isGender() ? "/img/employee_male.png" : "/img/employee_female.png";
                 java.net.URL avatarUrl = getClass().getResource(iconPath);
+                utils.SessionManager.nhanVienDangNhap = nv;
+                phanQuyenMenu(true);
                 if (avatarUrl != null) {
                     btnAvatar.setIcon(new ImageIcon(new ImageIcon(avatarUrl).getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH)));
                 }
                 
                 String gioiTinh = nv.isGender() ? "Nam" : "Nữ";
                 btnAvatar.setText(nv.getEmployeeName());
-                btnAvatar.setToolTipText("<html><b>Họ tên:</b> " + nv.getEmployeeName() + "<br><b>Chức vụ:</b> " + nv.getPosition() + "</html>");
+                
                 
                 currentNhanVienInfo = "BẢNG THÔNG TIN \n\n"
                                     + "Họ và tên: " + nv.getEmployeeName() + "\n"
@@ -258,6 +271,7 @@ public class GUI extends JFrame implements ActionListener {
                                     + "Giới tính: " + gioiTinh;
                 
                 loginCardLayout.show(pnlRight, "DaDangNhap");
+                btnHome.doClick();
             }).setVisible(true);
         }
         else if (o == btnLogout) {

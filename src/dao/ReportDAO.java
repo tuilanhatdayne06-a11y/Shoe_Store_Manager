@@ -66,11 +66,11 @@ public class ReportDAO {
     // Chi tinh phieu nhap co trang thai "Da nhap"
     public BigDecimal getTotalImportCost(LocalDate tuNgay, LocalDate denNgay)
             throws SQLException {
-        String sql = "SELECT COALESCE(SUM(d.quantity * d.importPrice), 0) AS tong "
-                   + "FROM dbo.PurchaseOrderDetail d "
-                   + "JOIN dbo.PurchaseOrder p ON d.purchaseOrderId = p.purchaseOrderId "
-                   + "WHERE p.status = 'Da nhap' "
-                   + "AND p.orderDate >= ? AND p.orderDate < ?";
+            String sql = "SELECT COALESCE(SUM(d.quantity * d.importPrice), 0) AS tong "
+                    + "FROM dbo.PurchaseOrderDetail d "
+                    + "JOIN dbo.PurchaseOrder p ON d.purchaseOrderId = p.purchaseOrderId "
+                    + "WHERE p.status = 'Da nhap' "
+                    + "AND p.orderDate >= ? AND p.orderDate < ?";
 
         Connection con = ConnectDB.getConnection();
         if (con == null || con.isClosed()) {

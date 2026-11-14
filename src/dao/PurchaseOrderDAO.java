@@ -49,12 +49,13 @@ public class PurchaseOrderDAO {
             }
 
             sql = "INSERT INTO PurchaseOrder "
-                    + "(purchaseOrderId, orderDate, employeeId, supplierId) "
-                    + "VALUES (?, GETDATE(), ?, ?)";
+                    + "(purchaseOrderId, orderDate, employeeId, supplierId, status) "
+                    + "VALUES (?, GETDATE(), ?, ?, ?)";
             try (PreparedStatement pst = con.prepareStatement(sql)) {
                 pst.setString(1, orderId);
                 pst.setString(2, order.getEmployeeId().getEmployeeId());
                 pst.setString(3, order.getSupplierId().getSupplierId());
+                pst.setString(4, "Da nhap");
                 pst.executeUpdate();
             }
 

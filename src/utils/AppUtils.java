@@ -12,7 +12,7 @@ public class AppUtils {
 	 * @param prefix
 	 * : tiền tố của id
 	 * <br>
-	 * chỉ chấp nhận NV, KH, NCC, CAT, SP, PD, PO, HD
+	 * chỉ chấp nhận NV, KH, NCC, CAT, SP, PD, PO, HD, HDD
 	 * @param code
 	 * : mã số theo sau(tối thiểu 3 số)
 	 * @return mã đã được generate
@@ -26,7 +26,7 @@ public class AppUtils {
 	    	    OUTPUT INSERTED.currentValue
 	    	    WHERE prefix = ?
 	    	    """;
-	    String[] checkId = {"NV", "KH", "NCC", "CAT", "SP", "PD", "PO", "HD"};
+	    String[] checkId = {"NV", "KH", "NCC", "CAT", "SP", "PD", "PO", "HD", "HDD"};
 
 	    boolean isExist = false;
 
