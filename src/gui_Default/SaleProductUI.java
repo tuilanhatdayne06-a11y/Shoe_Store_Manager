@@ -162,7 +162,7 @@ public class SaleProductUI extends JPanel{
 	private void printInvoice()
 	{
 		JDialog diaInvoice = new JDialog();
-		diaInvoice.setSize(500, 400);
+		diaInvoice.setSize(500, 300);
 		diaInvoice.setLocationRelativeTo(null);
 
 		JPanel pnlInvoice = new JPanel(new BorderLayout());
@@ -172,84 +172,47 @@ public class SaleProductUI extends JPanel{
 
 		pnlInvoice.add(lblHeader, BorderLayout.NORTH);
 		
-		JPanel pnlBody = new JPanel(new GridLayout(2, 1, 0, 0));
+		JPanel pnlBody = new JPanel();
+		pnlBody.setLayout(new BoxLayout(pnlBody, BoxLayout.Y_AXIS));
 		pnlBody.setBorder(BorderFactory.createEmptyBorder(30, 0, 0, 0));
+		JLabel lblTradeDetail = new JLabel("THÔNG TIN GIAO DỊCH");
+		lblTradeDetail.setFont(new Font(lblTradeDetail.getFont().getName(), Font.BOLD, 15));
 
-		JPanel pnlTrade = new JPanel(new BorderLayout());
-		JLabel lblTitleTrade = new JLabel("THÔNG TIN GIAO DỊCH");
-		lblTitleTrade.setFont(new Font(lblTitleTrade.getFont().getName(), Font.BOLD, 13));
+		JLabel lblCreateDate = new JLabel("Ngày giao dịch: " + " " + "ĐỊT");
+		lblCreateDate.setFont(new Font(lblCreateDate.getFont().getName(), Font.PLAIN, 13));
 
-		JPanel pnlInfoTrade = new JPanel();
-		pnlInfoTrade.setLayout(new BoxLayout(pnlInfoTrade, BoxLayout.Y_AXIS));
+		JLabel lblEmployeeName = new JLabel("Ngày giao dịch: " + " " + "ĐỊT");
+		lblEmployeeName.setFont(new Font(lblEmployeeName.getFont().getName(), Font.PLAIN, 13));
 
-		JPanel pnlDate = new JPanel(new BorderLayout());
-		JLabel lblCreateDate = new JLabel("Ngày lập: ");
-		JLabel lblDate = new JLabel("14/11/2026" + " " + "18:20:58");		
+		JLabel lblCustomerName = new JLabel("Ngày giao dịch: " + " " + "ĐỊT");
+		lblCustomerName.setFont(new Font(lblCustomerName.getFont().getName(), Font.PLAIN, 13));
 
-		pnlDate.setPreferredSize(new Dimension(300, 20));
-		pnlDate.add(lblCreateDate, BorderLayout.WEST);
-		pnlDate.add(lblDate, BorderLayout.EAST);
+		JLabel lblCheckoutDetail = new JLabel("CHI TIẾT THANH TOÁN");
+		lblCheckoutDetail.setFont(new Font(lblCheckoutDetail.getFont().getName(), Font.BOLD, 15));
 
-		pnlInfoTrade.add(pnlDate);
+		JLabel lblTotalAmount = new JLabel("Ngày giao dịch: " + " " + "ĐỊT");
+		lblTotalAmount.setFont(new Font(lblTotalAmount.getFont().getName(), Font.PLAIN, 13));
 
-		JPanel pnlEmployee = new JPanel(new BorderLayout());
+		JLabel lblDiscount = new JLabel("Ngày giao dịch: " + " " + "ĐỊT");
+		lblDiscount.setFont(new Font(lblDiscount.getFont().getName(), Font.PLAIN, 13));
+
+		JLabel lblPaid = new JLabel("Ngày giao dịch: " + " " + "ĐỊT");
+		lblPaid.setFont(new Font(lblPaid.getFont().getName(), Font.PLAIN, 13));
+
+		JLabel lblChange = new JLabel("Ngày giao dịch: " + " " + "ĐỊT");
+		lblChange.setFont(new Font(lblChange.getFont().getName(), Font.PLAIN, 13));
+
+		pnlBody.add(lblTradeDetail);
+		pnlBody.add(lblCreateDate);
+		pnlBody.add(lblEmployeeName);
+		pnlBody.add(lblCustomerName);
+		pnlBody.add(lblCheckoutDetail);
+		pnlBody.add(lblTotalAmount);
+		pnlBody.add(lblDiscount);
+		pnlBody.add(lblPaid);
+		pnlBody.add(lblChange);
+
 		
-		JLabel lblNameEmployeeL = new JLabel("Tên nhân viên");
-		JLabel lblNameEmployeeR = new JLabel("Nguyễn Văn A");
-		pnlEmployee.setPreferredSize(new Dimension(300, 20));
-		pnlEmployee.add(lblNameEmployeeL, BorderLayout.WEST);
-		pnlEmployee.add(lblNameEmployeeR, BorderLayout.EAST);
-
-		pnlInfoTrade.add(pnlEmployee);
-
-		JPanel pnlCustomer = new JPanel(new BorderLayout());
-		
-		JLabel lblNameCustomerL = new JLabel("Tên khách hàng");
-		JLabel lblNameCustomerR = new JLabel("Nguyễn Văn A");
-		pnlCustomer.setPreferredSize(new Dimension(300, 20));
-		pnlCustomer.add(lblNameCustomerL, BorderLayout.WEST);
-		pnlCustomer.add(lblNameCustomerR, BorderLayout.EAST);
-
-		pnlInfoTrade.add(pnlCustomer);
-
-		pnlTrade.add(lblTitleTrade, BorderLayout.NORTH);
-		pnlTrade.add(pnlInfoTrade, BorderLayout.CENTER);
-
-		pnlBody.add(pnlTrade);
-
-		JPanel pnlCheckout = new JPanel(new BorderLayout());
-		pnlCheckout.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
-
-		JLabel lblTitleCheckout = new JLabel("CHI TIẾT THANH TOÁN");
-		lblTitleCheckout.setFont(new Font(lblTitleCheckout.getFont().getName(), Font.BOLD, 13));
-
-		JPanel pnlDetailCheckout = new JPanel();
-		pnlDetailCheckout.setLayout(new BoxLayout(pnlDetailCheckout, BoxLayout.Y_AXIS));
-
-		JPanel pnlAmount = new JPanel(new BorderLayout());
-		
-		JLabel lblAmountLeft = new JLabel("Tên khách hàng");
-		JLabel lblAmountRight = new JLabel("Nguyễn Văn A");
-		pnlAmount.setPreferredSize(new Dimension(300, 20));
-		pnlAmount.add(lblAmountLeft, BorderLayout.WEST);
-		pnlAmount.add(lblAmountRight, BorderLayout.EAST);
-
-		pnlDetailCheckout.add(pnlAmount);
-
-		JPanel pnlDiscount = new JPanel(new BorderLayout());
-		
-		JLabel lblDiscountLeft = new JLabel("Tên khách hàng");
-		JLabel lblDiscountRight = new JLabel("Nguyễn Văn A");
-		pnlDiscount.setPreferredSize(new Dimension(300, 20));
-		pnlDiscount.add(lblDiscountLeft, BorderLayout.WEST);
-		pnlDiscount.add(lblDiscountRight, BorderLayout.EAST);
-
-		pnlDetailCheckout.add(pnlDiscount);
-
-		pnlCheckout.add(lblTitleCheckout, BorderLayout.NORTH);
-		pnlCheckout.add(pnlDetailCheckout, BorderLayout.CENTER);
-
-		pnlBody.add(pnlCheckout);
 
 		pnlInvoice.add(pnlBody, BorderLayout.WEST);
 		
