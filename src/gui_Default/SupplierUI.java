@@ -65,11 +65,24 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
         setBackground(BACKGROUND_COLOR);
 
         JPanel titleBar = new JPanel(new BorderLayout());
-        titleBar.setBackground(BACKGROUND_COLOR);
+        titleBar.setBackground(new Color(234, 230, 250));
         titleBar.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
-        JLabel title = new JLabel("QUẢN LÝ NHÀ CUNG CẤP", JLabel.CENTER);
+        JLabel title = new JLabel("Quản lý nhà cung cấp", JLabel.LEFT);
         title.setFont(new Font("Arial", Font.BOLD, 24));
-        title.setForeground(ACCENT_COLOR);
+        title.setForeground(new Color(94, 53, 165));
+
+        try {
+            ImageIcon icon = new ImageIcon(getClass().getResource("/img/supplier.png"));
+            Image scaleIcon = icon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+            title.setIcon(new ImageIcon(scaleIcon));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        title.setHorizontalTextPosition(JLabel.RIGHT);
+        title.setVerticalTextPosition(JLabel.CENTER);
+        title.setHorizontalAlignment(JLabel.LEFT);
+        title.setVerticalAlignment(JLabel.CENTER);
         titleBar.add(title, BorderLayout.CENTER);
         add(titleBar, BorderLayout.NORTH);
 

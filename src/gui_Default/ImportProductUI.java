@@ -13,6 +13,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Image;
 import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ import java.util.Locale;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -67,11 +69,27 @@ public class ImportProductUI extends JPanel {
         setBackground(new Color(253, 240, 255));
 
         JPanel titleBar = new JPanel(new BorderLayout());
-        titleBar.setBackground(new Color(253, 240, 255));
+        titleBar.setBackground(new Color(234, 230, 250));
         titleBar.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
-        JLabel title = new JLabel("NHẬP KHO", SwingConstants.CENTER);
+        JLabel title = new JLabel("Nhập kho", SwingConstants.LEFT);
         title.setFont(new Font("Arial", Font.BOLD, 24));
-        title.setForeground(new Color(180, 60, 200));
+        title.setForeground(new Color(94, 53, 165));
+
+        try {
+            java.net.URL iconUrl = getClass().getResource("/img/import.png");
+            if (iconUrl != null) {
+                ImageIcon icon = new ImageIcon(iconUrl);
+                Image scaledIcon = icon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+                title.setIcon(new ImageIcon(scaledIcon));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        title.setHorizontalTextPosition(SwingConstants.RIGHT);
+        title.setVerticalTextPosition(SwingConstants.CENTER);
+        title.setHorizontalAlignment(SwingConstants.LEFT);
+        title.setVerticalAlignment(SwingConstants.CENTER);
         titleBar.add(title, BorderLayout.CENTER);
         add(titleBar, BorderLayout.NORTH);
 
