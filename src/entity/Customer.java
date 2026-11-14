@@ -7,7 +7,6 @@ public class Customer {
     private String address;
     private String phoneNumber;
     private int loyaltyPoints;
-    private String imgCustomer;
 
     
     public Customer() {
@@ -23,14 +22,12 @@ public class Customer {
 	
 
 
-	public Customer(String customerId, String customerName, String address, String phoneNumber, int loyaltyPoints,
-			String imgCustomer) {
+	public Customer(String customerId, String customerName, String address, String phoneNumber, int loyaltyPoints) {
 		setCustomerId(customerId);
 		setCustomerName(customerName);
 		setAddress(address);
 		setPhoneNumber(phoneNumber);
 		setLoyaltyPoints(loyaltyPoints);
-		setImgCustomer(imgCustomer);
 	}
 
 
@@ -84,20 +81,10 @@ public class Customer {
 	}
 
 
-	public String getImgCustomer() {
-		return imgCustomer;
-	}
-
-
-	public void setImgCustomer(String imgCustomer) {
-		this.imgCustomer = imgCustomer;
-	}
-
-
 	@Override
 	public String toString() {
 		return "Customer [customerId=" + customerId + ", customerName=" + customerName + ", address=" + address
-				+ ", phoneNumber=" + phoneNumber + ", loyaltyPoints=" + loyaltyPoints + ", imgCustomer=" + imgCustomer
+				+ ", phoneNumber=" + phoneNumber + ", loyaltyPoints=" + loyaltyPoints
 				+ "]";
 	}
 }
