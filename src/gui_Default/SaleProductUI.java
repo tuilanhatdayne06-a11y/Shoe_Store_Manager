@@ -591,12 +591,12 @@ public class SaleProductUI extends JPanel{
 		GridBagConstraints gbcRight = new GridBagConstraints();
 		
 		JPanel pnlTop = new JPanel(new BorderLayout());
-		pnlTop.setBackground(new Color(15, 10, 26));
+		pnlTop.setBackground(new Color(245, 243, 250));
 		
 		
 		pnlTop.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 10));
 		JPanel pnlSearch = new JPanel(new BorderLayout());
-		pnlSearch.setBackground(new Color(15, 10, 26));
+		pnlSearch.setBackground(new Color(245, 243, 250));
 		pnlSearch.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
 		JLabel lblPhone = new JLabel("SĐT");
 		txtPhone = new JTextField(12);
@@ -633,7 +633,7 @@ public class SaleProductUI extends JPanel{
 		pnlInfo.setOpaque(false);
 
 		JLabel lblCustomerInfo = new JLabel("THÔNG TIN KHÁCH HÀNG");
-		lblCustomerInfo.setForeground(new Color(157, 78, 221));
+		lblCustomerInfo.setForeground(new Color(94, 53, 165));
 		lblCustomerInfo.setFont(new Font(lblCustomerInfo.getFont().getName(), Font.BOLD, 12));
 		lblCustomerInfo.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
 		
@@ -676,11 +676,11 @@ public class SaleProductUI extends JPanel{
 		
 		JPanel pnlMiddle = new JPanel(new BorderLayout());
 		pnlMiddle.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-		pnlMiddle.setBackground(new Color(15, 10, 26));
+		pnlMiddle.setBackground(new Color(245, 243, 250));
 		
 		
 		JLabel lblCart = new JLabel("GIỎ HÀNG", JLabel.LEFT);
-		lblCart.setForeground(new Color(157, 78, 221));
+		lblCart.setForeground(new Color(94, 53, 165));
 		
 		
 		lblCart.setFont(new Font(lblCart.getFont().getName(), Font.BOLD, 12));
@@ -710,13 +710,13 @@ public class SaleProductUI extends JPanel{
 		pnlTitle.setBorder(BorderFactory.createEmptyBorder(10, 10, 0, 0));
 		radUsePoint = new JRadioButton("Dùng điểm tích lũy");
 		
-		lblDetailCheckout.setForeground(new Color(157, 78, 221));
+		lblDetailCheckout.setForeground(new Color(94, 53, 165));
 		pnlTitle.setOpaque(false);
-		radUsePoint.setBackground(new Color(15, 10, 26));
+		radUsePoint.setBackground(new Color(245, 243, 250));
 		radUsePoint.setForeground(new Color(157, 78, 221));
 		radUsePoint.setFont(new Font(radUsePoint.getFont().getName(), Font.BOLD, 12));
 		
-		pnlBottom.setBackground(new Color(15, 10, 26));
+		pnlBottom.setBackground(new Color(245, 243, 250));
 		
 		lblDetailCheckout.setFont(new Font(lblDetailCheckout.getFont().getName(), Font.BOLD, 12));
 		lblDetailCheckout.setBorder(BorderFactory.createEmptyBorder(0, 0, 3, 0));
@@ -758,7 +758,7 @@ public class SaleProductUI extends JPanel{
 		
 		for(JLabel jl : jlFillColor)
 		{
-			jl.setForeground(new Color(240, 230, 255));
+			jl.setForeground(Color.BLACK);
 			jl.setFont(new Font(jl.getFont().getName(), Font.BOLD, 12));
 		}
 		
