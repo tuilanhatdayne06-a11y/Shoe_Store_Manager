@@ -1,7 +1,5 @@
 package gui_Default;
 
-import dao.SupplierDAO;
-import entity.Supplier;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -14,6 +12,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
 import java.util.List;
+
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
@@ -28,6 +27,9 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingWorker;
 import javax.swing.table.DefaultTableModel;
+
+import dao.SupplierDAO;
+import entity.Supplier;
 import utils.ImageUtil;
 
 public class SupplierUI extends JPanel implements ActionListener, MouseListener {
