@@ -9,6 +9,7 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.HeadlessException;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.FocusAdapter;
@@ -16,6 +17,7 @@ import java.awt.event.FocusEvent;
 import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -140,29 +142,44 @@ public class SaleProductUI extends JPanel{
 		});
 
 		btnPayment.addActionListener(e -> {
-			// if(validDataPayment())
-			// {
-			// 	String invoiceId = appUtils.autoGenerateId("HD");
-			// 	double totalAmount = 0.0;
-
-			// 	try {
-			// 		totalAmount = nf.parse(txtAmount.getText()).doubleValue();
-			// 	} catch (ParseException e1) {}
-
-			// 	int loyaltyPoint = Integer.parseInt(txtIsUsePoint.getText());
-			// 	double discountPrice = totalAmount - (double)loyaltyPoint * 10000;
-			// 	double paidPrice = discountPrice;
-			// 	double takenMoney = Double.parseDouble(txtTake.getText());
-			// 	double change = totalAmount - takenMoney;
-			// }
-			printInvoice();
+			if(validDataPayment())
+			{
+				String invoiceId = appUtils.autoGenerateId("HD");
+				
+				LocalDateTime ldt = LocalDateTime.now();
+				String date = Integer.toString(ldt.getDayOfMonth()) + Integer.toString(ldt.getMonthValue());
+				String employeeName = cboEmployee.getSelectedItem().toString();
+				String customerName = txtName.getText();
+				double amount = 0.0;
+				double discount = 0.0;
+				double paid = 0.0;
+				double take = Double.parseDouble(txtTake.getText());
+	
+				try {
+					amount = nf.parse(txtAmount.getText()).doubleValue();
+					discount = nf.parse(txtDiscount.getText()).doubleValue();
+					paid = nf.parse(txtPaid.getText()).doubleValue();
+				} catch (Exception er) {
+					er.printStackTrace();
+				}
+				double change = take - paid;
+				txtChange.setText(nf.format(change));
+	
+				printInvoice(
+					date, employeeName, customerName, amount,
+					discount, paid, take, change
+				);
+			}
 		});
 	}
 
-	private void printInvoice()
+	private void printInvoice(
+		String date, String employeeName, String customerName,
+		double totalAmount, double discount, double paid, double take, double change
+	)
 	{
 		JDialog diaInvoice = new JDialog();
-		diaInvoice.setSize(500, 300);
+		diaInvoice.setSize(350, 300);
 		diaInvoice.setLocationRelativeTo(null);
 
 		JPanel pnlInvoice = new JPanel(new BorderLayout());
@@ -174,32 +191,36 @@ public class SaleProductUI extends JPanel{
 		
 		JPanel pnlBody = new JPanel();
 		pnlBody.setLayout(new BoxLayout(pnlBody, BoxLayout.Y_AXIS));
-		pnlBody.setBorder(BorderFactory.createEmptyBorder(30, 0, 0, 0));
+		pnlBody.setBorder(BorderFactory.createEmptyBorder(30, 10, 0, 0));
 		JLabel lblTradeDetail = new JLabel("THÔNG TIN GIAO DỊCH");
 		lblTradeDetail.setFont(new Font(lblTradeDetail.getFont().getName(), Font.BOLD, 15));
 
-		JLabel lblCreateDate = new JLabel("Ngày giao dịch: " + " " + "ĐỊT");
+		JLabel lblCreateDate = new JLabel("Ngày giao dịch: " + " " + date);
 		lblCreateDate.setFont(new Font(lblCreateDate.getFont().getName(), Font.PLAIN, 13));
 
-		JLabel lblEmployeeName = new JLabel("Ngày giao dịch: " + " " + "ĐỊT");
+		JLabel lblEmployeeName = new JLabel("Nhân viên phụ trách: " + " " + employeeName);
 		lblEmployeeName.setFont(new Font(lblEmployeeName.getFont().getName(), Font.PLAIN, 13));
 
-		JLabel lblCustomerName = new JLabel("Ngày giao dịch: " + " " + "ĐỊT");
+		JLabel lblCustomerName = new JLabel("Tên khách hàng: " + " " + customerName);
 		lblCustomerName.setFont(new Font(lblCustomerName.getFont().getName(), Font.PLAIN, 13));
 
 		JLabel lblCheckoutDetail = new JLabel("CHI TIẾT THANH TOÁN");
 		lblCheckoutDetail.setFont(new Font(lblCheckoutDetail.getFont().getName(), Font.BOLD, 15));
+		lblCheckoutDetail.setBorder(BorderFactory.createEmptyBorder(15, 0, 0, 0));
 
-		JLabel lblTotalAmount = new JLabel("Ngày giao dịch: " + " " + "ĐỊT");
+		JLabel lblTotalAmount = new JLabel("Tổng tiền hóa đơn: " + " " + nf.format(totalAmount));
 		lblTotalAmount.setFont(new Font(lblTotalAmount.getFont().getName(), Font.PLAIN, 13));
 
-		JLabel lblDiscount = new JLabel("Ngày giao dịch: " + " " + "ĐỊT");
+		JLabel lblDiscount = new JLabel("Số tiền đã giảm: " + " " + nf.format(discount));
 		lblDiscount.setFont(new Font(lblDiscount.getFont().getName(), Font.PLAIN, 13));
 
-		JLabel lblPaid = new JLabel("Ngày giao dịch: " + " " + "ĐỊT");
+		JLabel lblPaid = new JLabel("Số tiền tạm tính: " + " " + nf.format(paid));
 		lblPaid.setFont(new Font(lblPaid.getFont().getName(), Font.PLAIN, 13));
 
-		JLabel lblChange = new JLabel("Ngày giao dịch: " + " " + "ĐỊT");
+		JLabel lblTake = new JLabel("Số tiền khách đưa: " + " " + nf.format(take));
+		lblTake.setFont(new Font(lblTake.getFont().getName(), Font.PLAIN, 13));
+
+		JLabel lblChange = new JLabel("Tiền thối: " + " " + nf.format(change));
 		lblChange.setFont(new Font(lblChange.getFont().getName(), Font.PLAIN, 13));
 
 		pnlBody.add(lblTradeDetail);
@@ -210,9 +231,8 @@ public class SaleProductUI extends JPanel{
 		pnlBody.add(lblTotalAmount);
 		pnlBody.add(lblDiscount);
 		pnlBody.add(lblPaid);
+		pnlBody.add(lblTake);
 		pnlBody.add(lblChange);
-
-		
 
 		pnlInvoice.add(pnlBody, BorderLayout.WEST);
 		
@@ -265,15 +285,25 @@ public class SaleProductUI extends JPanel{
 			return false;
 		}
 
-		try {
-			int takenMoney = Integer.parseInt(txtTake.getText());
-			if(takenMoney < Integer.parseInt(txtDiscount.getText()))
-				JOptionPane.showMessageDialog(this, "Không đủ tiền để giao dịch");
-
-		} catch (NumberFormatException e) {
-			JOptionPane.showMessageDialog(this, "Số tiền khách đưa phải là số");
-			return false;
-		}
+			double paid = 0.0;
+    		try {
+				paid = nf.parse(txtPaid.getText()).doubleValue();
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			double takenMoney = Double.parseDouble(txtTake.getText());
+			try {
+				if(takenMoney < paid)
+				{
+					JOptionPane.showMessageDialog(this, "Không đủ tiền để giao dịch");
+					return false;
+				}
+			}catch (NumberFormatException e) {
+				e.printStackTrace();
+				JOptionPane.showMessageDialog(this, "Số tiền khách đưa phải là số");
+				return false;
+			}
 
 		return true;
 	}
@@ -589,6 +619,7 @@ public class SaleProductUI extends JPanel{
 		
 		JPanel pnlRight = new JPanel(new GridBagLayout());
 		GridBagConstraints gbcRight = new GridBagConstraints();
+		pnlRight.setBackground(Color.WHITE);
 		
 		JPanel pnlTop = new JPanel(new BorderLayout());
 		pnlTop.setBackground(new Color(245, 243, 250));
@@ -611,7 +642,6 @@ public class SaleProductUI extends JPanel{
 		pnlSearch.add(pnlSearchPhone, BorderLayout.WEST);
 		
 		JPanel pnlEmployee = new JPanel(new GridLayout(2, 1, 0, 5));
-		pnlEmployee.setBackground(new Color(15, 26, 10));
 
 		JLabel lblEmployee = new JLabel("NHÂN VIÊN PHỤ TRÁCH");
 		lblEmployee.setForeground(new Color(157, 78, 221));
@@ -700,7 +730,7 @@ public class SaleProductUI extends JPanel{
 		gbcRight.gridy = 1;
 		gbcRight.weightx = 1.0;
 		gbcRight.weighty = 0.25;
-		gbcRight.insets = new Insets(5, 0, 0, 0);
+		gbcRight.insets = new Insets(10, 0, 0, 0);
 		
 		pnlRight.add(pnlMiddle, gbcRight);
 		
@@ -802,7 +832,7 @@ public class SaleProductUI extends JPanel{
 		gbcRight.gridy = 2;
 		gbcRight.weightx = 1.0;
 		gbcRight.weighty = 0.5;
-		gbcRight.insets = new Insets(5, 0, 0, 0);
+		gbcRight.insets = new Insets(10, 0, 0, 0);
 		
 		pnlRight.add(pnlBottom, gbcRight);
 		
