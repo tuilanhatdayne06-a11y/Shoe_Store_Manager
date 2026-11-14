@@ -37,10 +37,9 @@ public class GUI extends JFrame implements ActionListener {
 
     public GUI() {
         setTitle("Phần Mềm Quản Lý Cửa Hàng Giày Dép - Nhóm 10");
-        //setSize(1200, 750);
+        setSize(1200, 800);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
         setLayout(new BorderLayout());
 
         JPanel pnlNorth = new JPanel();
@@ -50,7 +49,7 @@ public class GUI extends JFrame implements ActionListener {
         JPanel pnlHeader = new JPanel(new BorderLayout());
         pnlHeader.setBackground(Color.WHITE);
         pnlHeader.setPreferredSize(new Dimension(1200, 100));
-        pnlHeader.setBorder(BorderFactory.createEmptyBorder(0, 10, 5, 10));
+        pnlHeader.setBorder(BorderFactory.createEmptyBorder(5, 20, 5, 20));
 
         JLabel lblAddress = new JLabel(" 12 Nguyễn Văn Bảo, Gò Vấp, TP.HCM");
         lblAddress.setFont(new Font("Arial", Font.PLAIN, 12));
@@ -150,6 +149,7 @@ public class GUI extends JFrame implements ActionListener {
         btnImport.addActionListener(this);
         btnPOS.addActionListener(this);
         btnReport.addActionListener(this);
+        phanQuyenMenu(false);
 
         pnlMenu.add(btnHome);
         pnlMenu.add(btnSupplier);
@@ -182,7 +182,18 @@ public class GUI extends JFrame implements ActionListener {
 
         add(pnlCenter, BorderLayout.CENTER);
     }
+    public void phanQuyenMenu(boolean isLogin) {
+       
+        btnEmployee.setEnabled(isLogin);
+        btnCustomer.setEnabled(isLogin);
+        btnImport.setEnabled(isLogin);
+        btnPOS.setEnabled(isLogin);
+        btnReport.setEnabled(isLogin);
+        btnProduct.setEnabled(isLogin);
+        btnSupplier.setEnabled(isLogin);
 
+        btnHome.setEnabled(true); 
+    }
     private JButton createMenuButton(String text, String iconFileName) {
         JButton btn = new JButton(text);
         btn.setFont(new Font("Arial", Font.BOLD, 13));
@@ -243,6 +254,8 @@ public class GUI extends JFrame implements ActionListener {
             new FrmLogin(nv -> {
                 String iconPath = nv.isGender() ? "/img/employee_male.png" : "/img/employee_female.png";
                 java.net.URL avatarUrl = getClass().getResource(iconPath);
+                utils.SessionManager.nhanVienDangNhap = nv;
+                phanQuyenMenu(true);
                 if (avatarUrl != null) {
                     btnAvatar.setIcon(new ImageIcon(new ImageIcon(avatarUrl).getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH)));
                 }
@@ -258,6 +271,7 @@ public class GUI extends JFrame implements ActionListener {
                                     + "Giới tính: " + gioiTinh;
                 
                 loginCardLayout.show(pnlRight, "DaDangNhap");
+                btnHome.doClick();
             }).setVisible(true);
         }
         else if (o == btnLogout) {

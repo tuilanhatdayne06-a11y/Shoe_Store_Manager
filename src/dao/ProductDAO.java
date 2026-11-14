@@ -163,7 +163,6 @@ public class ProductDAO {
 	
 	public void addProduct(Product product)
 	{
-
 		String sql = "INSERT INTO Product(productId, productName, unitPrice, categoryId, supplierId) VALUES(?, ?, ?, ?, ?)";
 
 		try {
