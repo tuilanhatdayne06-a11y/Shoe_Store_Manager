@@ -34,19 +34,19 @@ go
     ('NV010', '123456', 'Admin');
 
     -- 3. CUSTOMER
-    INSERT INTO Customer
-    (customerId, customerName, address, phoneNumber, loyaltyPoints)
-    VALUES
-    ('KH001', 'Nguyen Minh Khang', 'Quan 1, TP.HCM', '0912000001', 120),
-    ('KH002', 'Tran Ngoc Ha', 'Quan 3, TP.HCM', '0912000002', 50),
-    ('KH003', 'Le Quoc Bao', 'Go Vap, TP.HCM', '0912000003', 200),
-    ('KH004', 'Pham Thanh Truc', 'Tan Binh, TP.HCM', '0912000004', 80),
-    ('KH005', 'Hoang Gia Huy', 'Thu Duc, TP.HCM', '0912000005', 300),
-    ('KH006', 'Vo Thi Ngoc', 'Binh Thanh, TP.HCM', '0912000006', 40),
-    ('KH007', 'Dang Minh Quan', 'Quan 7, TP.HCM', '0912000007', 150),
-    ('KH008', 'Bui Khanh Linh', 'Quan 5, TP.HCM', '0912000008', 90),
-    ('KH009', 'Phan Tuan Kiet', 'Quan 10, TP.HCM', '0912000009', 60),
-    ('KH010', 'Do My Duyen', 'Binh Tan, TP.HCM', '0912000010', 180);
+   INSERT INTO Customer
+	(customerId, customerName, address, phoneNumber, loyaltyPoints, imgCustomer, gender)
+	VALUES
+	('KH001', 'Nguyen Minh Khang', 'Quan 1, TP.HCM', '0912000001', 120, NULL, 1),
+	('KH002', 'Tran Ngoc Ha', 'Quan 3, TP.HCM', '0912000002', 50, NULL, 0),
+	('KH003', 'Le Quoc Bao', 'Go Vap, TP.HCM', '0912000003', 200, NULL, 1),
+	('KH004', 'Pham Thanh Truc', 'Tan Binh, TP.HCM', '0912000004', 80, NULL, 0),
+	('KH005', 'Hoang Gia Huy', 'Thu Duc, TP.HCM', '0912000005', 300, NULL, 1),
+	('KH006', 'Vo Thi Ngoc', 'Binh Thanh, TP.HCM', '0912000006', 40, NULL, 0),
+	('KH007', 'Dang Minh Quan', 'Quan 7, TP.HCM', '0912000007', 150, NULL, 1),
+	('KH008', 'Bui Khanh Linh', 'Quan 5, TP.HCM', '0912000008', 90, NULL, 0),
+	('KH009', 'Phan Tuan Kiet', 'Quan 10, TP.HCM', '0912000009', 60, NULL, 1),
+	('KH010', 'Do My Duyen', 'Binh Tan, TP.HCM', '0912000010', 180, NULL, 0);
 
     -- 4. SUPPLIER
     INSERT INTO Supplier
