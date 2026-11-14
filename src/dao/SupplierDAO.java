@@ -104,15 +104,53 @@ public class SupplierDAO {
 
 
     public boolean insertSupplier(Supplier supplier) {
+        String sqlId = "UPDATE IDCounter SET currentValue = currentValue + 1 "
+                     + "OUTPUT INSERTED.currentValue WHERE prefix = 'NCC'";
         String sql = "INSERT INTO Supplier (supplierId, supplierName, address, phoneNumber, email, logo) VALUES (?, ?, ?, ?, ?, ?)";
         Connection conn = ConnectDB.getConnection();
+        if (conn == null) {
+            return false;
+        }
 
-        try (PreparedStatement pst = conn.prepareStatement(sql)) {
-            bindSupplier(pst, supplier);
-            return pst.executeUpdate() > 0;
+        try {
+            conn.setAutoCommit(false);
+            int number;
+
+            try (PreparedStatement pstId = conn.prepareStatement(sqlId);
+                 ResultSet rs = pstId.executeQuery()) {
+                if (!rs.next()) {
+                    conn.rollback();
+                    return false;
+                }
+                number = rs.getInt(1);
+            }
+
+            supplier.setSupplierId("NCC" + String.format("%03d", number));
+
+            try (PreparedStatement pst = conn.prepareStatement(sql)) {
+                bindSupplier(pst, supplier);
+                if (pst.executeUpdate() == 0) {
+                    conn.rollback();
+                    return false;
+                }
+            }
+
+            conn.commit();
+            return true;
         } catch (Exception e) {
+            try {
+                conn.rollback();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
             e.printStackTrace();
             return false;
+        } finally {
+            try {
+                conn.setAutoCommit(true);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
