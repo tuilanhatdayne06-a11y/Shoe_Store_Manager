@@ -43,16 +43,35 @@ public class EmployeeUI extends JPanel implements ActionListener {
     public EmployeeUI() {
         setLayout(new BorderLayout(10, 15));
         setBackground(Color.WHITE);
-        setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
 
         JPanel pnlTop = new JPanel(new BorderLayout(0, 15));
         pnlTop.setBackground(Color.WHITE);
-
+        
+        JPanel pnlHeader = new JPanel();
+        pnlHeader.setBackground(new Color(234, 230, 250)); 
+        pnlHeader.setLayout(new BorderLayout());
+        pnlHeader.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+        
+        
         JLabel lblTitle = new JLabel("QUẢN LÝ NHÂN VIÊN", SwingConstants.CENTER);
         lblTitle.setFont(new Font("Arial", Font.BOLD, 24));
-        lblTitle.setForeground(primaryColor);
-        pnlTop.add(lblTitle, BorderLayout.NORTH);
-
+        lblTitle.setForeground(new Color(94, 53, 165));
+       
+        try {
+        ImageIcon icon = new ImageIcon(getClass().getResource("/img/employee.png")); 
+        Image scaleIcon = icon.getImage().getScaledInstance(50, 50, java.awt.Image.SCALE_SMOOTH);
+        lblTitle.setIcon(new ImageIcon(scaleIcon));
+        } catch (Exception e) {
+        	e.printStackTrace();
+        }
+        lblTitle.setHorizontalTextPosition(SwingConstants.RIGHT);
+		lblTitle.setVerticalTextPosition(SwingConstants.CENTER);
+		lblTitle.setHorizontalAlignment(SwingConstants.LEFT);
+		lblTitle.setVerticalAlignment(SwingConstants.CENTER);
+        pnlHeader.add(lblTitle);
+        pnlTop.add(pnlHeader, BorderLayout.NORTH);
+       
         JPanel pnlForm = new JPanel(new GridLayout(3, 4, 15, 15));
         pnlForm.setBackground(bgLight);
         TitledBorder formBorder = BorderFactory.createTitledBorder(

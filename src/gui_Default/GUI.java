@@ -37,7 +37,7 @@ public class GUI extends JFrame implements ActionListener {
 
     public GUI() {
         setTitle("Phần Mềm Quản Lý Cửa Hàng Giày Dép - Nhóm 10");
-        setSize(1200, 750);
+        //setSize(1200, 750);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -50,7 +50,7 @@ public class GUI extends JFrame implements ActionListener {
         JPanel pnlHeader = new JPanel(new BorderLayout());
         pnlHeader.setBackground(Color.WHITE);
         pnlHeader.setPreferredSize(new Dimension(1200, 100));
-        pnlHeader.setBorder(BorderFactory.createEmptyBorder(5, 20, 5, 20));
+        pnlHeader.setBorder(BorderFactory.createEmptyBorder(0, 10, 5, 10));
 
         JLabel lblAddress = new JLabel(" 12 Nguyễn Văn Bảo, Gò Vấp, TP.HCM");
         lblAddress.setFont(new Font("Arial", Font.PLAIN, 12));
