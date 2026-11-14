@@ -482,7 +482,6 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
         hienThiAnhKhachHang(file);
     }
 
-    // Luu anh rieng vao src/img va tra ve ten file de luu trong SQL
     private String luuAnhKhachHang(String ma) throws Exception {
         if (selectedImg == null) return null;
 
@@ -502,7 +501,6 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
         return imgName;
     }
 
-    // Ho tro anh khach hang luu theo cach cu chua co cot imgCustomer
     private File findCustomerImage(String ma) {
         for (String ext : new String[] {".jpg", ".jpeg", ".png"}) {
             File img = new File("src/img/customer_" + ma + ext);
@@ -518,11 +516,9 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
         }
     }
 
-    // Anh rieng uu tien truoc, neu khong co thi dung anh theo gioi tinh
     private ImageIcon getCustomerAvatar(String imgName, String ma, boolean isGender, int size) {
         ImageIcon icon = null;
         if (imgName != null && !imgName.trim().isEmpty()) {
-            // SQL luu ten file, khong luu duong dan may ca nhan
             String fileName = new File(imgName).getName();
             File file = new File("src/img", fileName);
             if (file.isFile()) icon = new ImageIcon(file.getAbsolutePath());
@@ -588,7 +584,6 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
             txtCustomerPhone.setText(kh.getPhoneNumber());
             txtCustomerAddress.setText(kh.getAddress() == null ? "" : kh.getAddress());
             txtCustomerPoints.setText(String.valueOf(kh.getLoyaltyPoints()));
-            // Doc gioi tinh tu JTable va tick lai radio tuong ung
             String gioiTinh = modelTable.getValueAt(row, 5).toString();
             if (gioiTinh.equals("Nam")) {
                 radNam.setSelected(true);
