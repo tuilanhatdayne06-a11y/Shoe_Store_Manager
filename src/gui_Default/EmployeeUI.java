@@ -43,16 +43,35 @@ public class EmployeeUI extends JPanel implements ActionListener {
     public EmployeeUI() {
         setLayout(new BorderLayout(10, 15));
         setBackground(Color.WHITE);
-        setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
 
         JPanel pnlTop = new JPanel(new BorderLayout(0, 15));
         pnlTop.setBackground(Color.WHITE);
-
+        
+        JPanel pnlHeader = new JPanel();
+        pnlHeader.setBackground(new Color(234, 230, 250)); 
+        pnlHeader.setLayout(new BorderLayout());
+        pnlHeader.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+        
+        
         JLabel lblTitle = new JLabel("QUẢN LÝ NHÂN VIÊN", SwingConstants.CENTER);
         lblTitle.setFont(new Font("Arial", Font.BOLD, 24));
-        lblTitle.setForeground(primaryColor);
-        pnlTop.add(lblTitle, BorderLayout.NORTH);
-
+        lblTitle.setForeground(new Color(94, 53, 165));
+       
+        try {
+        ImageIcon icon = new ImageIcon(getClass().getResource("/img/UIEmployee.png")); 
+        Image scaleIcon = icon.getImage().getScaledInstance(50, 50, java.awt.Image.SCALE_SMOOTH);
+        lblTitle.setIcon(new ImageIcon(scaleIcon));
+        } catch (Exception e) {
+        	e.printStackTrace();
+        }
+        lblTitle.setHorizontalTextPosition(SwingConstants.RIGHT);
+		lblTitle.setVerticalTextPosition(SwingConstants.CENTER);
+		lblTitle.setHorizontalAlignment(SwingConstants.LEFT);
+		lblTitle.setVerticalAlignment(SwingConstants.CENTER);
+        pnlHeader.add(lblTitle);
+        pnlTop.add(pnlHeader, BorderLayout.NORTH);
+       
         JPanel pnlForm = new JPanel(new GridLayout(3, 4, 15, 15));
         pnlForm.setBackground(bgLight);
         TitledBorder formBorder = BorderFactory.createTitledBorder(
@@ -188,7 +207,15 @@ public class EmployeeUI extends JPanel implements ActionListener {
             modelNhanVien.addRow(row);
         }
     }
-
+    /**
+    * Tự động phát sinh mã nhân viên mới đảm bảo không bị trùng lặp.
+    * Phương thức này thực hiện quét toàn bộ dữ liệu mã nhân viên hiện có trên JTable (thông qua {@code modelNhanVien}), 
+    * trích xuất phần số từ các mã này (loại bỏ các ký tự chữ) và lưu vào danh sách. 
+    * Sau đó, thuật toán sẽ tìm kiếm số nguyên dương nhỏ nhất (bắt đầu từ 1) chưa từng xuất hiện trong danh sách. 
+    * Cách làm này giúp tự động lấp đầy các khoảng trống của những mã nhân viên đã bị xóa trước đó (nếu có),
+    * hoặc tạo ra số thứ tự tiếp theo một cách liền mạch.
+    * @return Chuỗi định danh mã nhân viên mới, bao gồm tiền tố "NV" kết hợp với phần số được định dạng 3 chữ số (Ví dụ: "NV001", "NV015").
+    */
     private String phatSinhMaNV() {
         ArrayList<Integer> danhSachSo = new ArrayList<>();
         for (int i = 0; i < modelNhanVien.getRowCount(); i++) {

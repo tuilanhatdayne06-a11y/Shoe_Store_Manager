@@ -149,6 +149,7 @@ public class GUI extends JFrame implements ActionListener {
         btnImport.addActionListener(this);
         btnPOS.addActionListener(this);
         btnReport.addActionListener(this);
+        phanQuyenMenu(false);
 
         pnlMenu.add(btnHome);
         pnlMenu.add(btnSupplier);
@@ -181,7 +182,18 @@ public class GUI extends JFrame implements ActionListener {
 
         add(pnlCenter, BorderLayout.CENTER);
     }
+    public void phanQuyenMenu(boolean isLogin) {
+       
+        btnEmployee.setEnabled(isLogin);
+        btnCustomer.setEnabled(isLogin);
+        btnImport.setEnabled(isLogin);
+        btnPOS.setEnabled(isLogin);
+        btnReport.setEnabled(isLogin);
+        btnProduct.setEnabled(isLogin);
+        btnSupplier.setEnabled(isLogin);
 
+        btnHome.setEnabled(true); 
+    }
     private JButton createMenuButton(String text, String iconFileName) {
         JButton btn = new JButton(text);
         btn.setFont(new Font("Arial", Font.BOLD, 13));
@@ -242,6 +254,8 @@ public class GUI extends JFrame implements ActionListener {
             new FrmLogin(nv -> {
                 String iconPath = nv.isGender() ? "/img/employee_male.png" : "/img/employee_female.png";
                 java.net.URL avatarUrl = getClass().getResource(iconPath);
+                utils.SessionManager.nhanVienDangNhap = nv;
+                phanQuyenMenu(true);
                 if (avatarUrl != null) {
                     btnAvatar.setIcon(new ImageIcon(new ImageIcon(avatarUrl).getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH)));
                 }
@@ -257,6 +271,7 @@ public class GUI extends JFrame implements ActionListener {
                                     + "Giới tính: " + gioiTinh;
                 
                 loginCardLayout.show(pnlRight, "DaDangNhap");
+                btnHome.doClick();
             }).setVisible(true);
         }
         else if (o == btnLogout) {

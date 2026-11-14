@@ -1,7 +1,5 @@
 package gui_Default;
 
-import dao.SupplierDAO;
-import entity.Supplier;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -14,6 +12,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
 import java.util.List;
+
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
@@ -28,6 +27,9 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingWorker;
 import javax.swing.table.DefaultTableModel;
+
+import dao.SupplierDAO;
+import entity.Supplier;
 import utils.ImageUtil;
 
 public class SupplierUI extends JPanel implements ActionListener, MouseListener {
@@ -89,6 +91,8 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
         txtPhoneNumber = new JTextField(25);
         txtEmail = new JTextField(25);
         txtSupplierId.setFont(FONT);
+        txtSupplierId.setEditable(false);
+        txtSupplierId.setBackground(Color.LIGHT_GRAY);
         txtSupplierName.setFont(FONT);
         txtAddress.setFont(FONT);
         txtPhoneNumber.setFont(FONT);
@@ -108,7 +112,7 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
         Box b6 = Box.createVerticalBox();
         editorPanel.add(b, BorderLayout.CENTER);
 
-        JLabel lblSupplierId = new JLabel("Mã nhà cung cấp *");
+        JLabel lblSupplierId = new JLabel("Mã nhà cung cấp (tự động)");
         lblSupplierId.setFont(FONT);
         b1.add(lblSupplierId);
         b1.add(txtSupplierId);
@@ -277,12 +281,10 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
         }.execute();
     }
 
-    // Tạo một nhóm gồm nhãn và ô nhập liệu.
-    // Kiểm tra dữ liệu bắt buộc, độ dài và định dạng email.
     private boolean validData() {
         String[] values = readFormValues();
-        if (values[0].isEmpty() || values[1].isEmpty()) {
-            showMessage("Vui lòng nhập mã và tên nhà cung cấp.");
+        if (values[1].isEmpty()) {
+            showMessage("Vui lòng nhập tên nhà cung cấp.");
             return false;
         }
 
@@ -305,7 +307,6 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
         return true;
     }
 
-    // Đọc nội dung các ô nhập và loại bỏ khoảng trắng thừa.
     private String[] readFormValues() {
         return new String[]{
                 txtSupplierId.getText().trim(),
@@ -317,13 +318,11 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
         };
     }
 
-    // Tạo đối tượng nhà cung cấp từ dữ liệu trên form.
     private Supplier readSupplierFromForm() {
         String[] values = readFormValues();
         return new Supplier(values[0], values[1], values[2], values[3], values[4], values[5]);
     }
 
-    // Nạp lại dữ liệu từ DAO lên bảng.
     private void updateTable(List<Supplier> suppliers) {
         supplierTableModel.setRowCount(0);
         for (Supplier supplier : suppliers) {
@@ -333,7 +332,6 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
         }
     }
 
-    // Cập nhật danh sách mã nhà cung cấp trong combobox tìm kiếm.
     private void updateSupplierComboBox(List<Supplier> suppliers) {
         Object selectedId = cboSupplierId.getSelectedItem();
         String[] supplierIds = new String[suppliers.size()];
@@ -360,7 +358,6 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
         updateSupplierComboBox(suppliers);
     }
 
-    // Xóa form và bỏ lựa chọn hiện tại trong bảng, combobox.
     private void clearForm() {
         txtSupplierId.setText("");
         txtSupplierName.setText("");
@@ -378,7 +375,6 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
         }
     }
 
-    // Hiển thị thông tin một nhà cung cấp lên các ô nhập.
     private void showSupplier(Supplier supplier) {
         image = null;
         String name = getLogoFileName(supplier.getLogo());
@@ -418,12 +414,10 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
         lblLogoPreview.setIcon(new ImageIcon(scaled));
     }
 
-    // Hiển thị thông báo cho người dùng.
     private void showMessage(String message) {
         JOptionPane.showMessageDialog(this, message);
     }
 
-    // Xử lý thao tác thêm, sửa, xóa, làm mới và tìm mã.
     @Override
     public void actionPerformed(ActionEvent event) {
         handleAction(event);
@@ -436,17 +430,13 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
                 return;
             }
             Supplier supplier = readSupplierFromForm();
-            if (supplierDao.findById(supplier.getSupplierId()) != null) {
-                showMessage("Mã nhà cung cấp đã tồn tại.");
-                return;
-            }
-
             if (!supplierDao.insertSupplier(supplier)) {
-                showMessage("Nhà cung cấp đã tồn tại.");
+                showMessage("Không thể thêm nhà cung cấp.");
                 return;
             }
             refreshSupplierData();
             clearForm();
+            showMessage("Thêm nhà cung cấp thành công. Mã: " + supplier.getSupplierId());
         } else if (source == btnClear) {
             clearForm();
         } else if (source == btnDelete) {
@@ -508,7 +498,6 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
         }
     }
 
-    // Chọn dòng tương ứng với mã nhà cung cấp trong bảng.
     private void selectSupplierInTable(String supplierId) {
         for (int row = 0; row < supplierTableModel.getRowCount(); row++) {
             if (supplierId.equals(supplierTableModel.getValueAt(row, 0).toString())) {
@@ -519,7 +508,6 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
         }
     }
 
-    // Nạp thông tin lên form khi người dùng nhấp vào một dòng trong bảng.
     @Override
     public void mouseClicked(MouseEvent event) {
         int row = supplierTable.getSelectedRow();

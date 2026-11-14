@@ -134,7 +134,7 @@ public class ProductDAO {
 		}
 	}
 	
-	public void updateProduct(String productName, String categoryId, String supplierId, double price)
+	public void updateProduct(int stock, String productName, String categoryId, String supplierId, double price)
 	{
 		String sql = """
 				update p set p.unitPrice= ?, p.productName = ? from
@@ -164,6 +164,7 @@ public class ProductDAO {
 	public void addProduct(Product product)
 	{
 		String sql = "INSERT INTO Product(productId, productName, unitPrice, categoryId, supplierId) VALUES(?, ?, ?, ?, ?)";
+
 		try {
 			Connection con = ConnectDB.getConnection();
 			PreparedStatement pst = con.prepareStatement(sql);
