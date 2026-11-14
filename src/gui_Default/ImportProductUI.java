@@ -10,6 +10,7 @@ import entity.PurchaseOrderDetail;
 import entity.Supplier;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.sql.SQLException;
@@ -20,7 +21,6 @@ import java.util.List;
 import java.util.Locale;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -33,6 +33,7 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.event.ListSelectionEvent;
 import javax.swing.table.DefaultTableModel;
 
 public class ImportProductUI extends JPanel {
@@ -42,16 +43,19 @@ public class ImportProductUI extends JPanel {
     private final JComboBox<ProductChoice> cboProduct = new JComboBox<>();
     private final JComboBox<EmployeeOption> cboEmployee = new JComboBox<>();
     private final JComboBox<String> cboSize = new JComboBox<>();
+    private final JTextField txtPurchaseOrderId = new JTextField(12);
     private final JTextField txtUnitPrice = new JTextField(12);
     private final JTextField txtQuantity = new JTextField(8);
     private final JLabel lblTotal = new JLabel("0 VNĐ");
     private final List<ImportProductDAO.ProductOption> productOptions = new ArrayList<>();
     private boolean loadingSuppliers;
     private boolean loadingProducts;
+    private JTable historyTable;
 
     private final DefaultTableModel modelHistory = new DefaultTableModel(
             new String[]{"Mã phiếu", "Nhà cung cấp", "Mẫu giày", "Size",
-                "Đơn giá nhập", "Số lượng", "Thành tiền", "Ngày nhập"}, 0) {
+                "Đơn giá nhập", "Số lượng", "Thành tiền", "Ngày nhập",
+                "Mã nhà cung cấp", "Mã nhân viên", "Mã chi tiết sản phẩm", "Đơn giá gốc"}, 0) {
         @Override
         public boolean isCellEditable(int row, int column) {
             return false;
@@ -61,9 +65,191 @@ public class ImportProductUI extends JPanel {
     public ImportProductUI() {
         setLayout(new BorderLayout());
         setBackground(new Color(253, 240, 255));
-        setBorder(BorderFactory.createEmptyBorder(14, 0, 12, 0));
 
-        add(createImportTab(), BorderLayout.CENTER);
+        JPanel titleBar = new JPanel(new BorderLayout());
+        titleBar.setBackground(new Color(253, 240, 255));
+        titleBar.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        JLabel title = new JLabel("NHẬP KHO", SwingConstants.CENTER);
+        title.setFont(new Font("Arial", Font.BOLD, 24));
+        title.setForeground(new Color(180, 60, 200));
+        titleBar.add(title, BorderLayout.CENTER);
+        add(titleBar, BorderLayout.NORTH);
+
+        JPanel mainPanel = new JPanel(new BorderLayout(0, 12));
+        mainPanel.setBackground(new Color(253, 240, 255));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(14, 22, 12, 20));
+        add(mainPanel, BorderLayout.CENTER);
+
+        JPanel editorPanel = new JPanel(new BorderLayout(0, 8));
+        editorPanel.setBackground(new Color(253, 240, 255));
+        editorPanel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(205, 205, 205)),
+                BorderFactory.createEmptyBorder(10, 14, 10, 14)));
+        mainPanel.add(editorPanel, BorderLayout.NORTH);
+
+        Dimension fieldSize = new Dimension(220, 28);
+        Dimension fieldMaximumSize = new Dimension(10000, 28);
+        cboSupplier.setPreferredSize(fieldSize);
+        cboSupplier.setMaximumSize(fieldMaximumSize);
+        cboProduct.setPreferredSize(fieldSize);
+        cboProduct.setMaximumSize(fieldMaximumSize);
+        cboEmployee.setPreferredSize(fieldSize);
+        cboEmployee.setMaximumSize(fieldMaximumSize);
+        cboSize.setPreferredSize(fieldSize);
+        cboSize.setMaximumSize(fieldMaximumSize);
+        txtPurchaseOrderId.setEditable(false);
+        txtPurchaseOrderId.setBackground(Color.LIGHT_GRAY);
+        txtPurchaseOrderId.setPreferredSize(fieldSize);
+        txtPurchaseOrderId.setMaximumSize(fieldMaximumSize);
+        txtUnitPrice.setPreferredSize(fieldSize);
+        txtUnitPrice.setMaximumSize(fieldMaximumSize);
+        txtQuantity.setPreferredSize(fieldSize);
+        txtQuantity.setMaximumSize(fieldMaximumSize);
+
+        JLabel lblPurchaseOrderId = new JLabel("Mã phiếu nhập (tự động)");
+        JLabel lblSupplier = new JLabel("Nhà cung cấp");
+        JLabel lblProduct = new JLabel("Mẫu giày");
+        JLabel lblSize = new JLabel("Size");
+        JLabel lblEmployee = new JLabel("Nhân viên phụ trách");
+        JLabel lblUnitPrice = new JLabel("Đơn giá nhập (VNĐ)");
+        JLabel lblQuantity = new JLabel("Số lượng");
+        JLabel lblTotalTitle = new JLabel("Tổng tiền lô hàng");
+        lblPurchaseOrderId.setFont(new Font("Arial", Font.PLAIN, 13));
+        lblSupplier.setFont(new Font("Arial", Font.PLAIN, 13));
+        lblProduct.setFont(new Font("Arial", Font.PLAIN, 13));
+        lblSize.setFont(new Font("Arial", Font.PLAIN, 13));
+        lblEmployee.setFont(new Font("Arial", Font.PLAIN, 13));
+        lblUnitPrice.setFont(new Font("Arial", Font.PLAIN, 13));
+        lblQuantity.setFont(new Font("Arial", Font.PLAIN, 13));
+        lblPurchaseOrderId.setAlignmentX(LEFT_ALIGNMENT);
+        lblSupplier.setAlignmentX(LEFT_ALIGNMENT);
+        lblProduct.setAlignmentX(LEFT_ALIGNMENT);
+        lblSize.setAlignmentX(LEFT_ALIGNMENT);
+        lblEmployee.setAlignmentX(LEFT_ALIGNMENT);
+        lblUnitPrice.setAlignmentX(LEFT_ALIGNMENT);
+        lblQuantity.setAlignmentX(LEFT_ALIGNMENT);
+        txtPurchaseOrderId.setFont(new Font("Arial", Font.PLAIN, 13));
+        txtPurchaseOrderId.setAlignmentX(LEFT_ALIGNMENT);
+        txtUnitPrice.setFont(new Font("Arial", Font.PLAIN, 13));
+        txtUnitPrice.setAlignmentX(LEFT_ALIGNMENT);
+        txtQuantity.setFont(new Font("Arial", Font.PLAIN, 13));
+        txtQuantity.setAlignmentX(LEFT_ALIGNMENT);
+        cboSupplier.setFont(new Font("Arial", Font.PLAIN, 13));
+        cboSupplier.setAlignmentX(LEFT_ALIGNMENT);
+        cboProduct.setFont(new Font("Arial", Font.PLAIN, 13));
+        cboProduct.setAlignmentX(LEFT_ALIGNMENT);
+        cboEmployee.setFont(new Font("Arial", Font.PLAIN, 13));
+        cboEmployee.setAlignmentX(LEFT_ALIGNMENT);
+        cboSize.setFont(new Font("Arial", Font.PLAIN, 13));
+        cboSize.setAlignmentX(LEFT_ALIGNMENT);
+
+        Box idField = Box.createVerticalBox();
+        idField.add(lblPurchaseOrderId);
+        idField.add(txtPurchaseOrderId);
+        Box supplierField = Box.createVerticalBox();
+        supplierField.add(lblSupplier);
+        supplierField.add(cboSupplier);
+        Box productField = Box.createVerticalBox();
+        productField.add(lblProduct);
+        productField.add(cboProduct);
+        Box sizeField = Box.createVerticalBox();
+        sizeField.add(lblSize);
+        sizeField.add(cboSize);
+        Box employeeField = Box.createVerticalBox();
+        employeeField.add(lblEmployee);
+        employeeField.add(cboEmployee);
+        Box unitPriceField = Box.createVerticalBox();
+        unitPriceField.add(lblUnitPrice);
+        unitPriceField.add(txtUnitPrice);
+        Box quantityField = Box.createVerticalBox();
+        quantityField.add(lblQuantity);
+        quantityField.add(txtQuantity);
+        Box totalField = Box.createVerticalBox();
+        lblTotalTitle.setFont(new Font("Arial", Font.PLAIN, 13));
+        lblTotalTitle.setAlignmentX(LEFT_ALIGNMENT);
+        lblTotal.setFont(new Font("Arial", Font.BOLD, 18));
+        lblTotal.setAlignmentX(LEFT_ALIGNMENT);
+        totalField.add(lblTotalTitle);
+        totalField.add(lblTotal);
+
+        Dimension columnSize = new Dimension(220, 49);
+        Dimension columnMaximumSize = new Dimension(10000, 49);
+        idField.setMinimumSize(columnSize);
+        idField.setPreferredSize(columnSize);
+        idField.setMaximumSize(columnMaximumSize);
+        supplierField.setMinimumSize(columnSize);
+        supplierField.setPreferredSize(columnSize);
+        supplierField.setMaximumSize(columnMaximumSize);
+        productField.setMinimumSize(columnSize);
+        productField.setPreferredSize(columnSize);
+        productField.setMaximumSize(columnMaximumSize);
+        sizeField.setMinimumSize(columnSize);
+        sizeField.setPreferredSize(columnSize);
+        sizeField.setMaximumSize(columnMaximumSize);
+        employeeField.setMinimumSize(columnSize);
+        employeeField.setPreferredSize(columnSize);
+        employeeField.setMaximumSize(columnMaximumSize);
+        unitPriceField.setMinimumSize(columnSize);
+        unitPriceField.setPreferredSize(columnSize);
+        unitPriceField.setMaximumSize(columnMaximumSize);
+        quantityField.setMinimumSize(columnSize);
+        quantityField.setPreferredSize(columnSize);
+        quantityField.setMaximumSize(columnMaximumSize);
+        totalField.setMinimumSize(columnSize);
+        totalField.setPreferredSize(columnSize);
+        totalField.setMaximumSize(columnMaximumSize);
+
+        Box fieldsTop = Box.createHorizontalBox();
+        fieldsTop.add(idField);
+        fieldsTop.add(Box.createHorizontalStrut(12));
+        fieldsTop.add(supplierField);
+        fieldsTop.add(Box.createHorizontalStrut(12));
+        fieldsTop.add(productField);
+        fieldsTop.add(Box.createHorizontalStrut(12));
+        fieldsTop.add(sizeField);
+
+        Box fieldsBottom = Box.createHorizontalBox();
+        fieldsBottom.add(employeeField);
+        fieldsBottom.add(Box.createHorizontalStrut(12));
+        fieldsBottom.add(unitPriceField);
+        fieldsBottom.add(Box.createHorizontalStrut(12));
+        fieldsBottom.add(quantityField);
+        fieldsBottom.add(Box.createHorizontalStrut(12));
+        fieldsBottom.add(totalField);
+
+        Box fields = Box.createVerticalBox();
+        fields.add(fieldsTop);
+        fields.add(Box.createVerticalStrut(10));
+        fields.add(fieldsBottom);
+        editorPanel.add(fields, BorderLayout.CENTER);
+
+        JButton btnImport = new JButton("Nhập kho");
+        JButton btnReset = new JButton("Làm mới");
+        JPanel actionPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        actionPanel.setOpaque(false);
+        btnImport.setFont(new Font("Arial", Font.PLAIN, 13));
+        btnReset.setFont(new Font("Arial", Font.PLAIN, 13));
+        actionPanel.add(btnImport);
+        actionPanel.add(btnReset);
+        btnImport.addActionListener(event -> addImport());
+        btnReset.addActionListener(event -> resetForm());
+
+        editorPanel.add(actionPanel, BorderLayout.SOUTH);
+
+        JPanel tablePanel = new JPanel(new BorderLayout());
+        tablePanel.setBackground(Color.WHITE);
+        tablePanel.setBorder(BorderFactory.createTitledBorder("Lịch sử phiếu nhập"));
+        historyTable = new JTable(modelHistory);
+        historyTable.setRowHeight(25);
+        historyTable.setFont(new Font("Arial", Font.PLAIN, 12));
+        historyTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 12));
+        historyTable.setFillsViewportHeight(true);
+        historyTable.getSelectionModel().addListSelectionListener(this::loadSelectedImport);
+        for (int column = modelHistory.getColumnCount() - 1; column >= 8; column--) {
+            historyTable.removeColumn(historyTable.getColumnModel().getColumn(column));
+        }
+        tablePanel.add(new JScrollPane(historyTable), BorderLayout.CENTER);
+        mainPanel.add(tablePanel, BorderLayout.CENTER);
 
         cboSupplier.addActionListener(event -> {
             if (!loadingSuppliers) {
@@ -78,118 +264,8 @@ public class ImportProductUI extends JPanel {
         addPriceCalculationListeners();
         loadSuppliers();
         loadEmployees();
+        resetForm();
         refreshHistory();
-    }
-
-    private JPanel createImportTab() {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBackground(new Color(253, 240, 255));
-        panel.setBorder(BorderFactory.createEmptyBorder(12, 0, 0, 0));
-
-        JPanel sectionHeader = new JPanel(new BorderLayout());
-        sectionHeader.setBackground(new Color(253, 240, 255));
-        sectionHeader.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
-        JLabel sectionTitle = new JLabel("NHẬP KHO", SwingConstants.CENTER);
-        sectionTitle.setFont(new Font("Arial", Font.BOLD, 24));
-        sectionTitle.setForeground(new Color(180, 60, 200));
-        sectionHeader.add(sectionTitle, BorderLayout.CENTER);
-
-        cboSupplier.setPreferredSize(new java.awt.Dimension(190, 28));
-        cboProduct.setPreferredSize(new java.awt.Dimension(220, 28));
-        cboEmployee.setPreferredSize(new java.awt.Dimension(190, 28));
-        cboSize.setPreferredSize(new java.awt.Dimension(90, 28));
-        txtUnitPrice.setPreferredSize(new java.awt.Dimension(150, 28));
-        txtQuantity.setPreferredSize(new java.awt.Dimension(100, 28));
-
-        Box fieldsTop = Box.createHorizontalBox();
-        fieldsTop.add(createField("Nhà cung cấp", cboSupplier));
-        fieldsTop.add(Box.createHorizontalStrut(12));
-        fieldsTop.add(createField("Mẫu giày", cboProduct));
-        fieldsTop.add(Box.createHorizontalStrut(12));
-        fieldsTop.add(createField("Size", cboSize));
-
-        Box fieldsBottom = Box.createHorizontalBox();
-        fieldsBottom.add(createField("Nhân viên phụ trách", cboEmployee));
-        fieldsBottom.add(Box.createHorizontalStrut(12));
-        fieldsBottom.add(createField("Đơn giá nhập (VNĐ)", txtUnitPrice));
-        fieldsBottom.add(Box.createHorizontalStrut(12));
-        fieldsBottom.add(createField("Số lượng", txtQuantity));
-
-        JPanel form = new JPanel();
-        form.setLayout(new BoxLayout(form, BoxLayout.Y_AXIS));
-        form.setBackground(new Color(253, 240, 255));
-        form.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(205, 205, 205)),
-                BorderFactory.createEmptyBorder(10, 14, 10, 14)));
-        form.add(fieldsTop);
-        form.add(Box.createVerticalStrut(10));
-        form.add(fieldsBottom);
-
-        JButton btnImport = new JButton("Nhập kho");
-        JButton btnReset = new JButton("Làm mới");
-        btnImport.addActionListener(event -> addImport());
-        btnReset.addActionListener(event -> resetForm());
-
-        JPanel footer = new JPanel(new BorderLayout());
-        footer.setBackground(new Color(253, 240, 255));
-        JPanel totalPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
-        totalPanel.setOpaque(false);
-        JLabel totalLabel = new JLabel("TỔNG TIỀN LÔ HÀNG:");
-        totalLabel.setFont(new Font("Arial", Font.BOLD, 16));
-        lblTotal.setFont(new Font("Arial", Font.BOLD, 18));
-        totalPanel.add(totalLabel);
-        totalPanel.add(lblTotal);
-
-        Box actions = Box.createHorizontalBox();
-        actions.add(Box.createHorizontalGlue());
-        actions.add(btnImport);
-        actions.add(Box.createHorizontalStrut(10));
-        actions.add(btnReset);
-        footer.add(totalPanel, BorderLayout.WEST);
-        footer.add(actions, BorderLayout.EAST);
-
-        JPanel editor = new JPanel(new BorderLayout(0, 10));
-        editor.setBackground(new Color(253, 240, 255));
-        editor.add(form, BorderLayout.CENTER);
-        editor.add(footer, BorderLayout.SOUTH);
-
-        JPanel content = new JPanel(new BorderLayout(0, 10));
-        content.setBackground(new Color(253, 240, 255));
-        content.setBorder(BorderFactory.createEmptyBorder(8, 22, 0, 20));
-        content.add(editor, BorderLayout.NORTH);
-        content.add(createHistoryTablePanel(), BorderLayout.CENTER);
-
-        panel.add(sectionHeader, BorderLayout.NORTH);
-        panel.add(content, BorderLayout.CENTER);
-        return panel;
-    }
-
-    private JPanel createField(String labelText, java.awt.Component input) {
-        JPanel field = new JPanel(new BorderLayout(0, 4));
-        field.setOpaque(false);
-        field.setPreferredSize(new java.awt.Dimension(100, 60));
-        field.setMinimumSize(new java.awt.Dimension(0, 60));
-        field.setMaximumSize(new java.awt.Dimension(Integer.MAX_VALUE, 60));
-        JLabel label = new JLabel(labelText);
-        label.setFont(new Font("Arial", Font.PLAIN, 13));
-        input.setPreferredSize(new java.awt.Dimension(input.getPreferredSize().width, 34));
-        field.add(label, BorderLayout.NORTH);
-        field.add(input, BorderLayout.CENTER);
-        return field;
-    }
-
-    private JPanel createHistoryTablePanel() {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBackground(Color.WHITE);
-        panel.setBorder(BorderFactory.createTitledBorder("Lịch sử phiếu nhập"));
-
-        JTable table = new JTable(modelHistory);
-        table.setRowHeight(25);
-        table.setFont(new Font("Arial", Font.PLAIN, 12));
-        table.getTableHeader().setFont(new Font("Arial", Font.BOLD, 12));
-        table.setFillsViewportHeight(true);
-        panel.add(new JScrollPane(table), BorderLayout.CENTER);
-        return panel;
     }
 
     private void loadSuppliers() {
@@ -271,11 +347,73 @@ public class ImportProductUI extends JPanel {
                         currency.format(row[4]),
                         row[5],
                         currency.format(row[6]),
-                        row[7]
+                        row[7],
+                        row[8],
+                        row[9],
+                        row[10],
+                        row[11]
                 });
             }
         } catch (SQLException e) {
             showError("Không thể tải lịch sử phiếu nhập.", e);
+        }
+    }
+
+    private void loadSelectedImport(ListSelectionEvent event) {
+        if (event.getValueIsAdjusting()) {
+            return;
+        }
+        int selectedRow = historyTable.getSelectedRow();
+        if (selectedRow < 0) {
+            return;
+        }
+
+        int modelRow = historyTable.convertRowIndexToModel(selectedRow);
+        String supplierId = (String) modelHistory.getValueAt(modelRow, 8);
+        String employeeId = (String) modelHistory.getValueAt(modelRow, 9);
+        String productDetailId = (String) modelHistory.getValueAt(modelRow, 10);
+        String importPrice = String.valueOf(modelHistory.getValueAt(modelRow, 11));
+        int quantity = (Integer) modelHistory.getValueAt(modelRow, 5);
+
+        txtPurchaseOrderId.setText((String) modelHistory.getValueAt(modelRow, 0));
+        selectSupplier(supplierId);
+        selectEmployee(employeeId);
+        selectProduct(productDetailId);
+        txtUnitPrice.setText(importPrice);
+        txtQuantity.setText(Integer.toString(quantity));
+    }
+
+    private void selectSupplier(String supplierId) {
+        for (int i = 0; i < cboSupplier.getItemCount(); i++) {
+            if (supplierId.equals(cboSupplier.getItemAt(i).supplierId)) {
+                cboSupplier.setSelectedIndex(i);
+                return;
+            }
+        }
+    }
+
+    private void selectEmployee(String employeeId) {
+        for (int i = 0; i < cboEmployee.getItemCount(); i++) {
+            if (employeeId != null
+                    && employeeId.equals(cboEmployee.getItemAt(i).employeeId)) {
+                cboEmployee.setSelectedIndex(i);
+                return;
+            }
+        }
+    }
+
+    private void selectProduct(String productDetailId) {
+        for (ImportProductDAO.ProductOption option : productOptions) {
+            if (!productDetailId.equals(option.getProductDetailId())) {
+                continue;
+            }
+            for (int i = 0; i < cboProduct.getItemCount(); i++) {
+                if (cboProduct.getItemAt(i).matches(option)) {
+                    cboProduct.setSelectedIndex(i);
+                    cboSize.setSelectedItem(option.getSize());
+                    return;
+                }
+            }
         }
     }
 
@@ -329,6 +467,12 @@ public class ImportProductUI extends JPanel {
     }
 
     private void resetForm() {
+        try {
+            txtPurchaseOrderId.setText(purchaseOrderDAO.getNextPurchaseOrderId());
+        } catch (SQLException e) {
+            txtPurchaseOrderId.setText("");
+            showError("Không thể tạo mã phiếu nhập tiếp theo.", e);
+        }
         txtUnitPrice.setText("");
         txtQuantity.setText("");
         cboSize.setSelectedIndex(cboSize.getItemCount() > 0 ? 0 : -1);

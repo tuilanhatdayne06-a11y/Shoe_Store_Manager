@@ -5,6 +5,7 @@ import entity.Supplier;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,27 +41,19 @@ public class SupplierDAO {
 		return null;
 	}
 	
-    public List<Supplier> getAll() {
+    public List<Supplier> getAll() throws SQLException {
         List<Supplier> suppliers = new ArrayList<>();
         String sql = "SELECT * FROM Supplier";
         Connection conn = ConnectDB.getConnection();
+        if (conn == null) {
+            throw new SQLException("Không thể kết nối cơ sở dữ liệu.");
+        }
 
-        try (
-            PreparedStatement pst = conn.prepareStatement(sql);
-            ResultSet rs = pst.executeQuery()
-        ) {
+        try (PreparedStatement pst = conn.prepareStatement(sql);
+             ResultSet rs = pst.executeQuery()) {
             while (rs.next()) {
-                Supplier sp = new Supplier();
-                sp.setSupplierId(rs.getString("supplierId"));
-                sp.setSupplierName(rs.getString("supplierName"));
-                sp.setAddress(rs.getString("address"));
-                sp.setPhoneNumber(rs.getString("phoneNumber"));
-                sp.setEmail(rs.getString("email"));
-                sp.setLogo(rs.getString("logo"));
-                suppliers.add(sp);
+                suppliers.add(readSupplier(rs));
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
         return suppliers;
     }
@@ -100,6 +93,24 @@ public class SupplierDAO {
         }
 
         return null;
+    }
+
+    public String getNextSupplierId() throws SQLException {
+        String sql = "SELECT currentValue + 1 FROM IDCounter WHERE prefix = ?";
+        Connection conn = ConnectDB.getConnection();
+        if (conn == null) {
+            throw new SQLException("Không thể kết nối cơ sở dữ liệu.");
+        }
+
+        try (PreparedStatement pst = conn.prepareStatement(sql)) {
+            pst.setString(1, "NCC");
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    return "NCC" + String.format("%03d", rs.getInt(1));
+                }
+            }
+        }
+        throw new SQLException("Không tìm thấy bộ đếm mã nhà cung cấp NCC.");
     }
 
 
@@ -183,20 +194,15 @@ public class SupplierDAO {
         }
     }
 
-    private Supplier readSupplier(ResultSet rs) {
-        try {
-            return new Supplier(
+    private Supplier readSupplier(ResultSet rs) throws SQLException {
+        return new Supplier(
                 rs.getString("supplierId"),
                 rs.getString("supplierName"),
                 rs.getString("address"),
                 rs.getString("phoneNumber"),
                 rs.getString("email"),
                 rs.getString("logo")
-            );
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+        );
     }
 
     private void bindSupplier(PreparedStatement pst, Supplier supplier) throws Exception {

@@ -10,8 +10,8 @@ public class PurchaseOrderDetailDAO {
         String sql = "INSERT INTO PurchaseOrderDetail (purchaseOrderId, productDetailId, quantity, importPrice) "
                 + "VALUES (?, ?, ?, ?)";
         try (PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setString(1, detail.getPurchaseOrderId().getPurchaseOrderId());
-            pst.setString(2, detail.getProductDetailId().getProductDetailId());
+            pst.setString(1, detail.getPurchaseOrder().getPurchaseOrderId());
+            pst.setString(2, detail.getProductDetail().getProductDetailId());
             pst.setInt(3, detail.getQuantity());
             pst.setDouble(4, detail.getImportPrice());
             return pst.executeUpdate() == 1;

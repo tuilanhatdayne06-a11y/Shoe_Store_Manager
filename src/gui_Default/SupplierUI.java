@@ -259,7 +259,7 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
 
         new SwingWorker<List<Supplier>, Void>() {
             @Override
-            protected List<Supplier> doInBackground() {
+            protected List<Supplier> doInBackground() throws Exception {
                 return supplierDao.getAll();
             }
 
@@ -353,13 +353,23 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
     }
 
     private void refreshSupplierData() {
-        List<Supplier> suppliers = supplierDao.getAll();
-        updateTable(suppliers);
-        updateSupplierComboBox(suppliers);
+        try {
+            List<Supplier> suppliers = supplierDao.getAll();
+            updateTable(suppliers);
+            updateSupplierComboBox(suppliers);
+        } catch (java.sql.SQLException e) {
+            e.printStackTrace();
+            showMessage("Không thể tải danh sách nhà cung cấp: " + e.getMessage());
+        }
     }
 
     private void clearForm() {
-        txtSupplierId.setText("");
+        try {
+            txtSupplierId.setText(supplierDao.getNextSupplierId());
+        } catch (java.sql.SQLException e) {
+            txtSupplierId.setText("");
+            showMessage("Không thể tạo mã nhà cung cấp tiếp theo: " + e.getMessage());
+        }
         txtSupplierName.setText("");
         txtAddress.setText("");
         txtPhoneNumber.setText("");

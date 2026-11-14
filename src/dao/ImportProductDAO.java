@@ -48,7 +48,8 @@ public class ImportProductDAO {
     public List<Object[]> getPurchaseHistory() throws SQLException {
         List<Object[]> history = new ArrayList<>();
         String sql = "SELECT po.purchaseOrderId, s.supplierName, p.productName, "
-                + "pd.size, d.importPrice, d.quantity, po.orderDate "
+                + "pd.size, d.importPrice, d.quantity, po.orderDate, "
+                + "s.supplierId, po.employeeId, pd.productDetailId "
                 + "FROM PurchaseOrder po "
                 + "JOIN Supplier s ON s.supplierId = po.supplierId "
                 + "JOIN PurchaseOrderDetail d ON d.purchaseOrderId = po.purchaseOrderId "
@@ -65,7 +66,9 @@ public class ImportProductDAO {
                 history.add(new Object[]{rs.getString("purchaseOrderId"),
                     rs.getString("supplierName"), rs.getString("productName"),
                     rs.getString("size"), price, quantity, price * quantity,
-                    rs.getTimestamp("orderDate")});
+                    rs.getTimestamp("orderDate"), rs.getString("supplierId"),
+                    rs.getString("employeeId"), rs.getString("productDetailId"),
+                    rs.getBigDecimal("importPrice")});
             }
         }
         return history;

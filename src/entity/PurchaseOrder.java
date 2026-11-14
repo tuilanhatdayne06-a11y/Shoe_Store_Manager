@@ -6,8 +6,8 @@ import java.sql.Timestamp;
 public class PurchaseOrder {
     private String purchaseOrderId;
     private Timestamp orderDate;
-    private Employee employeeId;
-    private Supplier supplierId;
+    private Employee employee;
+    private Supplier supplier;
     private String status;
 
     public PurchaseOrder() {
@@ -17,12 +17,12 @@ public class PurchaseOrder {
         this.purchaseOrderId = purchaseOrderId;
     }
 
-    public PurchaseOrder(String purchaseOrderId, Timestamp orderDate, Employee employeeId, Supplier supplierId,
+    public PurchaseOrder(String purchaseOrderId, Timestamp orderDate, Employee employee, Supplier supplier,
             String status) {
         this.purchaseOrderId = purchaseOrderId;
         this.orderDate = orderDate;
-        this.employeeId = employeeId;
-        this.supplierId = supplierId;
+        this.employee = employee;
+        this.supplier = supplier;
         this.status = status;
     }
 
@@ -42,20 +42,20 @@ public class PurchaseOrder {
         this.orderDate = orderDate;
     }
 
-    public Employee getEmployeeId() {
-        return employeeId;
+    public Employee getEmployee() {
+        return employee;
     }
 
-    public void setEmployeeId(Employee employeeId) {
-        this.employeeId = employeeId;
+    public void setEmployee(Employee employee) {
+        this.employee = employee;
     }
 
-    public Supplier getSupplierId() {
-        return supplierId;
+    public Supplier getSupplier() {
+        return supplier;
     }
 
-    public void setSupplierId(Supplier supplierId) {
-        this.supplierId = supplierId;
+    public void setSupplier(Supplier supplier) {
+        this.supplier = supplier;
     }
 
     public String getStatus() {
@@ -68,8 +68,8 @@ public class PurchaseOrder {
 
     @Override
     public String toString() {
-        return "PurchaseOrder [purchaseOrderId=" + purchaseOrderId + ", orderDate=" + orderDate + ", employeeId="
-                + employeeId + ", supplierId=" + supplierId + ", status=" + status + "]";
+        return "PurchaseOrder [purchaseOrderId=" + purchaseOrderId + ", orderDate=" + orderDate + ", employee="
+                + employee + ", supplier=" + supplier + ", status=" + status + "]";
     }
 
     
