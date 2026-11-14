@@ -2,6 +2,7 @@ package gui_Default;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -10,6 +11,8 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Insets;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -18,6 +21,7 @@ import java.util.Locale;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -29,6 +33,8 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.border.Border;
 import javax.swing.table.DefaultTableModel;
 
 import dao.CustomerDAO;
@@ -109,9 +115,204 @@ public class SaleProductUI extends JPanel{
 		});
 		
 		radUsePoint.addActionListener(e -> {
-			txtIsUsePoint.setText(radUsePoint.isSelected() ? txtPoint.getText() : "");
+			if(modelTableCart.getRowCount() > 0)
+			{
+				if(radUsePoint.isSelected())
+					calculateDiscountPrice();
+				else
+				{
+					double totalAmount = 0.0;
+					try {
+						totalAmount = nf.parse(txtAmount.getText()).doubleValue();
+					} catch (Exception ee) {
+						return;
+					}
+					txtIsUsePoint.setText("0");
+					txtDiscount.setText("");
+					txtPaid.setText(nf.format(totalAmount));
+				}
+			}
+			else
+			{
+				JOptionPane.showMessageDialog(this,"Hiện không có sản phẩm nào để dùng điểm", "Lỗi dùng điểm tích lũy", JOptionPane.PLAIN_MESSAGE);
+				radUsePoint.setSelected(false);
+			}
 		});
+
+		btnPayment.addActionListener(e -> {
+			// if(validDataPayment())
+			// {
+			// 	String invoiceId = appUtils.autoGenerateId("HD");
+			// 	double totalAmount = 0.0;
+
+			// 	try {
+			// 		totalAmount = nf.parse(txtAmount.getText()).doubleValue();
+			// 	} catch (ParseException e1) {}
+
+			// 	int loyaltyPoint = Integer.parseInt(txtIsUsePoint.getText());
+			// 	double discountPrice = totalAmount - (double)loyaltyPoint * 10000;
+			// 	double paidPrice = discountPrice;
+			// 	double takenMoney = Double.parseDouble(txtTake.getText());
+			// 	double change = totalAmount - takenMoney;
+			// }
+			printInvoice();
+		});
+	}
+
+	private void printInvoice()
+	{
+		JDialog diaInvoice = new JDialog();
+		diaInvoice.setSize(500, 400);
+		diaInvoice.setLocationRelativeTo(null);
+
+		JPanel pnlInvoice = new JPanel(new BorderLayout());
+		JLabel lblHeader = new JLabel("HÓA ĐƠN BÁN HÀNG", SwingConstants.CENTER);
+		lblHeader.setFont(new Font(lblHeader.getFont().getName(), Font.BOLD, 15));
 		
+
+		pnlInvoice.add(lblHeader, BorderLayout.NORTH);
+		
+		JPanel pnlBody = new JPanel(new GridLayout(2, 1, 0, 0));
+		pnlBody.setBorder(BorderFactory.createEmptyBorder(30, 0, 0, 0));
+
+		JPanel pnlTrade = new JPanel(new BorderLayout());
+		JLabel lblTitleTrade = new JLabel("THÔNG TIN GIAO DỊCH");
+		lblTitleTrade.setFont(new Font(lblTitleTrade.getFont().getName(), Font.BOLD, 13));
+
+		JPanel pnlInfoTrade = new JPanel();
+		pnlInfoTrade.setLayout(new BoxLayout(pnlInfoTrade, BoxLayout.Y_AXIS));
+
+		JPanel pnlDate = new JPanel(new BorderLayout());
+		JLabel lblCreateDate = new JLabel("Ngày lập: ");
+		JLabel lblDate = new JLabel("14/11/2026" + " " + "18:20:58");		
+
+		pnlDate.setPreferredSize(new Dimension(300, 20));
+		pnlDate.add(lblCreateDate, BorderLayout.WEST);
+		pnlDate.add(lblDate, BorderLayout.EAST);
+
+		pnlInfoTrade.add(pnlDate);
+
+		JPanel pnlEmployee = new JPanel(new BorderLayout());
+		
+		JLabel lblNameEmployeeL = new JLabel("Tên nhân viên");
+		JLabel lblNameEmployeeR = new JLabel("Nguyễn Văn A");
+		pnlEmployee.setPreferredSize(new Dimension(300, 20));
+		pnlEmployee.add(lblNameEmployeeL, BorderLayout.WEST);
+		pnlEmployee.add(lblNameEmployeeR, BorderLayout.EAST);
+
+		pnlInfoTrade.add(pnlEmployee);
+
+		JPanel pnlCustomer = new JPanel(new BorderLayout());
+		
+		JLabel lblNameCustomerL = new JLabel("Tên khách hàng");
+		JLabel lblNameCustomerR = new JLabel("Nguyễn Văn A");
+		pnlCustomer.setPreferredSize(new Dimension(300, 20));
+		pnlCustomer.add(lblNameCustomerL, BorderLayout.WEST);
+		pnlCustomer.add(lblNameCustomerR, BorderLayout.EAST);
+
+		pnlInfoTrade.add(pnlCustomer);
+
+		pnlTrade.add(lblTitleTrade, BorderLayout.NORTH);
+		pnlTrade.add(pnlInfoTrade, BorderLayout.CENTER);
+
+		pnlBody.add(pnlTrade);
+
+		JPanel pnlCheckout = new JPanel(new BorderLayout());
+		pnlCheckout.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
+
+		JLabel lblTitleCheckout = new JLabel("CHI TIẾT THANH TOÁN");
+		lblTitleCheckout.setFont(new Font(lblTitleCheckout.getFont().getName(), Font.BOLD, 13));
+
+		JPanel pnlDetailCheckout = new JPanel();
+		pnlDetailCheckout.setLayout(new BoxLayout(pnlDetailCheckout, BoxLayout.Y_AXIS));
+
+		JPanel pnlAmount = new JPanel(new BorderLayout());
+		
+		JLabel lblAmountLeft = new JLabel("Tên khách hàng");
+		JLabel lblAmountRight = new JLabel("Nguyễn Văn A");
+		pnlAmount.setPreferredSize(new Dimension(300, 20));
+		pnlAmount.add(lblAmountLeft, BorderLayout.WEST);
+		pnlAmount.add(lblAmountRight, BorderLayout.EAST);
+
+		pnlDetailCheckout.add(pnlAmount);
+
+		JPanel pnlDiscount = new JPanel(new BorderLayout());
+		
+		JLabel lblDiscountLeft = new JLabel("Tên khách hàng");
+		JLabel lblDiscountRight = new JLabel("Nguyễn Văn A");
+		pnlDiscount.setPreferredSize(new Dimension(300, 20));
+		pnlDiscount.add(lblDiscountLeft, BorderLayout.WEST);
+		pnlDiscount.add(lblDiscountRight, BorderLayout.EAST);
+
+		pnlDetailCheckout.add(pnlDiscount);
+
+		pnlCheckout.add(lblTitleCheckout, BorderLayout.NORTH);
+		pnlCheckout.add(pnlDetailCheckout, BorderLayout.CENTER);
+
+		pnlBody.add(pnlCheckout);
+
+		pnlInvoice.add(pnlBody, BorderLayout.WEST);
+		
+		diaInvoice.add(pnlInvoice);
+
+		diaInvoice.setVisible(true);
+	}
+
+	private void calculateDiscountPrice()
+	{
+		double totalAmount = 0.0;
+		try {
+			totalAmount = nf.parse(txtAmount.getText()).doubleValue();
+		} catch (Exception e) {
+			return;
+		}
+		double discountPrice = 0.2 * totalAmount;
+		double paidPrice = totalAmount - discountPrice;
+		int loyaltyPoint = (int)(discountPrice / 10000);
+		if(loyaltyPoint > Integer.parseInt(txtPoint.getText()))
+		{
+			int maxLoyalty = Integer.parseInt(txtPoint.getText());
+			double newDiscount = totalAmount - (double)(maxLoyalty * 10000);
+			txtIsUsePoint.setText(Integer.toString(maxLoyalty));
+			txtDiscount.setText(nf.format((double)(maxLoyalty * 10000)));
+			txtPaid.setText(nf.format(newDiscount));
+		}
+		else
+		{
+			txtIsUsePoint.setText(Integer.toString(loyaltyPoint));
+			txtDiscount.setText(nf.format(discountPrice));
+			txtPaid.setText(nf.format(paidPrice));
+		}
+		
+	}
+
+	private boolean validDataPayment()
+	{
+		if(radUsePoint.isSelected() && txtIsUsePoint.getText().isBlank())
+		{
+			JOptionPane.showMessageDialog(this, "Chưa nhập điểm tích lũy cần dùng");
+			txtIsUsePoint.requestFocus();
+			return false;
+		}
+
+		if(txtTake.getText().isBlank())
+		{
+			JOptionPane.showMessageDialog(this, "Chưa nhập số tiền khách đưa");
+			txtTake.requestFocus();
+			return false;
+		}
+
+		try {
+			int takenMoney = Integer.parseInt(txtTake.getText());
+			if(takenMoney < Integer.parseInt(txtDiscount.getText()))
+				JOptionPane.showMessageDialog(this, "Không đủ tiền để giao dịch");
+
+		} catch (NumberFormatException e) {
+			JOptionPane.showMessageDialog(this, "Số tiền khách đưa phải là số");
+			return false;
+		}
+
+		return true;
 	}
 	
 	private void findByName(String name)
@@ -202,6 +403,9 @@ public class SaleProductUI extends JPanel{
 				price += prePrice + pd.getProduct().getUnitPrice();
 				
 				txtAmount.setText(nf.format(price));
+				txtPaid.setText(nf.format(price));
+				if(radUsePoint.isSelected())
+					calculateDiscountPrice();
 			}
 		});
 		
@@ -223,7 +427,6 @@ public class SaleProductUI extends JPanel{
 	private void addToCart(ProductDetail pd) {
 		int totalRow = modelTableCart.getRowCount();
 		boolean isExist = false;
-		
 		if(totalRow == 0)
 		{
 			modelTableCart.addRow(new Object[] {
@@ -371,11 +574,10 @@ public class SaleProductUI extends JPanel{
 
 	private void addToEmployeeCombobox()
 	{
-		ArrayList<Object[]> list = new ArrayList<Object[]>();
+		ArrayList<Object[]> list = employeeDao.getEmployeeByPosition("Nhân viên bán hàng");
 		for(Object[] obj : list)
 		{
-			String employee = (String) obj[0];
-			System.out.println(employee);
+			String employee = (String) obj[1];
 			cboEmployee.addItem(employee);
 		}
 	}
@@ -445,10 +647,19 @@ public class SaleProductUI extends JPanel{
 	
 		pnlSearch.add(pnlSearchPhone, BorderLayout.WEST);
 		
-		cboEmployee = new JComboBox<String>();
+		JPanel pnlEmployee = new JPanel(new GridLayout(2, 1, 0, 5));
+		pnlEmployee.setBackground(new Color(15, 26, 10));
 
+		JLabel lblEmployee = new JLabel("NHÂN VIÊN PHỤ TRÁCH");
+		lblEmployee.setForeground(new Color(157, 78, 221));
+		lblEmployee.setFont(new Font(lblEmployee.getFont().getName(), Font.BOLD, 12));
+
+		pnlEmployee.add(lblEmployee);
+		cboEmployee = new JComboBox<String>();
 		addToEmployeeCombobox();
-		pnlSearch.add(cboEmployee, BorderLayout.EAST);
+		
+		pnlEmployee.add(cboEmployee);
+		pnlSearch.add(pnlEmployee, BorderLayout.EAST);
 
 
 		pnlTop.add(pnlSearch, BorderLayout.NORTH);
@@ -478,10 +689,11 @@ public class SaleProductUI extends JPanel{
 		JPanel pnlPoint = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		pnlPoint.setOpaque(false);
 		JLabel lblPoint = new JLabel("Điểm tích lũy");
-		lblName.setPreferredSize(new Dimension(80, 13));
-		lblPoint.setPreferredSize(new Dimension(80, 13));
 		txtPoint = new JTextField(12);
 		txtPoint.setEnabled(false);
+
+		lblName.setPreferredSize(new Dimension(lblPoint.getPreferredSize().width + lblName.getPreferredSize().width + 3, lblPoint.getPreferredSize().height));
+
 		pnlPoint.add(lblPoint);
 		pnlPoint.add(txtPoint);
 		
@@ -566,6 +778,7 @@ public class SaleProductUI extends JPanel{
 		txtAmount = new JTextField(15);
 		txtAmount.setEnabled(false);
 		txtIsUsePoint = new JTextField(15);
+		txtIsUsePoint.setText("0");
 		txtIsUsePoint.setEnabled(false);
 		txtDiscount = new JTextField(15);
 		txtDiscount.setEnabled(false);
