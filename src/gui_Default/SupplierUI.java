@@ -66,7 +66,8 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
 
         JPanel titleBar = new JPanel(new BorderLayout());
         titleBar.setBackground(new Color(234, 230, 250));
-        titleBar.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        titleBar.setPreferredSize(new Dimension(0, 60));
+        titleBar.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         JLabel title = new JLabel("Quản lý nhà cung cấp", JLabel.LEFT);
         title.setFont(new Font("Arial", Font.BOLD, 24));
         title.setForeground(new Color(94, 53, 165));
