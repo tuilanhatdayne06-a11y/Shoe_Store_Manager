@@ -13,9 +13,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -37,7 +34,6 @@ import javax.swing.table.DefaultTableModel;
 import dao.CustomerDAO;
 import entity.Customer;
 import utils.AppUtils;
-import utils.ImageUtil;
 
 public class CustomerUI extends JPanel implements ActionListener, MouseListener {
 
@@ -55,23 +51,19 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
     private JButton btnRemoveCustomer;
     private JButton btnClear;
     private JButton btnFind;
-    private JButton btnBrowseImg;
     private JTable table;
     private DefaultTableModel modelTable;
     private JLabel lblCustomerImg;
 
     private CustomerDAO customerDAO = new CustomerDAO();
-    private File selectedImg = null;
 
     private Color bgColor = new Color(248, 247, 255);
     private Color primaryColor = new Color(94, 53, 165);
-    private ImageUtil imgUtil = new ImageUtil();
     private AppUtils appUtil = new AppUtils();
 
     public CustomerUI() {
         setLayout(new BorderLayout(10, 10));
         setBackground(bgColor);
-
 
         JPanel pNorth = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 12));
         pNorth.setBackground(new Color(234, 230, 250));
@@ -88,11 +80,9 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
         pNorth.add(lblTieuDe);
         add(pNorth, BorderLayout.NORTH);
 
-
         JPanel pCenter = new JPanel(new BorderLayout(12, 0));
         pCenter.setBackground(bgColor);
         pCenter.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
-
 
         JPanel pDanhSach = new JPanel(new BorderLayout(0, 10));
         pDanhSach.setBackground(bgColor);
@@ -122,7 +112,6 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
         table.getColumnModel().getColumn(6).setPreferredWidth(60);
         pDanhSach.add(new JScrollPane(table), BorderLayout.CENTER);
         pCenter.add(pDanhSach, BorderLayout.CENTER);
-
 
         JPanel pInput = new JPanel(new GridBagLayout());
         pInput.setBackground(new Color(230, 216, 255));
@@ -173,9 +162,7 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
         lblCustomerImg = new JLabel("Chưa có ảnh", SwingConstants.CENTER);
         lblCustomerImg.setPreferredSize(new Dimension(95, 95));
         lblCustomerImg.setBorder(BorderFactory.createLineBorder(new Color(175, 145, 210)));
-        btnBrowseImg = new JButton("Chọn ảnh");
         pAnh.add(lblCustomerImg);
-        pAnh.add(btnBrowseImg);
 
         gbc.gridx = 0; gbc.gridy = 6; gbc.gridwidth = 2; gbc.weightx = 1;
         pInput.add(pAnh, gbc);
@@ -201,13 +188,12 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
         btnRemoveCustomer.addActionListener(this);
         btnClear.addActionListener(this);
         btnFind.addActionListener(this);
-        btnBrowseImg.addActionListener(this);
         radNam.addActionListener(this);
         radNu.addActionListener(this);
         txtFind.addActionListener(this);
         table.addMouseListener(this);
 
-        hienThiAnhKhachHang(null);
+        hienThiAnhKhachHang();
         loadDataToTable();
     }
 
@@ -230,7 +216,7 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
                 kh.getAddress(),
                 kh.getLoyaltyPoints(),
                 kh.isGender() ? "Nam" : "Nữ",
-                getCustomerAvatar(kh.getCustomerId(), kh.isGender(), 44)
+                getCustomerAvatar(kh.isGender(), 44)
             });
         }
     }
@@ -303,13 +289,6 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
             Customer customer = getCustomerFromForm(customerId);
 
             if (customerDAO.addCustomer(customer)) {
-                if (selectedImg != null) {
-                    try {
-                        luuAnhKhachHang(customerId);
-                    } catch (Exception e) {
-                        showMessage("Đã thêm khách hàng nhưng không lưu được ảnh: " + e.getMessage());
-                    }
-                }
                 loadDataToTable();
                 clearForm();
                 showMessage("Thêm khách hàng thành công! Mã: " + customerId);
@@ -335,13 +314,6 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
 
             Customer customer = getCustomerFromForm(ma);
             if (customerDAO.updateCustomer(customer)) {
-                if (selectedImg != null) {
-                    try {
-                        luuAnhKhachHang(ma);
-                    } catch (Exception e) {
-                        showMessage("Đã sửa khách hàng nhưng không lưu được ảnh: " + e.getMessage());
-                    }
-                }
                 loadDataToTable();
                 clearForm();
                 showMessage("Sửa khách hàng thành công!");
@@ -364,7 +336,6 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
 
         try {
             if (customerDAO.removeCustomer(ma)) {
-                xoaAnhKhachHang(ma);
                 loadDataToTable();
                 clearForm();
                 showMessage("Xóa khách hàng thành công!");
@@ -400,9 +371,8 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
         txtCustomerPoints.setText("0");
         groupGender.clearSelection();
         txtFind.setText("");
-        selectedImg = null;
         lblCustomerImg.setToolTipText(null);
-        hienThiAnhKhachHang(null);
+        hienThiAnhKhachHang();
         txtCustomerName.requestFocus();
     }
 
@@ -429,8 +399,7 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
                 radNu.setSelected(true);
             }
 
-            selectedImg = null;
-            hienThiAnhKhachHang(null); 
+            hienThiAnhKhachHang(); 
             lblCustomerImg.setToolTipText("<html><b>Họ tên:</b> " + kh.getCustomerName()
                     + "<br><b>Giới tính:</b> " + (kh.isGender() ? "Nam" : "Nữ")
                     + "<br><b>SĐT:</b> " + kh.getPhoneNumber() + "</html>");
@@ -439,96 +408,30 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
         }
     }
 
-  
-    
-    private void chonAnhKhachHang() {
-        File file = imgUtil.browseImg();
-        if (file == null) return;
-        ImageIcon icon = new ImageIcon(file.getAbsolutePath());
-        if (icon.getIconWidth() <= 0) {
-            showMessage("Vui lòng chọn file ảnh hợp lệ!");
-            return;
-        }
-        selectedImg = file;
-        hienThiAnhKhachHang(file);
-    }
-
-    private void luuAnhKhachHang(String ma) throws Exception {
-        if (selectedImg == null) return;
-        String fileName = selectedImg.getName().toLowerCase();
-        String ext = ".png";
-        if (fileName.endsWith(".jpg")) ext = ".jpg";
-        else if (fileName.endsWith(".jpeg")) ext = ".jpeg";
-        else if (!fileName.endsWith(".png")) {
-            throw new Exception("Chỉ hỗ trợ ảnh JPG, JPEG hoặc PNG");
-        }
-        
-        File folder = new File("src/img");
-        Files.createDirectories(folder.toPath());
-        File target = new File(folder, "customer_" + ma + ext);
-        Files.copy(selectedImg.toPath(), target.toPath(), StandardCopyOption.REPLACE_EXISTING);
-        
-        for (String other : new String[] {".jpg", ".jpeg", ".png"}) {
-            if (!other.equals(ext)) {
-                new File(folder, "customer_" + ma + other).delete();
-            }
-        }
-    }
-
-    private File findCustomerImage(String ma) {
-        if (ma == null || ma.isEmpty() || ma.equals("Tự sinh khi thêm")) return null;
-        for (String ext : new String[] {".jpg", ".jpeg", ".png"}) {
-            File img = new File("src/img/customer_" + ma + ext);
-            if (img.isFile()) return img;
-        }
-        return null;
-    }
-
-    private void xoaAnhKhachHang(String ma) {
-        for (String ext : new String[] {".jpg", ".jpeg", ".png"}) {
-            File file = new File("src/img/customer_" + ma + ext);
-            if (file.exists()) file.delete();
-        }
-    }
-
-    private ImageIcon getCustomerAvatar(String ma, boolean isGender, int size) {
+    private ImageIcon getCustomerAvatar(boolean isGender, int size) {
         ImageIcon icon = null;
-        File file = findCustomerImage(ma);
-        
-        if (file != null && file.isFile()) {
-            icon = new ImageIcon(file.getAbsolutePath());
-        } else {
-            String path = isGender ? "/img/employee_male.png" : "/img/employee_female.png";
-            java.net.URL url = getClass().getResource(path);
-            if (url != null) icon = new ImageIcon(url);
-        }
+        String path = isGender ? "/img/employee_male.png" : "/img/employee_female.png";
+        java.net.URL url = getClass().getResource(path);
+        if (url != null) icon = new ImageIcon(url);
 
         if (icon == null || icon.getIconWidth() <= 0) return null;
         Image img = icon.getImage().getScaledInstance(size, size, Image.SCALE_SMOOTH);
         return new ImageIcon(img);
     }
 
-    private void hienThiAnhKhachHang(File file) {
+    private void hienThiAnhKhachHang() {
         ImageIcon icon = null;
-        if (file != null) {
-            ImageIcon anh = new ImageIcon(file.getAbsolutePath());
-            if (anh.getIconWidth() > 0) {
-                Image img = anh.getImage().getScaledInstance(90, 90, Image.SCALE_SMOOTH);
+        String ma = txtCustomerCode.getText().trim();
+        boolean gender = radNam.isSelected();
+        
+        if (!radNam.isSelected() && !radNu.isSelected() && (ma.isEmpty() || ma.equals("Tự sinh khi thêm"))) {
+            java.net.URL url = getClass().getResource("/img/customer.png");
+            if (url != null) {
+                Image img = new ImageIcon(url).getImage().getScaledInstance(90, 90, Image.SCALE_SMOOTH);
                 icon = new ImageIcon(img);
             }
         } else {
-            String ma = txtCustomerCode.getText().trim();
-            boolean gender = radNam.isSelected();
-            
-            if (!radNam.isSelected() && !radNu.isSelected() && (ma.isEmpty() || ma.equals("Tự sinh khi thêm"))) {
-                java.net.URL url = getClass().getResource("/img/customer.png");
-                if (url != null) {
-                    Image img = new ImageIcon(url).getImage().getScaledInstance(90, 90, Image.SCALE_SMOOTH);
-                    icon = new ImageIcon(img);
-                }
-            } else {
-                icon = getCustomerAvatar(ma, gender, 90);
-            }
+            icon = getCustomerAvatar(gender, 90);
         }
 
         lblCustomerImg.setIcon(icon);
@@ -554,10 +457,8 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
             loadDataToTable();
         } else if (o.equals(btnFind) || o.equals(txtFind)) {
             timKhachHang();
-        } else if (o.equals(btnBrowseImg)) {
-            chonAnhKhachHang();
         } else if (o.equals(radNam) || o.equals(radNu)) {
-            if (selectedImg == null) hienThiAnhKhachHang(null);
+            hienThiAnhKhachHang();
         }
     }
 

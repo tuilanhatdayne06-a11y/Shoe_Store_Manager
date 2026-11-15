@@ -30,7 +30,7 @@ public class Customer {
 		setAddress(address);
 		setPhoneNumber(phoneNumber);
 		setLoyaltyPoints(loyaltyPoints);
-		setGender(isGender());
+		setGender(gender);
 	}
 
 
