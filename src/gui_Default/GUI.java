@@ -262,7 +262,7 @@ public class GUI extends JFrame implements ActionListener {
                 
                 String gioiTinh = nv.isGender() ? "Nam" : "Nữ";
                 btnAvatar.setText(nv.getEmployeeName());
-                btnAvatar.setToolTipText("<html><b>Họ tên:</b> " + nv.getEmployeeName() + "<br><b>Chức vụ:</b> " + nv.getPosition() + "</html>");
+                
                 
                 currentNhanVienInfo = "BẢNG THÔNG TIN \n\n"
                                     + "Họ và tên: " + nv.getEmployeeName() + "\n"

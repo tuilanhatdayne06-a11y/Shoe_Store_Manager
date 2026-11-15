@@ -13,29 +13,28 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.File;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
-
 import javax.swing.table.DefaultTableModel;
 
 import dao.CustomerDAO;
 import entity.Customer;
-
 import utils.AppUtils;
-import utils.ImageUtil;
+
 public class CustomerUI extends JPanel implements ActionListener, MouseListener {
 
     private JTextField txtCustomerCode;
@@ -44,25 +43,23 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
     private JTextField txtCustomerAddress;
     private JTextField txtCustomerPoints;
     private JTextField txtFind;
+    private JRadioButton radNam;
+    private JRadioButton radNu;
+    private ButtonGroup groupGender;
     private JButton btnAddCustomer;
     private JButton btnEditCustomer;
     private JButton btnRemoveCustomer;
     private JButton btnClear;
     private JButton btnFind;
-    private JButton btnBrowseImg;
     private JTable table;
     private DefaultTableModel modelTable;
     private JLabel lblCustomerImg;
-    private JLabel lblImgName;
 
     private CustomerDAO customerDAO = new CustomerDAO();
-    private File selectedImg = null;
 
     private Color bgColor = new Color(248, 247, 255);
     private Color primaryColor = new Color(94, 53, 165);
-	private ImageUtil imgUtil = new ImageUtil();
-	private AppUtils appUtil = new AppUtils();
-
+    private AppUtils appUtil = new AppUtils();
 
     public CustomerUI() {
         setLayout(new BorderLayout(10, 10));
@@ -74,13 +71,18 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
         JLabel lblTieuDe = new JLabel("QUẢN LÝ KHÁCH HÀNG");
         lblTieuDe.setFont(new Font("Arial", Font.BOLD, 24));
         lblTieuDe.setForeground(primaryColor);
+        java.net.URL iconURL = getClass().getResource("/img/customer.png");
+        if (iconURL != null) {
+            ImageIcon icon = new ImageIcon(iconURL);
+            Image img = icon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+            lblTieuDe.setIcon(new ImageIcon(img));
+        }
         pNorth.add(lblTieuDe);
         add(pNorth, BorderLayout.NORTH);
 
         JPanel pCenter = new JPanel(new BorderLayout(12, 0));
         pCenter.setBackground(bgColor);
         pCenter.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
-
 
         JPanel pDanhSach = new JPanel(new BorderLayout(0, 10));
         pDanhSach.setBackground(bgColor);
@@ -94,13 +96,20 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
         pTim.add(btnFind);
         pDanhSach.add(pTim, BorderLayout.NORTH);
 
-        String[] cols = {"Mã KH", "Tên khách hàng", "SĐT", "Địa chỉ", "Điểm tích lũy"};
-        modelTable = new DefaultTableModel(cols, 0);
+        String[] cols = {"Mã KH", "Tên khách hàng", "SĐT", "Địa chỉ", "Điểm tích lũy", "Giới tính", "Ảnh"};
+        modelTable = new DefaultTableModel(cols, 0) {
+            @Override
+            public Class<?> getColumnClass(int column) {
+                if (column == 6) return ImageIcon.class;
+                return Object.class;
+            }
+        };
         table = new JTable(modelTable);
-        table.setRowHeight(28);
+        table.setRowHeight(52);
         table.setDefaultEditor(Object.class, null);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.getTableHeader().setBackground(new Color(230, 216, 255));
+        table.getColumnModel().getColumn(6).setPreferredWidth(60);
         pDanhSach.add(new JScrollPane(table), BorderLayout.CENTER);
         pCenter.add(pDanhSach, BorderLayout.CENTER);
 
@@ -109,63 +118,53 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
         pInput.setPreferredSize(new Dimension(375, 0));
         pInput.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        txtCustomerCode = new JTextField(15);
+        txtCustomerCode = new JTextField("KH001", 15);
         txtCustomerCode.setEditable(false);
         txtCustomerName = new JTextField(15);
         txtCustomerPhone = new JTextField(15);
         txtCustomerAddress = new JTextField(15);
+        radNam = new JRadioButton("Nam");
+        radNu = new JRadioButton("Nữ");
+        radNam.setOpaque(false);
+        radNu.setOpaque(false);
+        groupGender = new ButtonGroup();
+        groupGender.add(radNam);
+        groupGender.add(radNu);
+        JPanel pGender = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 0));
+        pGender.setOpaque(false);
+        pGender.add(radNam);
+        pGender.add(radNu);
         txtCustomerPoints = new JTextField("0", 15);
         txtCustomerPoints.setEditable(false);
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(8, 5, 8, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
+        
         gbc.weightx = 0.35;
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        pInput.add(new JLabel("Mã khách hàng:"), gbc);
-        gbc.gridy = 1;
-        pInput.add(new JLabel("Tên khách hàng:"), gbc);
-        gbc.gridy = 2;
-        pInput.add(new JLabel("Số điện thoại:"), gbc);
-        gbc.gridy = 3;
-        pInput.add(new JLabel("Địa chỉ:"), gbc);
-        gbc.gridy = 4;
-        pInput.add(new JLabel("Điểm tích lũy:"), gbc);
+        gbc.gridx = 0; gbc.gridy = 0; pInput.add(new JLabel("Mã khách hàng:"), gbc);
+        gbc.gridy = 1; pInput.add(new JLabel("Tên khách hàng:"), gbc);
+        gbc.gridy = 2; pInput.add(new JLabel("Số điện thoại:"), gbc);
+        gbc.gridy = 3; pInput.add(new JLabel("Địa chỉ:"), gbc);
+        gbc.gridy = 4; pInput.add(new JLabel("Giới tính:"), gbc);
+        gbc.gridy = 5; pInput.add(new JLabel("Điểm tích lũy:"), gbc);
 
         gbc.weightx = 0.65;
-        gbc.gridx = 1;
-        gbc.gridy = 0;
-        pInput.add(txtCustomerCode, gbc);
-        gbc.gridy = 1;
-        pInput.add(txtCustomerName, gbc);
-        gbc.gridy = 2;
-        pInput.add(txtCustomerPhone, gbc);
-        gbc.gridy = 3;
-        pInput.add(txtCustomerAddress, gbc);
-        gbc.gridy = 4;
-        pInput.add(txtCustomerPoints, gbc);
-
+        gbc.gridx = 1; gbc.gridy = 0; pInput.add(txtCustomerCode, gbc);
+        gbc.gridy = 1; pInput.add(txtCustomerName, gbc);
+        gbc.gridy = 2; pInput.add(txtCustomerPhone, gbc);
+        gbc.gridy = 3; pInput.add(txtCustomerAddress, gbc);
+        gbc.gridy = 4; pInput.add(pGender, gbc);
+        gbc.gridy = 5; pInput.add(txtCustomerPoints, gbc);
 
         JPanel pAnh = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 4));
         pAnh.setOpaque(false);
         lblCustomerImg = new JLabel("Chưa có ảnh", SwingConstants.CENTER);
         lblCustomerImg.setPreferredSize(new Dimension(95, 95));
         lblCustomerImg.setBorder(BorderFactory.createLineBorder(new Color(175, 145, 210)));
-        lblImgName = new JLabel("Chưa chọn ảnh");
-        btnBrowseImg = new JButton("Chọn ảnh");
         pAnh.add(lblCustomerImg);
 
-        JPanel pChonAnh = new JPanel(new BorderLayout(0, 5));
-        pChonAnh.setOpaque(false);
-        pChonAnh.add(btnBrowseImg, BorderLayout.NORTH);
-        pChonAnh.add(lblImgName, BorderLayout.SOUTH);
-        pAnh.add(pChonAnh);
-
-        gbc.gridx = 0;
-        gbc.gridy = 5;
-        gbc.gridwidth = 2;
-        gbc.weightx = 1;
+        gbc.gridx = 0; gbc.gridy = 6; gbc.gridwidth = 2; gbc.weightx = 1;
         pInput.add(pAnh, gbc);
 
         JPanel pButton = new JPanel(new FlowLayout(FlowLayout.CENTER, 7, 5));
@@ -179,8 +178,7 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
         pButton.add(btnRemoveCustomer);
         pButton.add(btnClear);
 
-        gbc.gridy = 6;
-        gbc.anchor = GridBagConstraints.NORTH;
+        gbc.gridy = 7; gbc.anchor = GridBagConstraints.NORTH;
         pInput.add(pButton, gbc);
         pCenter.add(pInput, BorderLayout.EAST);
         add(pCenter, BorderLayout.CENTER);
@@ -190,10 +188,12 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
         btnRemoveCustomer.addActionListener(this);
         btnClear.addActionListener(this);
         btnFind.addActionListener(this);
-        btnBrowseImg.addActionListener(this);
+        radNam.addActionListener(this);
+        radNu.addActionListener(this);
         txtFind.addActionListener(this);
         table.addMouseListener(this);
 
+        hienThiAnhKhachHang();
         loadDataToTable();
     }
 
@@ -202,22 +202,21 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
             ArrayList<Customer> ds = customerDAO.getAllCustomers();
             showCustomerList(ds);
         } catch (SQLException e) {
-            showMessage(
-                    "Không tải được danh sách khách hàng: " + e.getMessage());
+            showMessage("Không tải được danh sách khách hàng: " + e.getMessage());
         }
     }
 
     private void showCustomerList(ArrayList<Customer> ds) {
         modelTable.setRowCount(0);
         for (Customer kh : ds) {
-
             modelTable.addRow(new Object[] {
                 kh.getCustomerId(),
                 kh.getCustomerName(),
                 kh.getPhoneNumber(),
                 kh.getAddress(),
                 kh.getLoyaltyPoints(),
-                kh.getImgCustomer()
+                kh.isGender() ? "Nam" : "Nữ",
+                getCustomerAvatar(kh.isGender(), 44)
             });
         }
     }
@@ -242,6 +241,10 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
             txtCustomerAddress.requestFocus();
             return false;
         }
+        if (!radNam.isSelected() && !radNu.isSelected()) {
+            showMessage("Vui lòng chọn giới tính khách hàng!");
+            return false;
+        }
         return true;
     }
 
@@ -249,18 +252,20 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
         JOptionPane.showMessageDialog(this, message);
     }
 
-    private Customer getCustomerFromForm() {
+    private Customer getCustomerFromForm(String id) {
+        int points = 0;
+        try {
+            points = Integer.parseInt(txtCustomerPoints.getText().trim());
+        } catch (Exception e) {}
+        
         return new Customer(
-                txtCustomerCode.getText().trim(),
+                id,
                 txtCustomerName.getText().trim(),
                 txtCustomerAddress.getText().trim(),
                 txtCustomerPhone.getText().trim(),
-                0,
-                selectedImg.getName()
-          );
+                points,
+                radNam.isSelected());
     }
-    
-
 
     private void themKhachHang() {
         if (table.getSelectedRow() != -1) {
@@ -276,35 +281,18 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
             }
 
             String customerId = appUtil.autoGenerateId("KH");
-            Customer customer = new Customer(
-            		customerId,
-            		txtCustomerName.getText(),
-            		txtCustomerAddress.getText(),
-            		txtCustomerPhone.getText(),
-            		0,
-            		selectedImg.getName()
-            );
-            
-            modelTable.addRow(new Object[] {
-            		customer.getCustomerId(),
-            		customer.getCustomerName(),
-            		customer.getPhoneNumber(),
-            		customer.getAddress(),
-            		0,
-            		customer.getImgCustomer()
-            });
-
-            try {
-                luuAnhKhachHang();
-            } catch (Exception e) {
-                showMessage(
-                        "Đã thêm khách hàng nhưng không lưu được ảnh: " + e.getMessage());
+            if (customerId == null) {
+                showMessage("Không thể sinh mã khách hàng!");
+                return;
             }
- 
-            customerDAO.addCustomer(customer);
+            
+            Customer customer = getCustomerFromForm(customerId);
 
-            clearForm();
-            showMessage("Thêm khách hàng thành công!");
+            if (customerDAO.addCustomer(customer)) {
+                loadDataToTable();
+                clearForm();
+                showMessage("Thêm khách hàng thành công! Mã: " + customerId);
+            }
         } catch (SQLException e) {
             showMessage("Không thể thêm khách hàng: " + e.getMessage());
         }
@@ -324,13 +312,8 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
                 return;
             }
 
-            if (customerDAO.updateCustomer(getCustomerFromForm())) {
-                try {
-                    luuAnhKhachHang();
-                } catch (Exception e) {
-                    showMessage(
-                            "Đã sửa khách hàng nhưng không lưu được ảnh: " + e.getMessage());
-                }
+            Customer customer = getCustomerFromForm(ma);
+            if (customerDAO.updateCustomer(customer)) {
                 loadDataToTable();
                 clearForm();
                 showMessage("Sửa khách hàng thành công!");
@@ -348,30 +331,24 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
         }
 
         String ma = txtCustomerCode.getText().trim();
-
-        int chon = JOptionPane.showConfirmDialog(this,
-                "Bạn có muốn xóa khách hàng " + ma + "?",
-                "Xác nhận", JOptionPane.YES_NO_OPTION);
+        int chon = JOptionPane.showConfirmDialog(this, "Bạn có muốn xóa khách hàng " + ma + "?", "Xác nhận", JOptionPane.YES_NO_OPTION);
         if (chon != JOptionPane.YES_OPTION) return;
 
         try {
             if (customerDAO.removeCustomer(ma)) {
-                xoaAnhKhachHang(ma);
                 loadDataToTable();
                 clearForm();
                 showMessage("Xóa khách hàng thành công!");
             }
         } catch (SQLException e) {
-            showMessage(
-                    "Không thể xóa khách hàng (có thể đã phát sinh hóa đơn): " + e.getMessage());
+            showMessage("Không thể xóa khách hàng (có thể đã phát sinh hóa đơn): " + e.getMessage());
         }
     }
 
     private void timKhachHang() {
         String sdt = txtFind.getText().trim();
         if (sdt.isEmpty()) {
-        	JOptionPane.showMessageDialog(this, "Số điện thoại chưa điền");
-
+            JOptionPane.showMessageDialog(this, "Số điện thoại chưa điền");
             return;
         }
         try {
@@ -387,72 +364,83 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
 
     private void clearForm() {
         table.clearSelection();
-        txtCustomerCode.setText("");
+        txtCustomerCode.setText("Tự sinh khi thêm");
         txtCustomerName.setText("");
         txtCustomerPhone.setText("");
         txtCustomerAddress.setText("");
         txtCustomerPoints.setText("0");
+        groupGender.clearSelection();
         txtFind.setText("");
-        selectedImg = null;
-        hienThiAnhKhachHang(null);
+        lblCustomerImg.setToolTipText(null);
+        hienThiAnhKhachHang();
         txtCustomerName.requestFocus();
-    }
-
-    private void chonAnhKhachHang() {
-        File file = imgUtil .browseImg();
-
-        selectedImg = file;
-        hienThiAnhKhachHang(file);
-    }
-
-
-
-    private void luuAnhKhachHang() {
-        if (selectedImg == null) return;
-        imgUtil.saveImg(selectedImg);
-
-    }
-
-    private void xoaAnhKhachHang(String ma) {
-        String[] duoi = {".jpg", ".jpeg", ".png"};
-        for (String ext : duoi) {
-
-            File file = new File("src/img/" + ma + ext);
-
-            if (file.exists()) file.delete();
-        }
-    }
-
-    private void hienThiAnhKhachHang(File file) {
-        lblCustomerImg.setIcon(null);
-        lblCustomerImg.setText("Chưa có ảnh");
-        lblImgName.setText(file == null ? "Chưa chọn ảnh" : file.getName());
-        if (file == null) return;
-
-        ImageIcon icon = new ImageIcon(file.getPath());
-        if (icon.getIconWidth() <= 0) return;
-        Image anh = icon.getImage().getScaledInstance(90, 90, Image.SCALE_SMOOTH);
-        lblCustomerImg.setIcon(new ImageIcon(anh));
-        lblCustomerImg.setText("");
     }
 
     private void fillFormFromTable() {
         int row = table.getSelectedRow();
         if (row == -1) return;
-        txtCustomerCode.setText(modelTable.getValueAt(row, 0).toString());
-        txtCustomerName.setText(modelTable.getValueAt(row, 1).toString());
-        txtCustomerPhone.setText(modelTable.getValueAt(row, 2).toString());
-        Object diaChi = modelTable.getValueAt(row, 3);
-        txtCustomerAddress.setText(diaChi == null ? "" : diaChi.toString());
-        txtCustomerPoints.setText(modelTable.getValueAt(row, 4).toString());
-        selectedImg = null;
-        String customerImg = customerDAO.findById(modelTable.getValueAt(row, 0).toString()).getImgCustomer();
-        hienThiAnhKhachHang(new File("src/img/" + customerImg));
+
+        row = table.convertRowIndexToModel(row);
+        String ma = modelTable.getValueAt(row, 0).toString();
+
+        try {
+            Customer kh = customerDAO.findById(ma);
+            if (kh == null) return;
+
+            txtCustomerCode.setText(kh.getCustomerId());
+            txtCustomerName.setText(kh.getCustomerName());
+            txtCustomerPhone.setText(kh.getPhoneNumber());
+            txtCustomerAddress.setText(kh.getAddress() == null ? "" : kh.getAddress());
+            txtCustomerPoints.setText(String.valueOf(kh.getLoyaltyPoints()));
+            
+            if (kh.isGender()) {
+                radNam.setSelected(true);
+            } else {
+                radNu.setSelected(true);
+            }
+
+            hienThiAnhKhachHang(); 
+            lblCustomerImg.setToolTipText("<html><b>Họ tên:</b> " + kh.getCustomerName()
+                    + "<br><b>Giới tính:</b> " + (kh.isGender() ? "Nam" : "Nữ")
+                    + "<br><b>SĐT:</b> " + kh.getPhoneNumber() + "</html>");
+        } catch (Exception e) {
+            showMessage("Không lấy được thông tin khách hàng: " + e.getMessage());
+        }
+    }
+
+    private ImageIcon getCustomerAvatar(boolean isGender, int size) {
+        ImageIcon icon = null;
+        String path = isGender ? "/img/employee_male.png" : "/img/employee_female.png";
+        java.net.URL url = getClass().getResource(path);
+        if (url != null) icon = new ImageIcon(url);
+
+        if (icon == null || icon.getIconWidth() <= 0) return null;
+        Image img = icon.getImage().getScaledInstance(size, size, Image.SCALE_SMOOTH);
+        return new ImageIcon(img);
+    }
+
+    private void hienThiAnhKhachHang() {
+        ImageIcon icon = null;
+        String ma = txtCustomerCode.getText().trim();
+        boolean gender = radNam.isSelected();
+        
+        if (!radNam.isSelected() && !radNu.isSelected() && (ma.isEmpty() || ma.equals("Tự sinh khi thêm"))) {
+            java.net.URL url = getClass().getResource("/img/customer.png");
+            if (url != null) {
+                Image img = new ImageIcon(url).getImage().getScaledInstance(90, 90, Image.SCALE_SMOOTH);
+                icon = new ImageIcon(img);
+            }
+        } else {
+            icon = getCustomerAvatar(gender, 90);
+        }
+
+        lblCustomerImg.setIcon(icon);
+        lblCustomerImg.setText(icon == null ? "Chưa có ảnh" : "");
     }
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        fillFormFromTable();
+        if (e.getSource() == table) fillFormFromTable();
     }
 
     @Override
@@ -469,8 +457,8 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
             loadDataToTable();
         } else if (o.equals(btnFind) || o.equals(txtFind)) {
             timKhachHang();
-        } else if (o.equals(btnBrowseImg)) {
-            chonAnhKhachHang();
+        } else if (o.equals(radNam) || o.equals(radNu)) {
+            hienThiAnhKhachHang();
         }
     }
 
@@ -478,5 +466,4 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
     @Override public void mouseReleased(MouseEvent e) {}
     @Override public void mouseEntered(MouseEvent e) {}
     @Override public void mouseExited(MouseEvent e) {}
-
 }

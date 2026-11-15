@@ -40,7 +40,7 @@ public class SupplierDAO {
 		return null;
 	}
 	
-    public List<Supplier> getAll() {
+    public synchronized List<Supplier> getAll()  {
         List<Supplier> suppliers = new ArrayList<>();
         String sql = "SELECT * FROM Supplier";
         Connection conn = ConnectDB.getConnection();
