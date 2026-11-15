@@ -58,6 +58,36 @@ public class EmployeeDao {
         }
     }
 
+    public Employee findByName(String employeeName)
+    {
+        String sql = "select * from Employee where employeeName = ?";
+    	
+    	try {
+			Connection con = ConnectDB.getConnection();
+			PreparedStatement pst = con.prepareStatement(sql);
+			
+			pst.setString(1, employeeName);
+			
+			ResultSet rs = pst.executeQuery();
+			
+			if(rs.next())
+			{
+				return new Employee(
+						rs.getString("employeeId"),
+						rs.getString("employeeName"),
+						rs.getBoolean("gender"),
+						rs.getString("email"),
+						rs.getString("phoneNumber"),
+						rs.getString("position")
+				);
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+    	
+    	return null;
+    }
+
     public Employee dangNhap(String maNV, String matKhau) {
         String sql = "SELECT e.employeeId, e.employeeName, e.gender, e.email, e.phoneNumber, e.position "
                    + "FROM Employee e JOIN Account a ON e.employeeId = a.employeeId "

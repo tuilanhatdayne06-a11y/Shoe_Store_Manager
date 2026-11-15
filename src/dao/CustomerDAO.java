@@ -70,6 +70,37 @@ public class CustomerDAO {
         }
         return list;
     }
+
+    public Customer findByName(String customerName)
+    {
+        String sql = "select * from Customer where customerName = ?";
+    	
+    	try {
+			Connection con = ConnectDB.getConnection();
+			PreparedStatement pst = con.prepareStatement(sql);
+			
+			pst.setString(1, customerName);
+			
+			ResultSet rs = pst.executeQuery();
+			
+			if(rs.next())
+			{
+				return new Customer(
+						rs.getString("customerId"),
+						rs.getString("customerName"),
+						rs.getString("address"),
+						rs.getString("phoneNumber"),
+						rs.getInt("loyaltyPoints"),
+						rs.getString("imgCustomer")
+				);
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+    	
+    	return null;
+    }
+
     public Customer findById(String customerId)
     {
     	String sql = "select * from Customer where customerId = ?";
@@ -139,6 +170,25 @@ public class CustomerDAO {
             pst.setString(3, kh.getPhoneNumber());
             pst.setString(4, kh.getCustomerId());
             return pst.executeUpdate() > 0;
+        }
+    }
+
+    public void updateLoyalty(String phoneNumber, int newPoint, int usedPoint)
+    {
+        int updatePoint = newPoint - usedPoint;
+        try {
+            String sql = "update Customer set loyaltyPoints = loyaltyPoints + ? where phoneNumber = ?";
+            Connection con = ConnectDB.getConnection();
+            PreparedStatement pst = con.prepareStatement(sql);
+
+            pst.setInt(1, updatePoint);
+            pst.setString(2, phoneNumber);
+
+            pst.executeUpdate();
+
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
     }
 

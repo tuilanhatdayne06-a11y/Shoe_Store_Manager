@@ -212,7 +212,7 @@ public class ImportProductUI extends JPanel {
 
     private void loadEmployees() {
         DefaultComboBoxModel<EmployeeOption> model = new DefaultComboBoxModel<>();
-        for (Object[] employee : new EmployeeDao().getEmployeeByPosition("Nhân viên kho")) {
+        for (Object[] employee : new EmployeeDao().getEmployeeByPosition("Nhan vien kho")) {
             model.addElement(new EmployeeOption(
                     (String) employee[0], (String) employee[1]));
         }

@@ -1,6 +1,6 @@
 package entity;
 
-import java.security.Timestamp;
+import java.sql.Timestamp;
 
 public class Invoice {
 	private String invoiceId;

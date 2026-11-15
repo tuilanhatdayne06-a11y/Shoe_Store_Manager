@@ -11,6 +11,32 @@ import entity.Category;
 
 public class CategoryDAO {
 	
+	public Category findById(String id)
+	{
+		String sql = "select * from Category where categoryId = ?";
+
+		try {
+			Connection con = ConnectDB.getConnection();
+			PreparedStatement pst = con.prepareStatement(sql);
+
+			pst.setString(1, id);
+
+			ResultSet rs = pst.executeQuery();
+			if(rs.next())
+			{
+				return new Category(
+					rs.getString("categoryId"),
+					rs.getString("categoryName")
+				);
+			}
+
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+
+		return null;
+	}
+
 	public Category getCategoryByName(String name)
 	{
 		String sql = "select * from Category where categoryName = ?";
