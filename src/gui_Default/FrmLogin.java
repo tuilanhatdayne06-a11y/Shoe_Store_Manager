@@ -144,6 +144,7 @@ public class FrmLogin extends JFrame {
             if (nv != null) {
                 if (this.onLoginSuccess != null) {
                     this.onLoginSuccess.accept(nv);
+                    JOptionPane.showMessageDialog(this, "Đăng nhập thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
                 }
                 dispose();
             } else {
