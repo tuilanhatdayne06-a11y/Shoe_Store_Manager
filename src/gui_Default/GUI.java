@@ -280,6 +280,7 @@ public class GUI extends JFrame implements ActionListener {
                 loginCardLayout.show(pnlRight, "ChuaDangNhap");
                 mainCardLayout.show(pnlCenter, "HOME");
                 currentNhanVienInfo = ""; 
+                phanQuyenMenu(false);
             }
         }
         else if (o == btnAvatar) {

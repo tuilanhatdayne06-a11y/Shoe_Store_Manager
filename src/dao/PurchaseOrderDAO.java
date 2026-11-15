@@ -11,6 +11,24 @@ import java.sql.SQLException;
 public class PurchaseOrderDAO {
     private final PurchaseOrderDetailDAO detailDAO = new PurchaseOrderDetailDAO();
 
+    public String getNextPurchaseOrderId() throws SQLException {
+        String sql = "SELECT currentValue + 1 FROM IDCounter WHERE prefix = ?";
+        Connection con = ConnectDB.getConnection();
+        if (con == null) {
+            throw new SQLException("Không thể kết nối cơ sở dữ liệu.");
+        }
+
+        try (PreparedStatement pst = con.prepareStatement(sql)) {
+            pst.setString(1, "PO");
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    return String.format("PO%03d", rs.getInt(1));
+                }
+            }
+        }
+        throw new SQLException("Không tìm thấy bộ đếm mã phiếu nhập PO.");
+    }
+
     public String createImportOrder(PurchaseOrder order, PurchaseOrderDetail detail)
             throws SQLException {
         validate(order, detail);
@@ -32,14 +50,14 @@ public class PurchaseOrderDAO {
             }
 
             order.setPurchaseOrderId(orderId);
-            detail.setPurchaseOrderId(order);
+            detail.setPurchaseOrder(order);
 
             sql = "SELECT 1 FROM Product p "
                     + "JOIN ProductDetail pd ON pd.productId = p.productId "
                     + "WHERE p.supplierId = ? AND pd.productDetailId = ?";
             try (PreparedStatement pst = con.prepareStatement(sql)) {
-                pst.setString(1, order.getSupplierId().getSupplierId());
-                pst.setString(2, detail.getProductDetailId().getProductDetailId());
+                pst.setString(1, order.getSupplier().getSupplierId());
+                pst.setString(2, detail.getProductDetail().getProductDetailId());
                 try (ResultSet rs = pst.executeQuery()) {
                     if (!rs.next()) {
                         throw new IllegalArgumentException(
@@ -53,8 +71,8 @@ public class PurchaseOrderDAO {
                     + "VALUES (?, GETDATE(), ?, ?, ?)";
             try (PreparedStatement pst = con.prepareStatement(sql)) {
                 pst.setString(1, orderId);
-                pst.setString(2, order.getEmployeeId().getEmployeeId());
-                pst.setString(3, order.getSupplierId().getSupplierId());
+                pst.setString(2, order.getEmployee().getEmployeeId());
+                pst.setString(3, order.getSupplier().getSupplierId());
                 pst.setString(4, "Da nhap");
                 pst.executeUpdate();
             }
@@ -67,7 +85,7 @@ public class PurchaseOrderDAO {
                     + "ISNULL(stockQuantity, 0) + ? WHERE productDetailId = ?";
             try (PreparedStatement pst = con.prepareStatement(sql)) {
                 pst.setInt(1, detail.getQuantity());
-                pst.setString(2, detail.getProductDetailId().getProductDetailId());
+                pst.setString(2, detail.getProductDetail().getProductDetailId());
                 if (pst.executeUpdate() != 1) {
                     throw new SQLException("Không tìm thấy chi tiết sản phẩm.");
                 }
@@ -89,12 +107,12 @@ public class PurchaseOrderDAO {
 
     private void validate(PurchaseOrder order, PurchaseOrderDetail detail) {
         if (order == null || detail == null
-                || order.getEmployeeId() == null
-                || isEmpty(order.getEmployeeId().getEmployeeId())
-                || order.getSupplierId() == null
-                || isEmpty(order.getSupplierId().getSupplierId())
-                || detail.getProductDetailId() == null
-                || isEmpty(detail.getProductDetailId().getProductDetailId())
+                || order.getEmployee() == null
+                || isEmpty(order.getEmployee().getEmployeeId())
+                || order.getSupplier() == null
+                || isEmpty(order.getSupplier().getSupplierId())
+                || detail.getProductDetail() == null
+                || isEmpty(detail.getProductDetail().getProductDetailId())
                 || detail.getQuantity() <= 0
                 || !Double.isFinite(detail.getImportPrice())
                 || detail.getImportPrice() <= 0) {

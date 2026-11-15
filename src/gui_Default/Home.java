@@ -103,6 +103,7 @@ public class Home extends JScrollPane implements ActionListener, MouseListener {
         pnlPartners.add(createPartnerLogo("/img/logoVHD.jpg", "VHD"));
         pnlPartners.add(createPartnerLogo("/img/logoBeyono.png", "BEYONO"));
         pnlPartners.add(createPartnerLogo("/img/adidas.png", "ADIDAS"));
+        
 
         pnlContent.add(pnlPartners);
         pnlContent.add(Box.createVerticalStrut(40));
@@ -114,6 +115,7 @@ public class Home extends JScrollPane implements ActionListener, MouseListener {
         
         setViewportView(pnlWrapper);
     }
+    
     
     private Component createPartnerLogo(String imgPath, String altText) {
     	JLabel lbl = new JLabel();
@@ -218,7 +220,7 @@ public class Home extends JScrollPane implements ActionListener, MouseListener {
         }
         return pnl;
     }
-
+	
 	private void loadBanner(String path) {
         try {
             java.net.URL url = getClass().getResource(path);
@@ -294,6 +296,7 @@ public class Home extends JScrollPane implements ActionListener, MouseListener {
 
         return card;
     }
+    
     
     
     @Override
