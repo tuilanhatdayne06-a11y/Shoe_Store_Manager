@@ -1,36 +1,36 @@
 package entity;
 
 public class PurchaseOrderDetail {
-    private PurchaseOrder purchaseOrderId;
-    private ProductDetail productDetailId;
+    private PurchaseOrder purchaseOrder;
+    private ProductDetail productDetail;
     private int quantity;
     private double importPrice;
 
     public PurchaseOrderDetail() {
     }
 
-    public PurchaseOrderDetail(PurchaseOrder purchaseOrderId, ProductDetail productDetailId,
+    public PurchaseOrderDetail(PurchaseOrder purchaseOrder, ProductDetail productDetail,
             int quantity, double importPrice) {
-        this.purchaseOrderId = purchaseOrderId;
-        this.productDetailId = productDetailId;
+        this.purchaseOrder = purchaseOrder;
+        this.productDetail = productDetail;
         this.quantity = quantity;
         this.importPrice = importPrice;
     }
 
-    public PurchaseOrder getPurchaseOrderId() {
-        return purchaseOrderId;
+    public PurchaseOrder getPurchaseOrder() {
+        return purchaseOrder;
     }
 
-    public void setPurchaseOrderId(PurchaseOrder purchaseOrderId) {
-        this.purchaseOrderId = purchaseOrderId;
+    public void setPurchaseOrder(PurchaseOrder purchaseOrder) {
+        this.purchaseOrder = purchaseOrder;
     }
 
-    public ProductDetail getProductDetailId() {
-        return productDetailId;
+    public ProductDetail getProductDetail() {
+        return productDetail;
     }
 
-    public void setProductDetailId(ProductDetail productDetailId) {
-        this.productDetailId = productDetailId;
+    public void setProductDetail(ProductDetail productDetail) {
+        this.productDetail = productDetail;
     }
 
     public int getQuantity() {

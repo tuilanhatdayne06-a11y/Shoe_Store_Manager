@@ -51,6 +51,7 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
     private JButton btnRemoveCustomer;
     private JButton btnClear;
     private JButton btnFind;
+    private JButton btnRefresh;
     private JTable table;
     private DefaultTableModel modelTable;
     private JLabel lblCustomerImg;
@@ -173,10 +174,12 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
         btnEditCustomer = new JButton("Sửa");
         btnRemoveCustomer = new JButton("Xóa");
         btnClear = new JButton("Xóa trắng");
+        btnRefresh = new JButton("Làm mới");
         pButton.add(btnAddCustomer);
         pButton.add(btnEditCustomer);
         pButton.add(btnRemoveCustomer);
         pButton.add(btnClear);
+        pButton.add(btnRefresh);
 
         gbc.gridy = 7; gbc.anchor = GridBagConstraints.NORTH;
         pInput.add(pButton, gbc);
@@ -188,6 +191,7 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
         btnRemoveCustomer.addActionListener(this);
         btnClear.addActionListener(this);
         btnFind.addActionListener(this);
+        btnRefresh.addActionListener(this);
         radNam.addActionListener(this);
         radNu.addActionListener(this);
         txtFind.addActionListener(this);
@@ -438,6 +442,7 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
         lblCustomerImg.setText(icon == null ? "Chưa có ảnh" : "");
     }
 
+
     @Override
     public void mouseClicked(MouseEvent e) {
         if (e.getSource() == table) fillFormFromTable();
@@ -454,11 +459,13 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
             xoaKhachHang();
         } else if (o.equals(btnClear)) {
             clearForm();
-            loadDataToTable();
         } else if (o.equals(btnFind) || o.equals(txtFind)) {
             timKhachHang();
         } else if (o.equals(radNam) || o.equals(radNu)) {
             hienThiAnhKhachHang();
+        }
+        else if(o.equals(btnRefresh)){
+            loadDataToTable();
         }
     }
 

@@ -1,27 +1,56 @@
 package entity;
 
 public class Employee {
-
-	private String EmployeeId;
-    private String EmployeeName;
+	private String employeeId;
+    private String employeeName;
     private boolean isGender;
     private String email;
     private String position;
     private String phoneNumber;
     
-    public Employee(String id)
+    public Employee() {
+	}
+
+	public Employee(String id)
     {
-    	this.EmployeeId = id;
+    	this.employeeId = id;
     }
     
     public Employee (String employeeID, String employeeName, boolean isGender, String email,  String phoneNumber, String position) {
-        this.EmployeeId = employeeID;
-        this.EmployeeName = employeeName;
-        this.isGender = isGender;
-        this.email = email;
-        this.phoneNumber = phoneNumber;
-        this.position = position;
+		setEmployeeId(employeeID);
+		setEmployeeName(employeeName);
+		setGender(isGender);
+		setEmail(email);
+		setPhoneNumber(phoneNumber);
+		setPosition(position);
     }
+	
+	
+
+	public String getEmployeeId() {
+		return employeeId;
+	}
+
+	public void setEmployeeId(String employeeId) {
+		this.employeeId = employeeId;
+	}
+
+	public String getEmployeeName() {
+		return employeeName;
+	}
+
+	public void setEmployeeName(String employeeName) {
+		this.employeeName = employeeName;
+	}
+
+	public boolean isGender() {
+		return isGender;
+	}
+
+	public void setGender(boolean isGender) {
+		this.isGender = isGender;
+	}
+
 	public String getEmail() {
 		return email;
 	}
@@ -30,39 +59,25 @@ public class Employee {
 		this.email = email;
 	}
 
-	public String getEmployeeId() {
-		return EmployeeId;
-	}
-	public void setEmployeeID(String employeeID) {
-		EmployeeId = employeeID;
-	}
-	public String getEmployeeName() {
-		return EmployeeName;
-	}
-	public void setEmployeeName(String employeeName) {
-		EmployeeName = employeeName;
-	}
-	public boolean isGender() {
-		return isGender;
-	}
-	public void setGender(boolean isGender) {
-		this.isGender = isGender;
-	}
 	public String getPosition() {
 		return position;
 	}
+
 	public void setPosition(String position) {
 		this.position = position;
 	}
+
 	public String getPhoneNumber() {
 		return phoneNumber;
 	}
+
 	public void setPhoneNumber(String phoneNumber) {
 		this.phoneNumber = phoneNumber;
 	}
+
 	@Override
 	public String toString() {
-		return "NhanVien [EmployeeId=" + EmployeeId + ", EmployeeName=" + EmployeeName + ", isGender=" + isGender + email + ", email"
+		return "NhanVien [EmployeeId=" + employeeId + ", EmployeeName=" + employeeName + ", isGender=" + isGender + email + ", email"
 				+ ", position=" + position + ", phoneNumber=" + phoneNumber + "]";
 	}
 

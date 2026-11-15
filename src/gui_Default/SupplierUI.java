@@ -35,7 +35,6 @@ import utils.ImageUtil;
 public class SupplierUI extends JPanel implements ActionListener, MouseListener {
     private static final Font FONT = new Font("Arial", Font.PLAIN, 13);
     private static final Color BACKGROUND_COLOR = new Color(253, 240, 255);
-    private static final Color ACCENT_COLOR = new Color(180, 60, 200);
     private static final int LOGO_SIZE = 80;
 
     private JTextField txtSupplierId;
@@ -65,11 +64,25 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
         setBackground(BACKGROUND_COLOR);
 
         JPanel titleBar = new JPanel(new BorderLayout());
-        titleBar.setBackground(BACKGROUND_COLOR);
-        titleBar.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
-        JLabel title = new JLabel("QUẢN LÝ NHÀ CUNG CẤP", JLabel.CENTER);
+        titleBar.setBackground(new Color(234, 230, 250));
+        titleBar.setPreferredSize(new Dimension(0, 60));
+        titleBar.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        JLabel title = new JLabel("Quản lý nhà cung cấp", JLabel.LEFT);
         title.setFont(new Font("Arial", Font.BOLD, 24));
-        title.setForeground(ACCENT_COLOR);
+        title.setForeground(new Color(94, 53, 165));
+
+        try {
+            ImageIcon icon = new ImageIcon(getClass().getResource("/img/supplier.png"));
+            Image scaleIcon = icon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+            title.setIcon(new ImageIcon(scaleIcon));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        title.setHorizontalTextPosition(JLabel.RIGHT);
+        title.setVerticalTextPosition(JLabel.CENTER);
+        title.setHorizontalAlignment(JLabel.LEFT);
+        title.setVerticalAlignment(JLabel.CENTER);
         titleBar.add(title, BorderLayout.CENTER);
         add(titleBar, BorderLayout.NORTH);
 
@@ -259,7 +272,7 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
 
         new SwingWorker<List<Supplier>, Void>() {
             @Override
-            protected List<Supplier> doInBackground() {
+            protected List<Supplier> doInBackground() throws Exception {
                 return supplierDao.getAll();
             }
 
@@ -353,13 +366,23 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
     }
 
     private void refreshSupplierData() {
-        List<Supplier> suppliers = supplierDao.getAll();
-        updateTable(suppliers);
-        updateSupplierComboBox(suppliers);
+        try {
+            List<Supplier> suppliers = supplierDao.getAll();
+            updateTable(suppliers);
+            updateSupplierComboBox(suppliers);
+        } catch (java.sql.SQLException e) {
+            e.printStackTrace();
+            showMessage("Không thể tải danh sách nhà cung cấp: " + e.getMessage());
+        }
     }
 
     private void clearForm() {
-        txtSupplierId.setText("");
+        try {
+            txtSupplierId.setText(supplierDao.getNextSupplierId());
+        } catch (java.sql.SQLException e) {
+            txtSupplierId.setText("");
+            showMessage("Không thể tạo mã nhà cung cấp tiếp theo: " + e.getMessage());
+        }
         txtSupplierName.setText("");
         txtAddress.setText("");
         txtPhoneNumber.setText("");

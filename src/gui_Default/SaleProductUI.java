@@ -209,8 +209,6 @@ public class SaleProductUI extends JPanel{
 						sellingPrice,
 						invoiceDetailId
 					);
-					System.out.println(invoiceDetail.getProductDetail().getProductDetailId());
-					System.out.println(invoiceDetail.getQuantity());
 					invoiceDetailDAO.insertInvoiceDetail(invoiceDetail);
 					productDetailDao.updateStockProductDetail(invoiceDetail.getProductDetail().getProductDetailId(), invoiceDetail.getQuantity());
 				}
@@ -220,9 +218,9 @@ public class SaleProductUI extends JPanel{
 				int usedPoint = Integer.parseInt(txtIsUsePoint.getText());
 				customerDao.updateLoyalty(txtPhone.getText(), newPoint, usedPoint);
 
-			showCreateInvoiceNotice();
-			showCompleteCreateInvoice();	
-				resetInvoiceForm();
+				showCreateInvoiceNotice();
+				showCompleteCreateInvoice();	
+				resetTradeInfo();
 				modelTableCart.setRowCount(0);
 				printInvoice(
 					date, employeeName, customerName, amount,
@@ -232,10 +230,10 @@ public class SaleProductUI extends JPanel{
 		});
 	}
 
-	private void resetInvoiceForm()
+	private void resetTradeInfo()
 	{
 		JTextField[] listJTF = {
-			txtAmount, txtIsUsePoint, txtDiscount, txtPaid, txtTake, txtChange
+			txtAmount, txtIsUsePoint, txtDiscount, txtPaid, txtTake, txtChange, txtPhone, txtName, txtPoint
 		};
 		for(JTextField jtf : listJTF)
 			jtf.setText("");

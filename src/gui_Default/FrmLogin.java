@@ -141,6 +141,7 @@ public class FrmLogin extends JFrame {
             EmployeeDao dao = new EmployeeDao();
             Employee nv = dao.dangNhap(ma, pass);
 
+
             if (nv != null) {
                 if (this.onLoginSuccess != null) {
                     this.onLoginSuccess.accept(nv);
