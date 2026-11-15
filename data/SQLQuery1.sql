@@ -29,13 +29,15 @@ CREATE TABLE Supplier (
     email VARCHAR(100),
     logo VARCHAR(255)
 );
-Drop Table Employee
+
 CREATE TABLE Customer (
     customerId VARCHAR(20) NOT NULL PRIMARY KEY,
     customerName NVARCHAR(100) NOT NULL,
     address NVARCHAR(200),
     phoneNumber VARCHAR(15),
-    loyaltyPoints INT DEFAULT 0
+    loyaltyPoints INT DEFAULT 0,
+    imgCustomer VARCHAR(255),
+    gender BIT NOT NULL
 );
 
 CREATE TABLE IDCounter (
