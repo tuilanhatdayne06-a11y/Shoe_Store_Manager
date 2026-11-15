@@ -35,7 +35,6 @@ import utils.ImageUtil;
 public class SupplierUI extends JPanel implements ActionListener, MouseListener {
     private static final Font FONT = new Font("Arial", Font.PLAIN, 13);
     private static final Color BACKGROUND_COLOR = new Color(253, 240, 255);
-    private static final Color ACCENT_COLOR = new Color(180, 60, 200);
     private static final int LOGO_SIZE = 80;
 
     private JTextField txtSupplierId;

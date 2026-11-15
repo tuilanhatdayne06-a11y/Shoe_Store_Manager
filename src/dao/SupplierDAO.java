@@ -41,8 +41,7 @@ public class SupplierDAO {
 		return null;
 	}
 	
-
-    public synchronized List<Supplier> getAll() throws SQLException {
+    public List<Supplier> getAll() throws SQLException {
         List<Supplier> suppliers = new ArrayList<>();
         String sql = "SELECT * FROM Supplier";
         Connection conn = ConnectDB.getConnection();

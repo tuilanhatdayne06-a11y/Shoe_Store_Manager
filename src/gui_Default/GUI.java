@@ -149,7 +149,7 @@ public class GUI extends JFrame implements ActionListener {
         btnImport.addActionListener(this);
         btnPOS.addActionListener(this);
         btnReport.addActionListener(this);
-        phanQuyenMenu(false);
+        phanQuyenMenu(false, "");
 
         pnlMenu.add(btnHome);
         pnlMenu.add(btnSupplier);
@@ -182,17 +182,59 @@ public class GUI extends JFrame implements ActionListener {
 
         add(pnlCenter, BorderLayout.CENTER);
     }
-    public void phanQuyenMenu(boolean isLogin) {
-       
-        btnEmployee.setEnabled(isLogin);
-        btnCustomer.setEnabled(isLogin);
-        btnImport.setEnabled(isLogin);
-        btnPOS.setEnabled(isLogin);
-        btnReport.setEnabled(isLogin);
-        btnProduct.setEnabled(isLogin);
-        btnSupplier.setEnabled(isLogin);
+    public void phanQuyenMenu(boolean isLogin, String role) {
+        if(isLogin)
+        {
+            if(role.equals("Quan ly"))
+            {
+                btnEmployee.setEnabled(isLogin);
+                btnCustomer.setEnabled(isLogin);
+                btnImport.setEnabled(isLogin);
+                btnPOS.setEnabled(isLogin);
+                btnReport.setEnabled(isLogin);
+                btnProduct.setEnabled(isLogin);
+                btnSupplier.setEnabled(isLogin);
+                btnHome.setEnabled(true); 
+            }
 
-        btnHome.setEnabled(true); 
+            if(role.equals("Nhan vien ban hang"))
+            {
+                btnEmployee.setEnabled(!isLogin);
+                btnCustomer.setEnabled(isLogin);
+                btnImport.setEnabled(!isLogin);
+                btnPOS.setEnabled(isLogin);
+                btnReport.setEnabled(!isLogin);
+                btnProduct.setEnabled(isLogin);
+                btnSupplier.setEnabled(!isLogin);
+                btnHome.setEnabled(true); 
+            }
+
+            if(role.equals("Nhan vien kho"))
+            {
+                btnEmployee.setEnabled(!isLogin);
+                btnCustomer.setEnabled(!isLogin);
+                btnImport.setEnabled(isLogin);
+                btnPOS.setEnabled(!isLogin);
+                btnReport.setEnabled(!isLogin);
+                btnProduct.setEnabled(isLogin);
+                btnSupplier.setEnabled(isLogin);
+                btnHome.setEnabled(true); 
+            }  
+        }
+        else
+        {
+            btnEmployee.setEnabled(isLogin);
+            btnCustomer.setEnabled(isLogin);
+            btnImport.setEnabled(isLogin);
+            btnPOS.setEnabled(isLogin);
+            btnReport.setEnabled(isLogin);
+            btnProduct.setEnabled(isLogin);
+            btnSupplier.setEnabled(isLogin);
+            btnHome.setEnabled(true); 
+        }
+
+        // if(role.equals("Nhan vien kho"))
+
     }
     private JButton createMenuButton(String text, String iconFileName) {
         JButton btn = new JButton(text);
@@ -255,7 +297,8 @@ public class GUI extends JFrame implements ActionListener {
                 String iconPath = nv.isGender() ? "/img/employee_male.png" : "/img/employee_female.png";
                 java.net.URL avatarUrl = getClass().getResource(iconPath);
                 utils.SessionManager.nhanVienDangNhap = nv;
-                phanQuyenMenu(true);
+                String role = nv.getPosition();
+                phanQuyenMenu(true, role);
                 if (avatarUrl != null) {
                     btnAvatar.setIcon(new ImageIcon(new ImageIcon(avatarUrl).getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH)));
                 }
@@ -279,8 +322,8 @@ public class GUI extends JFrame implements ActionListener {
             if (confirm == JOptionPane.YES_OPTION) {
                 loginCardLayout.show(pnlRight, "ChuaDangNhap");
                 mainCardLayout.show(pnlCenter, "HOME");
+                phanQuyenMenu(false, "");
                 currentNhanVienInfo = ""; 
-                phanQuyenMenu(false);
             }
         }
         else if (o == btnAvatar) {
