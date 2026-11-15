@@ -70,31 +70,92 @@ public class CustomerDAO {
         return list;
     }
 
-    // Tim khach hang theo ma
-    public Customer findById(String customerId) throws SQLException {
-        String sql = "SELECT customerId, customerName, address, phoneNumber, loyaltyPoints, gender "
-                   + "FROM dbo.Customer WHERE customerId = ?";
-        
-        Connection con = ConnectDB.getConnection();
-        if (con == null || con.isClosed()) {
-            throw new SQLException("Khong ket noi duoc database ShoeStore");
-        }
+// <<<<<<< HEAD
+    public Customer findByName(String customerName)
+    {
+        String sql = "select * from Customer where customerName = ?";
+    	
+    	try {
+			Connection con = ConnectDB.getConnection();
+			PreparedStatement pst = con.prepareStatement(sql);
+			
+			pst.setString(1, customerName);
+			
+			ResultSet rs = pst.executeQuery();
+			
+			if(rs.next())
+			{
+				return new Customer(
+						rs.getString("customerId"),
+						rs.getString("customerName"),
+						rs.getString("address"),
+						rs.getString("phoneNumber"),
+						rs.getInt("loyaltyPoints"),
+						rs.getBoolean("gender")
+				);
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+    	
+    	return null;
+    }
 
-        try (PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setString(1, customerId);
-            try (ResultSet rs = pst.executeQuery()) {
-                if (rs.next()) {
-                    return new Customer(
-                            rs.getString("customerId"),
-                            rs.getString("customerName"),
-                            rs.getString("address"),
-                            rs.getString("phoneNumber"),
-                            rs.getInt("loyaltyPoints"),
-                            rs.getBoolean("gender"));
-                }
-            }
-        }
-        return null;
+    public Customer findById(String customerId)
+    {
+    	String sql = "select * from Customer where customerId = ?";
+    	
+    	try {
+			Connection con = ConnectDB.getConnection();
+			PreparedStatement pst = con.prepareStatement(sql);
+			
+			pst.setString(1, customerId);
+			
+			ResultSet rs = pst.executeQuery();
+			
+			if(rs.next())
+			{
+				return new Customer(
+						rs.getString("customerId"),
+						rs.getString("customerName"),
+						rs.getString("address"),
+						rs.getString("phoneNumber"),
+						rs.getInt("loyaltyPoints"),
+						rs.getBoolean("gender")
+				);
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+    	
+    	return null;
+// =======
+//     // Tim khach hang theo ma
+//     public Customer findById(String customerId) throws SQLException {
+//         String sql = "SELECT customerId, customerName, address, phoneNumber, loyaltyPoints, gender "
+//                    + "FROM dbo.Customer WHERE customerId = ?";
+        
+//         Connection con = ConnectDB.getConnection();
+//         if (con == null || con.isClosed()) {
+//             throw new SQLException("Khong ket noi duoc database ShoeStore");
+//         }
+
+//         try (PreparedStatement pst = con.prepareStatement(sql)) {
+//             pst.setString(1, customerId);
+//             try (ResultSet rs = pst.executeQuery()) {
+//                 if (rs.next()) {
+//                     return new Customer(
+//                             rs.getString("customerId"),
+//                             rs.getString("customerName"),
+//                             rs.getString("address"),
+//                             rs.getString("phoneNumber"),
+//                             rs.getInt("loyaltyPoints"),
+//                             rs.getBoolean("gender"));
+//                 }
+//             }
+//         }
+//         return null;
+// >>>>>>> main
     }
 
     // Kiem tra SDT da duoc su dung boi khach hang khac
@@ -137,6 +198,25 @@ public class CustomerDAO {
             pst.setBoolean(4, kh.isGender());
             pst.setString(5, kh.getCustomerId());
             return pst.executeUpdate() > 0;
+        }
+    }
+
+    public void updateLoyalty(String phoneNumber, int newPoint, int usedPoint)
+    {
+        int updatePoint = newPoint - usedPoint;
+        try {
+            String sql = "update Customer set loyaltyPoints = loyaltyPoints + ? where phoneNumber = ?";
+            Connection con = ConnectDB.getConnection();
+            PreparedStatement pst = con.prepareStatement(sql);
+
+            pst.setInt(1, updatePoint);
+            pst.setString(2, phoneNumber);
+
+            pst.executeUpdate();
+
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
     }
 

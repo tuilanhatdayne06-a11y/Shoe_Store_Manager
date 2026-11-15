@@ -15,6 +15,53 @@ import entity.Supplier;
 
 public class ProductDetailDAO {
 	
+	public ProductDetail findByNameAndSize(String name, int size)
+	{
+		CategoryDAO categoryDAO = new CategoryDAO();
+		SupplierDAO supplierDAO = new SupplierDAO();
+
+		String sql = """
+				select *
+				from ProductDetail pd join Product p on pd.productId = p.productId
+				where p.productName = ? and pd.size = ?
+			""";
+
+		try {
+			Connection con = ConnectDB.getConnection();
+			PreparedStatement pst = con.prepareStatement(sql);
+			pst.setString(1, name);
+			pst.setInt(2, size);
+
+			ResultSet rs = pst.executeQuery();
+
+			if(rs.next())
+			{
+				Category category = categoryDAO.findById(rs.getString("categoryId"));
+				Supplier supplier = supplierDAO.findById(rs.getString("supplierId"));
+
+				Product product = new Product(
+					rs.getString("productId"),
+					rs.getString("productName"),
+					rs.getDouble("unitPrice"),
+					category,
+					supplier
+				);
+
+				ProductDetail productDetail = new ProductDetail(
+					rs.getString("productDetailId"),
+					rs.getInt("size"),
+					rs.getString("color"),
+					rs.getInt("stockQuantity"),
+					product,
+					rs.getString("imgProductColor")
+				);
+
+				return productDetail;
+			}
+		} catch (Exception e) {}
+		return null;
+	}
+
 	public ArrayList<ProductDetail> findProduct(String name)
 	{
 		CategoryDAO categoryDao = new CategoryDAO();
@@ -90,7 +137,10 @@ public class ProductDetailDAO {
 	{
 		boolean isAddProductDetail = insertProductDetail(product.getProductId(), productDetail);
 		if(!isAddProductDetail)
+		{
 			JOptionPane.showMessageDialog(null, "Lỗi khi thêm biến thể của sản phẩm");
+			return;
+		}
 	}
 	public boolean removeProductDetail(String removeId)
 	{
@@ -125,5 +175,22 @@ public class ProductDetailDAO {
 		}
 		JOptionPane.showMessageDialog(null, "Không thể xóa sản phẩm này");
 		return false;
+	}
+
+	public void updateStockProductDetail(String productDetailId, int quantity)
+	{
+		String sql = "update ProductDetail set stockQuantity = stockQuantity - ? where productDetailId = ?";
+
+		try {
+			Connection con = ConnectDB.getConnection();
+			PreparedStatement pst = con.prepareStatement(sql);
+
+			pst.setInt(1, quantity);
+			pst.setString(2, productDetailId);
+
+			pst.executeUpdate();
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 	}
 }

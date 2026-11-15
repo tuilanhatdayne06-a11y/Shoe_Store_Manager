@@ -131,7 +131,7 @@ public class ProductUI extends JPanel {
 	
 	private void resetForm()
 	{
-		txtProductCode.setText(phatSinhMaProductDetail());
+		txtProductCode.setText(autoGenerateProductDetailId());
 		txtProductName.setText("");
 		txtProductSize.setText("");
 		txtProductColor.setText("");
@@ -530,23 +530,23 @@ public class ProductUI extends JPanel {
 			}
 		});
 	}
-	private String phatSinhMaProductDetail() {
-	    ArrayList<Integer> danhSachSo = new ArrayList<>();
+	private String autoGenerateProductDetailId() {
+	    ArrayList<Integer> listExistId = new ArrayList<>();
 
 	    for (int i = 0; i < modelTable.getRowCount(); i++) {
 	        String id = modelTable.getValueAt(i, 0).toString();
 	        try {
 	            int num = Integer.parseInt(id.replaceAll("\\D+", ""));
-	            danhSachSo.add(num);
+	            listExistId.add(num);
 	        } catch (Exception e) {}
 	    }
 	    
-	    int soMoi = 1;
-	    while (danhSachSo.contains(soMoi)) {
-	        soMoi++;
+	    int newId = 1;
+	    while (listExistId.contains(newId)) {
+	        newId++;
 	    }
 	    
-	    return String.format("PD%03d", soMoi);
+	    return String.format("PD%03d", newId);
 	}
 	
 	// PHẦN UI Ở DƯỚI, CÁC PHẦN XỬ LÝ LOGIC Ở TRÊN
@@ -670,7 +670,7 @@ public class ProductUI extends JPanel {
 		lblTitle.setForeground(new Color(94, 53, 165));
 
 		try {
-			ImageIcon icon = new ImageIcon(getClass().getResource("/img/product.png"));//Thay ảnh sao cho phù hợp 
+			ImageIcon icon = new ImageIcon(getClass().getResource("/img/product.png")); 
 			Image scaleIcon = icon.getImage().getScaledInstance(50, 50, java.awt.Image.SCALE_SMOOTH);
 			lblTitle.setIcon(new ImageIcon(scaleIcon));
 		} catch (Exception e) {
@@ -715,6 +715,7 @@ public class ProductUI extends JPanel {
 		table.getTableHeader().setFont(new Font(table.getName(), Font.PLAIN, 11));
 		table.setFont(new Font(table.getName(), Font.PLAIN, 11));
 		pane = new JScrollPane(table);
+		pane.getHorizontalScrollBar().setUnitIncrement(25);
 		addToModelTable(null);
 		
 		bCard = Box.createHorizontalBox();
@@ -757,7 +758,7 @@ public class ProductUI extends JPanel {
 		JLabel lblProductCode = new JLabel("Mã giày");
 		lblProductCode.setFont(new Font(lblProductCode.getName(), Font.BOLD, 12));
 		txtProductCode = new JTextField(12);
-		txtProductCode.setText(phatSinhMaProductDetail());
+		txtProductCode.setText(autoGenerateProductDetailId());
 		txtProductCode.setFont(new Font(txtProductCode.getName(), Font.BOLD, 12));
 		txtProductCode.setEnabled(false);
 

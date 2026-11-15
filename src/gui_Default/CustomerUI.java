@@ -403,7 +403,7 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
             lblCustomerImg.setToolTipText("<html><b>Họ tên:</b> " + kh.getCustomerName()
                     + "<br><b>Giới tính:</b> " + (kh.isGender() ? "Nam" : "Nữ")
                     + "<br><b>SĐT:</b> " + kh.getPhoneNumber() + "</html>");
-        } catch (SQLException e) {
+        } catch (Exception e) {
             showMessage("Không lấy được thông tin khách hàng: " + e.getMessage());
         }
     }
