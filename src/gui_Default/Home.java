@@ -2,6 +2,9 @@ package gui_Default;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
+
+import entity.Employee;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -23,6 +26,8 @@ public class Home extends JScrollPane implements ActionListener, MouseListener {
 	private CardLayout mainCardLayout;
 
 	private JPanel pnlProductVisible;
+
+	private Employee nhanVienDangNhap;
 
     public Home(CardLayout cardLayout, JPanel pnlCenter) {
     	this.mainCardLayout = cardLayout;
@@ -102,7 +107,8 @@ public class Home extends JScrollPane implements ActionListener, MouseListener {
        
         pnlPartners.add(createPartnerLogo("/img/logoVHD.jpg", "VHD"));
         pnlPartners.add(createPartnerLogo("/img/logoBeyono.png", "BEYONO"));
-        pnlPartners.add(createPartnerLogo("/img/adidas.png", "ADIDAS"));
+        pnlPartners.add(createPartnerLogo("/img/AdidasLogo.png", "ADIDAS"));
+        
 
         pnlContent.add(pnlPartners);
         pnlContent.add(Box.createVerticalStrut(40));
@@ -114,6 +120,7 @@ public class Home extends JScrollPane implements ActionListener, MouseListener {
         
         setViewportView(pnlWrapper);
     }
+    
     
     private Component createPartnerLogo(String imgPath, String altText) {
     	JLabel lbl = new JLabel();
@@ -218,7 +225,7 @@ public class Home extends JScrollPane implements ActionListener, MouseListener {
         }
         return pnl;
     }
-
+	
 	private void loadBanner(String path) {
         try {
             java.net.URL url = getClass().getResource(path);
@@ -296,6 +303,7 @@ public class Home extends JScrollPane implements ActionListener, MouseListener {
     }
     
     
+    
     @Override
     public void actionPerformed(ActionEvent e) {
         if (!banners.isEmpty()) {
@@ -305,8 +313,22 @@ public class Home extends JScrollPane implements ActionListener, MouseListener {
     }
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		mainCardLayout.show(pnlProductVisible, "PRODUCT");
+		if (isLogin()) {
+            JOptionPane.showMessageDialog(this, 
+                "Vui lòng đăng nhập vào hệ thống để xem chi tiết sản phẩm!", 
+                "Yêu cầu đăng nhập", 
+                JOptionPane.WARNING_MESSAGE);
+            return; 
+        }
+		
+		
 	}
+
+	private boolean isLogin() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 
 	@Override
 	public void mousePressed(MouseEvent e) {
