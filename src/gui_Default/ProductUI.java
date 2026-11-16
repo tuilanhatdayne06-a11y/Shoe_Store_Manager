@@ -658,25 +658,6 @@ public class ProductUI extends JPanel {
 				bCard.add(Box.createHorizontalStrut(15));
 			}
 	}
-
-	public void fillFormFromHome(ProductDetail productDetail)
-	{
-		txtProductCode.setText(productDetail.getProductDetailId());
-		txtProductName.setText(productDetail.getProduct().getProductName());
-		txtProductSize.setText(Integer.toString(productDetail.getSize()));
-		txtProductColor.setText(productDetail.getColor());
-		cboProductCategory.setSelectedItem(productDetail.getProduct().getCategory().getCategoryName());
-		txtProductStock.setText(Integer.toString(productDetail.getStockQuantity()));
-		txtProductCost.setText(Double.toString(productDetail.getProduct().getUnitPrice()));
-		try {
-			ImageIcon icon = new ImageIcon("src/img/" + productDetail.getImgProductColor());
-			Image scale = icon.getImage().getScaledInstance(70, 70, Image.SCALE_SMOOTH);
-			lblDefaultImg.setIcon(new ImageIcon(scale));
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
-		cboProductSupplier.setSelectedItem(productDetail.getProduct().getSupplier().getSupplierName());
-	}
 	
 	public ProductUI() {
 		this.setLayout(new BorderLayout());
