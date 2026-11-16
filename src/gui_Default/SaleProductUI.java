@@ -130,7 +130,7 @@ public class SaleProductUI extends JPanel{
 						return;
 					}
 					txtIsUsePoint.setText("0");
-					txtDiscount.setText("");
+					txtDiscount.setText(nf.format(0.0));
 					txtPaid.setText(nf.format(totalAmount));
 				}
 			}
@@ -203,11 +203,11 @@ public class SaleProductUI extends JPanel{
 						return;
 					}
 					InvoiceDetail invoiceDetail = new InvoiceDetail(
+						invoiceDetailId,
 						invoice,
 						productDetail,
 						quantity,
-						sellingPrice,
-						invoiceDetailId
+						sellingPrice
 					);
 					invoiceDetailDAO.insertInvoiceDetail(invoiceDetail);
 					productDetailDao.updateStockProductDetail(invoiceDetail.getProductDetail().getProductDetailId(), invoiceDetail.getQuantity());
@@ -235,6 +235,7 @@ public class SaleProductUI extends JPanel{
 		JTextField[] listJTF = {
 			txtAmount, txtIsUsePoint, txtDiscount, txtPaid, txtTake, txtChange, txtPhone, txtName, txtPoint
 		};
+		radUsePoint.setSelected(false);
 		for(JTextField jtf : listJTF)
 			jtf.setText("");
 	}
@@ -407,25 +408,25 @@ public class SaleProductUI extends JPanel{
 			return false;
 		}
 
-			double paid = 0.0;
-    		try {
-				paid = nf.parse(txtPaid.getText()).doubleValue();
-			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			double takenMoney = Double.parseDouble(txtTake.getText());
-			try {
-				if(takenMoney < paid)
-				{
-					JOptionPane.showMessageDialog(this, "Không đủ tiền để giao dịch");
-					return false;
-				}
-			}catch (NumberFormatException e) {
-				e.printStackTrace();
-				JOptionPane.showMessageDialog(this, "Số tiền khách đưa phải là số");
+		double paid = 0.0;
+		try {
+			paid = nf.parse(txtPaid.getText()).doubleValue();
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		double takenMoney = Double.parseDouble(txtTake.getText());
+		try {
+			if(takenMoney < paid)
+			{
+				JOptionPane.showMessageDialog(this, "Không đủ tiền để giao dịch");
 				return false;
 			}
+		}catch (NumberFormatException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(this, "Số tiền khách đưa phải là số");
+			return false;
+		}
 
 		return true;
 	}
@@ -512,6 +513,8 @@ public class SaleProductUI extends JPanel{
 			}
 			else
 			{
+				txtIsUsePoint.setText("0");
+				txtDiscount.setText(nf.format(0.0));
 				addToCart(pd);
 				double price = 0.0;
 				double prePrice = 0.0;
@@ -703,16 +706,16 @@ public class SaleProductUI extends JPanel{
 
 	private void addToEmployeeCombobox()
 	{
-		ArrayList<Object[]> listEmployee = employeeDao.getEmployeeByPosition("Nhan vien ban hang");
-		ArrayList<Object[]> listManager = employeeDao.getEmployeeByPosition("Quan ly");
-		for(Object[] obj : listEmployee)
+		ArrayList<Employee> listEmployee = employeeDao.getEmployeeByPosition("Nhan vien ban hang");
+		ArrayList<Employee> listManager = employeeDao.getEmployeeByPosition("Quan ly");
+		for(Employee em : listEmployee)
 		{
-			String employee = (String) obj[1];
+			String employee = em.getEmployeeName() + " - " + em.getPosition();
 			cboEmployee.addItem(employee);
 		}
-		for(Object[] obj : listManager)
+		for(Employee em : listManager)
 		{
-			String employee = (String) obj[1];
+			String employee = em.getEmployeeName() + " - " + em.getPosition();
 			cboEmployee.addItem(employee);
 		}
 	}

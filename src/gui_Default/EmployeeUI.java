@@ -113,7 +113,7 @@ public class EmployeeUI extends JPanel implements ActionListener {
         pnlForm.add(pnlGender);
 
         pnlForm.add(new JLabel("Chức Vụ:"));
-        String[] chucVu = {"Nhân viên bán hàng", "Quản lý cửa hàng", "Nhân viên kho", "Kế toán"};
+        String[] chucVu = {"Quan ly", "Nhan vien kho", "Nhan vien ban hang"};
         cmbChucVu = new JComboBox<>(chucVu);
         cmbChucVu.setBackground(Color.WHITE);
         pnlForm.add(cmbChucVu);
@@ -140,7 +140,7 @@ public class EmployeeUI extends JPanel implements ActionListener {
 
         JPanel pnlSearch = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         pnlSearch.setBackground(Color.WHITE);
-        pnlSearch.add(new JLabel("Tìm kiếm:"));
+        pnlSearch.add(new JLabel("Tìm kiếm theo chức vụ:"));
         txtTimKiem = new JTextField(15);
         txtTimKiem.setPreferredSize(new Dimension(150, 28));
         btnTimKiem = createButton("Tìm");
@@ -339,6 +339,18 @@ public class EmployeeUI extends JPanel implements ActionListener {
         else if (o == btnLamMoi) {
             loadDataToTable();
             btnXoaTrang.doClick();
+        }
+        else if(o == btnTimKiem)
+        {
+            for(int i = 0;i < modelNhanVien.getRowCount();i++)
+            {
+                if(modelNhanVien.getValueAt(i, 5).toString().equals("Nhan vien ban hang"))
+                {
+                    tblNhanVien.removeAll();
+                    
+                }
+            }
+
         }
     }
 }

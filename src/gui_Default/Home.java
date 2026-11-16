@@ -2,12 +2,12 @@ package gui_Default;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
-
-import entity.Employee;
+ 
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
@@ -21,17 +21,22 @@ public class Home extends JScrollPane implements ActionListener, MouseListener {
     private Timer slideTimer;
     private JLabel lblBanner;
     private JPanel pnlContent;
-
+    private boolean hadLogin;
 
 	private CardLayout mainCardLayout;
-
 	private JPanel pnlProductVisible;
 
-	private Employee nhanVienDangNhap;
+    public Home() {}
+
+    public void setLogin(boolean isLogin)
+    {
+        this.hadLogin = isLogin;
+    }
 
     public Home(CardLayout cardLayout, JPanel pnlCenter) {
     	this.mainCardLayout = cardLayout;
     	this.pnlProductVisible = pnlCenter;
+
     	
         pnlContent = new JPanel();
         pnlContent.setLayout(new BoxLayout(pnlContent, BoxLayout.Y_AXIS));
@@ -84,7 +89,7 @@ public class Home extends JScrollPane implements ActionListener, MouseListener {
         pnlGrid.add(createSportCard("Asics Sky Elite FF MT 3 White Dragon Fruit", "Đệm giảm chấn, bám sân cực tốt", "ASIC", "/img/Asics.png"));
         pnlGrid.add(createSportCard("Yonex Power Cushion Infinity 2", "Đế kếp dẻo, chống lật cổ chân", "YONEX", "/img/Yonex.png"));
         pnlGrid.add(createSportCard("LOW BASKET G BEG/SAX", "Phong cách trẻ trung, đi hàng ngày", "MOONSTAR", "/img/moon.png"));
-        pnlGrid.add(createSportCard("Ja 4 'Deep Water' EP", "Cổ cao bảo vệ khớp, bám sân", "NIKE", "/img/basketball.png"));
+        pnlGrid.add(createSportCard("Ja 4 Deep Water EP", "Cổ cao bảo vệ khớp, bám sân", "NIKE", "/img/basketball.png"));
         pnlGrid.add(createSportCard("Adizero Adios Pro EVO 1", "Siêu nhẹ, êm ái, tối ưu lực đẩy", "Adidas", "/img/running.png"));
 
         pnlContent.add(pnlGrid);
@@ -120,8 +125,7 @@ public class Home extends JScrollPane implements ActionListener, MouseListener {
         
         setViewportView(pnlWrapper);
     }
-    
-    
+
     private Component createPartnerLogo(String imgPath, String altText) {
     	JLabel lbl = new JLabel();
         lbl.setHorizontalAlignment(SwingConstants.CENTER);
@@ -262,7 +266,24 @@ public class Home extends JScrollPane implements ActionListener, MouseListener {
             }
         } catch (Exception e) {}
 
-        lblImg.addMouseListener(this);
+        lblImg.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (!hadLogin) {
+                    JOptionPane.showMessageDialog(lblImg, 
+                        "Vui lòng đăng nhập vào hệ thống để xem chi tiết sản phẩm!", 
+                        "Yêu cầu đăng nhập", 
+                        JOptionPane.WARNING_MESSAGE);
+                    return; 
+                }
+                else
+                {
+                    mainCardLayout.show(pnlProductVisible, "PRODUCT");
+                }
+            }
+        });
+
+
 
         card.add(lblImg, BorderLayout.CENTER);
 
@@ -301,9 +322,7 @@ public class Home extends JScrollPane implements ActionListener, MouseListener {
 
         return card;
     }
-    
-    
-    
+
     @Override
     public void actionPerformed(ActionEvent e) {
         if (!banners.isEmpty()) {
@@ -311,46 +330,19 @@ public class Home extends JScrollPane implements ActionListener, MouseListener {
             lblBanner.setIcon(banners.get(currentBannerIndex));
         }
     }
-	@Override
-	public void mouseClicked(MouseEvent e) {
-		if (isLogin()) {
-            JOptionPane.showMessageDialog(this, 
-                "Vui lòng đăng nhập vào hệ thống để xem chi tiết sản phẩm!", 
-                "Yêu cầu đăng nhập", 
-                JOptionPane.WARNING_MESSAGE);
-            return; 
-        }
-		
-		
-	}
-
-	private boolean isLogin() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 
 	@Override
-	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void mouseClicked(MouseEvent e) {}
 
 	@Override
-	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void mousePressed(MouseEvent e) {}
 
 	@Override
-	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void mouseReleased(MouseEvent e) {}
 
 	@Override
-	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void mouseEntered(MouseEvent e) {}
+
+	@Override
+	public void mouseExited(MouseEvent e) {}
 }
