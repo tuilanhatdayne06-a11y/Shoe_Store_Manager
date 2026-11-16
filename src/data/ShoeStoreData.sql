@@ -1,10 +1,5 @@
 USE ShoeStore;
 GO
-
--- Du lieu mau cho database ShoeStore
--- Moi bang nghiep vu co 15 dong du lieu.
--- IDCounter duoc khoi tao voi currentValue = 15.
-
 DELETE FROM InvoiceDetail;
 DELETE FROM Invoice;
 
@@ -23,7 +18,6 @@ DELETE FROM Category;
 
 DELETE FROM IDCounter;
 
--- 1. Employee
 INSERT INTO Employee (employeeId, employeeName, gender, phoneNumber, position, email) VALUES
 ('NV001', N'Nguyen Van An', 1, '0901000001', N'Quan ly', 'an.nguyen@shoestore.vn'),
 ('NV002', N'Tran Thi Binh', 0, '0901000002', N'Nhan vien ban hang', 'binh.tran@shoestore.vn'),
@@ -40,9 +34,7 @@ INSERT INTO Employee (employeeId, employeeName, gender, phoneNumber, position, e
 ('NV013', N'Ta Van Son', 1, '0901000013', N'Nhan vien kho', 'son.ta@shoestore.vn'),
 ('NV014', N'Phan Thi Thao', 0, '0901000014', N'Nhan vien ban hang', 'thao.phan@shoestore.vn'),
 ('NV015', N'Mai Van Tuan', 1, '0901000015', N'Nhan vien kho', 'tuan.mai@shoestore.vn');
-GO
 
--- 2. Account
 INSERT INTO Account (employeeId, password, role) VALUES
 ('NV001', '123456', N'Admin'),
 ('NV002', '123456', N'Staff'),
@@ -59,9 +51,7 @@ INSERT INTO Account (employeeId, password, role) VALUES
 ('NV013', '123456', N'Staff'),
 ('NV014', '123456', N'Staff'),
 ('NV015', '123456', N'Staff');
-GO
 
--- 3. Customer
 INSERT INTO Customer (customerId, customerName, address, phoneNumber, loyaltyPoints, gender) VALUES
 ('KH001', N'Nguyen Minh Chau', N'Quan 1, TP Ho Chi Minh', '0912000001', 12, 0),
 ('KH002', N'Tran Quoc Bao', N'Quan 3, TP Ho Chi Minh', '0912000002', 8, 1),
@@ -78,11 +68,7 @@ INSERT INTO Customer (customerId, customerName, address, phoneNumber, loyaltyPoi
 ('KH013', N'Ta Duc Thinh', N'Quan 12, TP Ho Chi Minh', '0912000013', 6, 1),
 ('KH014', N'Phan Nhu Quynh', N'Phu Nhuan, TP Ho Chi Minh', '0912000014', 22, 0),
 ('KH015', N'Mai Thanh Tung', N'Thu Dau Mot, Binh Duong', '0912000015', 10, 1);
-GO
 
--- 4. Supplier
--- Supplier la cac don vi phan phoi, khong phai ten thuong hieu giay.
--- Khong gan anh logo vi danh sach anh khong co logo nha phan phoi phu hop.
 INSERT INTO Supplier (supplierId, supplierName, address, phoneNumber, email, logo) VALUES
 ('NCC001', N'Cong ty Thuong mai Minh Phat', N'Quan 5, TP Ho Chi Minh', '02838000002', 'contact02@minhphat.vn', 'BeyonoLogo.png'),
 ('NCC002', N'Cong ty Phan phoi An Khang', N'Binh Thanh, TP Ho Chi Minh', '02838000003', 'contact03@ankhang.vn', 'CabetoLogo.png'),
@@ -93,9 +79,7 @@ INSERT INTO Supplier (supplierId, supplierName, address, phoneNumber, email, log
 ('NCC007', N'Cong ty Thuong mai Phu Hung', N'Tan Binh, TP Ho Chi Minh', '02838000008', 'contact08@phuhung.vn', 'Sporty VietnamLogo.png'),
 ('NCC008', N'Cong ty Phan phoi Tien Dat', N'Quan 7, TP Ho Chi Minh', '02838000009', 'contact09@tiendat.vn', 'Street StyleLogo.png'),
 ('NCC009', N'Cong ty Thuong mai Bao Tin', N'Quan 11, TP Ho Chi Minh', '02838000010', 'contact10@baotin.vn', 'Urban ShoesLogo.png');
-GO
 
--- 5. Category
 INSERT INTO Category (categoryId, categoryName) VALUES
 ('CAT001', N'Giay the thao'),
 ('CAT002', N'Giay chay bo'),
@@ -112,9 +96,7 @@ INSERT INTO Category (categoryId, categoryName) VALUES
 ('CAT013', N'Giay trekking'),
 ('CAT014', N'Giay tennis'),
 ('CAT015', N'Giay lifestyle');
-GO
 
--- 6. Product
 INSERT INTO Product (productId, productName, unitPrice, categoryId, supplierId) VALUES
 ('SP001', N'Giay chay bo nang nhe', 1250000, 'CAT002', 'NCC001'),
 ('SP002', N'Giay bong ro co cao', 1850000, 'CAT003', 'NCC002'),
@@ -138,11 +120,6 @@ INSERT INTO Product (productId, productName, unitPrice, categoryId, supplierId) 
 ('SP020', 'Ja 4 Deep Water EP', 3500000, 'CAT001', 'NCC005'),
 ('SP021', 'Adizero Adios Pro EVO 1', 6500000, 'CAT002', 'NCC001');
 
-GO
-
--- 7. ProductDetail
--- Cac ten anh duoi day deu nam trong danh sach anh duoc cung cap.
--- Khong su dung file co ten chua tu "logo".
 INSERT INTO ProductDetail (productDetailId, size, color, stockQuantity, productId, imgProductColor) VALUES
 ('PD001', 40, N'Den', 18, 'SP001', N'running.png'),
 ('PD002', 41, N'Trang', 12, 'SP002', N'basketball.png'),
@@ -165,8 +142,7 @@ INSERT INTO ProductDetail (productDetailId, size, color, stockQuantity, productI
 ('PD019', 39, 'Beige', 30, 'SP019', 'moon.png'),
 ('PD020', 43, 'Blue', 12, 'SP020', 'basketball.png'),
 ('PD021', 42, 'White/Black', 10, 'SP021', 'running.png');
-GO
--- 8. PurchaseOrder
+
 INSERT INTO PurchaseOrder (purchaseOrderId, orderDate, employeeId, supplierId, status) VALUES
 ('PO001', '2026-01-05T09:15:00', 'NV005', 'NCC001', N'Da nhap'),
 ('PO002', '2026-01-08T10:20:00', 'NV009', 'NCC002', N'Da nhap'),
@@ -183,9 +159,7 @@ INSERT INTO PurchaseOrder (purchaseOrderId, orderDate, employeeId, supplierId, s
 ('PO013', '2026-03-09T11:15:00', 'NV005', 'NCC004', N'Da nhap'),
 ('PO014', '2026-03-13T16:00:00', 'NV009', 'NCC005', N'Da nhap'),
 ('PO015', '2026-03-17T10:45:00', 'NV013', 'NCC006', N'Da nhap');
-GO
 
--- 9. PurchaseOrderDetail
 INSERT INTO PurchaseOrderDetail (purchaseOrderId, productDetailId, quantity, importPrice) VALUES
 ('PO001', 'PD001', 20, 850000),
 ('PO002', 'PD002', 15, 1300000),
@@ -202,9 +176,7 @@ INSERT INTO PurchaseOrderDetail (purchaseOrderId, productDetailId, quantity, imp
 ('PO013', 'PD013', 12, 1350000),
 ('PO014', 'PD014', 15, 1050000),
 ('PO015', 'PD015', 22, 860000);
-GO
 
--- 10. Invoice
 INSERT INTO Invoice (invoiceId, creationDate, totalAmount, employeeId, customerId) VALUES
 ('HD001', '2026-03-20T09:10:00', 1250000, 'NV002', 'KH001'),
 ('HD002', '2026-03-21T10:25:00', 1850000, 'NV003', 'KH002'),
@@ -221,9 +193,7 @@ INSERT INTO Invoice (invoiceId, creationDate, totalAmount, employeeId, customerI
 ('HD013', '2026-04-02T09:45:00', 1950000, 'NV011', 'KH013'),
 ('HD014', '2026-04-03T10:55:00', 1550000, 'NV014', 'KH014'),
 ('HD015', '2026-04-04T12:05:00', 1280000, 'NV002', 'KH015');
-GO
 
--- 11. InvoiceDetail
 INSERT INTO InvoiceDetail (invoiceDetailId, invoiceId, productDetailId, quantity, sellingPrice) VALUES
 ('HDD001', 'HD001', 'PD001', 1, 1250000),
 ('HDD002', 'HD002', 'PD002', 1, 1850000),
@@ -240,17 +210,15 @@ INSERT INTO InvoiceDetail (invoiceDetailId, invoiceId, productDetailId, quantity
 ('HDD013', 'HD013', 'PD013', 1, 1950000),
 ('HDD014', 'HD014', 'PD014', 1, 1550000),
 ('HDD015', 'HD015', 'PD015', 1, 1280000);
-GO
 
--- 12. IDCounter
 INSERT INTO IDCounter (prefix, currentValue) VALUES
 ('NV', 15),
 ('KH', 15),
-('NCC', 15),
+('NCC', 9),
 ('CAT', 15),
-('SP', 15),
-('PD', 15),
+('SP', 21),
+('PD', 21),
 ('PO', 15),
 ('HD', 15),
 ('HDD', 15);
-GO
+
