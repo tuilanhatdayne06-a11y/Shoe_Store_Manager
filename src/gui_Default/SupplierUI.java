@@ -301,7 +301,7 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
             return false;
         }
 
-        int[] maxLengths = {20, 150, 200, 15, 100, 255};
+        int[] maxLengths = {20, 100, 255, 15, 100, 255};
         String[] fieldNames = {
                 "Mã nhà cung cấp", "Tên nhà cung cấp", "Địa chỉ",
                 "Số điện thoại", "Email", "Logo"
@@ -312,6 +312,37 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
                 return false;
             }
         }
+
+        String[] checkEmpty = {
+            txtSupplierName.getText(),
+            txtAddress.getText(),
+            txtPhoneNumber.getText(),
+            txtEmail.getText()
+        };
+
+        for(String str : checkEmpty)
+        {
+            if(str.isBlank())
+            {
+                JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ các trường");
+                return false;
+            }
+        }
+
+        if(image == null)
+        {
+            JOptionPane.showMessageDialog(this, "Chưa chọn Logo");
+            return false;
+        }
+
+        if(!txtPhoneNumber.getText().matches("0\\d{9}"))
+        {
+            showMessage("Số điện thoại phải gồm 10 số, bắt đầu bằng 0!");
+            txtPhoneNumber.requestFocus();
+            return false;
+        }
+
+
         if (!values[4].isEmpty()
                 && !values[4].matches("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")) {
             showMessage("Email không đúng định dạng.");
@@ -411,7 +442,7 @@ public class SupplierUI extends JPanel implements ActionListener, MouseListener 
 
     private String getLogoProjectPath(String fileName) {
         String logoFileName = getLogoFileName(fileName);
-        return logoFileName.isEmpty() ? "" : new File("src/img", logoFileName).getName();
+        return logoFileName.isEmpty() ? "" : new File("src/img/", logoFileName).getAbsolutePath();
     }
 
     private String getLogoFileName(String path) {

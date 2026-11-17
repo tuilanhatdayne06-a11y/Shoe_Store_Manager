@@ -50,7 +50,7 @@ public class SupplierDAO {
         }
 
         try (PreparedStatement pst = conn.prepareStatement(sql);
-             ResultSet rs = pst.executeQuery()) {
+                ResultSet rs = pst.executeQuery()) {
             while (rs.next()) {
                 suppliers.add(readSupplier(rs));
             }

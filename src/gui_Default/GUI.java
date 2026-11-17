@@ -28,6 +28,7 @@ public class GUI extends JFrame implements ActionListener {
     private JButton btnImport;
     private JButton btnPOS;
     private JButton btnReport;
+    private Home home;
 
     private Color bgLight = new Color(253, 240, 255);
     private Color primaryColor = new Color(180, 60, 200);
@@ -37,7 +38,7 @@ public class GUI extends JFrame implements ActionListener {
 
     public GUI() {
         setTitle("Phần Mềm Quản Lý Cửa Hàng Giày Dép - Nhóm 10");
-        setSize(1200, 800);
+        setSize(1250, 800);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
@@ -168,17 +169,15 @@ public class GUI extends JFrame implements ActionListener {
         mainCardLayout = new CardLayout();
         pnlCenter = new JPanel(mainCardLayout);
 
-            
-        pnlCenter.add(new Home(mainCardLayout, pnlCenter), "HOME");
+        home = new Home(mainCardLayout, pnlCenter);
+        home.setLogin(false);
+        pnlCenter.add(home, "HOME");
         pnlCenter.add(new SupplierUI(), "SUPPLIER");
-        pnlCenter.add(new EmployeeUI(), "EMPLOYEE");
         pnlCenter.add(new ProductUI(), "PRODUCT");
+        pnlCenter.add(new EmployeeUI(), "EMPLOYEE");
         pnlCenter.add(new CustomerUI(), "CUSTOMER");
         pnlCenter.add(new ImportProductUI(), "IMPORT");
         pnlCenter.add(new SaleProductUI(), "POS");
-        pnlCenter.add(new ImportProductUI(), "IMPORT");
-        pnlCenter.add(new SaleProductUI(), "POS");
-        pnlCenter.add(new CustomerUI(), "CUSTOMER");
         pnlCenter.add(new ReportUI(), "REPORT");
 
         add(pnlCenter, BorderLayout.CENTER);
@@ -233,8 +232,6 @@ public class GUI extends JFrame implements ActionListener {
             btnSupplier.setEnabled(isLogin);
             btnHome.setEnabled(true); 
         }
-
-        // if(role.equals("Nhan vien kho"))
 
     }
     private JButton createMenuButton(String text, String iconFileName) {
@@ -299,6 +296,7 @@ public class GUI extends JFrame implements ActionListener {
                 java.net.URL avatarUrl = getClass().getResource(iconPath);
                 utils.SessionManager.nhanVienDangNhap = nv;
                 String role = nv.getPosition();
+                home.setLogin(true);
                 phanQuyenMenu(true, role);
                 if (avatarUrl != null) {
                     btnAvatar.setIcon(new ImageIcon(new ImageIcon(avatarUrl).getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH)));
@@ -323,6 +321,7 @@ public class GUI extends JFrame implements ActionListener {
             if (confirm == JOptionPane.YES_OPTION) {
                 loginCardLayout.show(pnlRight, "ChuaDangNhap");
                 mainCardLayout.show(pnlCenter, "HOME");
+                home.setLogin(false);
                 phanQuyenMenu(false, "");
                 currentNhanVienInfo = ""; 
             }

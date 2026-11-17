@@ -235,13 +235,27 @@ public class CustomerUI extends JPanel implements ActionListener, MouseListener 
             txtCustomerName.requestFocus();
             return false;
         }
+
+        if(sdt.isBlank())
+        {
+            JOptionPane.showMessageDialog(this, "Số điện thoại không được trống");
+            txtCustomerPhone.requestFocus();
+            return false;
+        }
+
+        if(diaChi.isBlank())
+        {
+            JOptionPane.showMessageDialog(this, "Địa chỉ không được trống");
+            txtCustomerAddress.requestFocus();
+            return false;
+        }
         if (!sdt.matches("0[0-9]{9}")) {
             showMessage("Số điện thoại phải gồm 10 số, bắt đầu bằng 0!");
             txtCustomerPhone.requestFocus();
             return false;
         }
-        if (diaChi.length() > 200) {
-            showMessage("Địa chỉ không được quá 200 ký tự!");
+        if (diaChi.length() > 255) {
+            showMessage("Địa chỉ không được quá 255 ký tự!");
             txtCustomerAddress.requestFocus();
             return false;
         }

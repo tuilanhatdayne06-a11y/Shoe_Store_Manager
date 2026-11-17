@@ -35,7 +35,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
 import dao.CustomerDAO;
@@ -88,6 +87,11 @@ public class SaleProductUI extends JPanel{
 		});
 		
 		btnFind.addActionListener(e -> {
+			if(txtFind.getText().isBlank())
+			{
+				JOptionPane.showMessageDialog(this, "Chưa nhập tên sản phẩm cần tìm");
+				return;
+			}
 			findByName(txtFind.getText().toString());
 		});
 		
@@ -141,7 +145,7 @@ public class SaleProductUI extends JPanel{
 						return;
 					}
 					txtIsUsePoint.setText("0");
-					txtDiscount.setText("");
+					txtDiscount.setText(nf.format(0.0));
 					txtPaid.setText(nf.format(totalAmount));
 				}
 			}
@@ -214,11 +218,11 @@ public class SaleProductUI extends JPanel{
 						return;
 					}
 					InvoiceDetail invoiceDetail = new InvoiceDetail(
+						invoiceDetailId,
 						invoice,
 						productDetail,
 						quantity,
-						sellingPrice,
-						invoiceDetailId
+						sellingPrice
 					);
 					invoiceDetailDAO.insertInvoiceDetail(invoiceDetail);
 					productDetailDao.updateStockProductDetail(invoiceDetail.getProductDetail().getProductDetailId(), invoiceDetail.getQuantity());
@@ -246,6 +250,7 @@ public class SaleProductUI extends JPanel{
 		JTextField[] listJTF = {
 			txtAmount, txtIsUsePoint, txtDiscount, txtPaid, txtTake, txtChange, txtPhone, txtName, txtPoint
 		};
+		radUsePoint.setSelected(false);
 		for(JTextField jtf : listJTF)
 			jtf.setText("");
 
@@ -314,7 +319,7 @@ public class SaleProductUI extends JPanel{
 	)
 	{
 		JDialog diaInvoice = new JDialog();
-		diaInvoice.setSize(350, 300);
+		diaInvoice.setSize(450, 300);
 		diaInvoice.setLocationRelativeTo(null);
 
 		JPanel pnlInvoice = new JPanel(new BorderLayout());
@@ -414,25 +419,25 @@ public class SaleProductUI extends JPanel{
 			return false;
 		}
 
-			double paid = 0.0;
-    		try {
-				paid = nf.parse(txtPaid.getText()).doubleValue();
-			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			double takenMoney = Double.parseDouble(txtTake.getText());
-			try {
-				if(takenMoney < paid)
-				{
-					JOptionPane.showMessageDialog(this, "Không đủ tiền để giao dịch");
-					return false;
-				}
-			}catch (NumberFormatException e) {
-				e.printStackTrace();
-				JOptionPane.showMessageDialog(this, "Số tiền khách đưa phải là số");
+		double paid = 0.0;
+		try {
+			paid = nf.parse(txtPaid.getText()).doubleValue();
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		double takenMoney = Double.parseDouble(txtTake.getText());
+		try {
+			if(takenMoney < paid)
+			{
+				JOptionPane.showMessageDialog(this, "Không đủ tiền để giao dịch");
 				return false;
 			}
+		}catch (NumberFormatException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(this, "Số tiền khách đưa phải là số");
+			return false;
+		}
 
 		return true;
 	}
@@ -506,6 +511,11 @@ public class SaleProductUI extends JPanel{
 		JButton btnDetail = new JButton("Xem chi tiết");
 		
 		btnChoose.addActionListener(e -> {
+			if(pd.getStockQuantity() == 0)
+			{
+				JOptionPane.showMessageDialog(this, "Sản phẩm đã hết hàng");
+				return;
+			}
 			if(txtPhone.getText().isBlank())
 			{
 				JOptionPane.showMessageDialog(this, "Không tìm thấy khách hàng nào để thực hiện giao dịch");
@@ -519,6 +529,8 @@ public class SaleProductUI extends JPanel{
 			}
 			else
 			{
+				txtIsUsePoint.setText("0");
+				txtDiscount.setText(nf.format(0.0));
 				addToCart(pd);
 				double price = 0.0;
 				double prePrice = 0.0;
@@ -555,8 +567,6 @@ public class SaleProductUI extends JPanel{
 	private void addToCart(ProductDetail pd) {
 		int totalRow = modelTableCart.getRowCount();
 		boolean isExist = false;
-		if(pd.getStockQuantity() == 0)
-			JOptionPane.showMessageDialog(this, "Sản phẩm đã hết hàng, vui lòng chọn sản phẩm khác");
 		if(totalRow == 0)
 		{
 			modelTableCart.addRow(new Object[] {
@@ -710,16 +720,16 @@ public class SaleProductUI extends JPanel{
 
 	private void addToEmployeeCombobox()
 	{
-		ArrayList<Object[]> listEmployee = employeeDao.getEmployeeByPosition("Nhan vien ban hang");
-		ArrayList<Object[]> listManager = employeeDao.getEmployeeByPosition("Quan ly");
-		for(Object[] obj : listEmployee)
+		ArrayList<Employee> listEmployee = employeeDao.getEmployeeByPosition("Nhan vien ban hang");
+		ArrayList<Employee> listManager = employeeDao.getEmployeeByPosition("Quan ly");
+		for(Employee em : listEmployee)
 		{
-			String employee = (String) obj[1];
+			String employee = em.getEmployeeName() + " - " + em.getPosition();
 			cboEmployee.addItem(employee);
 		}
-		for(Object[] obj : listManager)
+		for(Employee em : listManager)
 		{
-			String employee = (String) obj[1];
+			String employee = em.getEmployeeName() + " - " + em.getPosition();
 			cboEmployee.addItem(employee);
 		}
 	}
@@ -801,7 +811,7 @@ public class SaleProductUI extends JPanel{
 		pnlEmployee.add(lblEmployee);
 		cboEmployee = new JComboBox<String>();
 		cboEmployee.setMaximumRowCount(3);
-		cboEmployee.setPreferredSize(new Dimension(30, 5));
+		cboEmployee.setPreferredSize(new Dimension(200, 10));
 		addToEmployeeCombobox();
 		
 		pnlEmployee.add(cboEmployee);
@@ -986,7 +996,7 @@ public class SaleProductUI extends JPanel{
 		pnlManager.add(pnlLeft, BorderLayout.WEST);
 		
 		pnlRight.add(pnlBottom, gbcRight);
-		pnlRight.setPreferredSize(new Dimension(400, 35));
+		pnlRight.setPreferredSize(new Dimension(450, 35));
 		pnlManager.add(pnlRight, BorderLayout.EAST);
 
 

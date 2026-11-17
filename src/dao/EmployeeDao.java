@@ -16,32 +16,33 @@ public class EmployeeDao {
         Connection con = ConnectDB.getConnection();
         PreparedStatement pst = null;
         PreparedStatement pstAccount = null;
-        
+
         try {
             con.setAutoCommit(false);
-            
+
             pst = con.prepareStatement(sql);
             pstAccount = con.prepareStatement(sqlAccount);
-            
+
             pst.setString(1, nv.getEmployeeId());
             pst.setString(2, nv.getEmployeeName());
             pst.setBoolean(3, nv.isGender());
             pst.setString(4, nv.getEmail());
             pst.setString(5, nv.getPhoneNumber());
             pst.setString(6, nv.getPosition());
-            
+
             int updateEmployee = pst.executeUpdate();
-            
+
             pstAccount.setString(1, nv.getEmployeeId());
             pstAccount.setString(2, matKhau);
             pstAccount.setString(3, nv.getPosition());
-            
+
             int updateAccount = pstAccount.executeUpdate();
-            
+
             return updateEmployee > 0 && updateAccount > 0;
         } catch (SQLException e) {
             try {
-                if (con != null) con.rollback(); 
+                if (con != null)
+                    con.rollback();
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
@@ -49,66 +50,65 @@ public class EmployeeDao {
             return false;
         } finally {
             try {
-                if (pst != null) pst.close();
-                if (pstAccount != null) pstAccount.close();
-                if (con != null) con.setAutoCommit(true);
+                if (pst != null)
+                    pst.close();
+                if (pstAccount != null)
+                    pstAccount.close();
+                if (con != null)
+                    con.setAutoCommit(true);
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    public Employee findByName(String employeeName)
-    {
+    public Employee findByName(String employeeName) {
         String sql = "select * from Employee where employeeName = ?";
-    	
-    	try {
-			Connection con = ConnectDB.getConnection();
-			PreparedStatement pst = con.prepareStatement(sql);
-			
-			pst.setString(1, employeeName);
-			
-			ResultSet rs = pst.executeQuery();
-			
-			if(rs.next())
-			{
-				return new Employee(
-						rs.getString("employeeId"),
-						rs.getString("employeeName"),
-						rs.getBoolean("gender"),
-						rs.getString("email"),
-						rs.getString("phoneNumber"),
-						rs.getString("position")
-				);
-			}
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
-    	
-    	return null;
+
+        try {
+            Connection con = ConnectDB.getConnection();
+            PreparedStatement pst = con.prepareStatement(sql);
+
+            pst.setString(1, employeeName);
+
+            ResultSet rs = pst.executeQuery();
+
+            if (rs.next()) {
+                return new Employee(
+                        rs.getString("employeeId"),
+                        rs.getString("employeeName"),
+                        rs.getBoolean("gender"),
+                        rs.getString("email"),
+                        rs.getString("phoneNumber"),
+                        rs.getString("position"));
+            }
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
+
+        return null;
     }
 
     public Employee dangNhap(String maNV, String matKhau) {
         String sql = "SELECT e.employeeId, e.employeeName, e.gender, e.email, e.phoneNumber, e.position "
-                   + "FROM Employee e JOIN Account a ON e.employeeId = a.employeeId "
-                   + "WHERE e.employeeId = ? AND a.password = ?";
-        
+                + "FROM Employee e JOIN Account a ON e.employeeId = a.employeeId "
+                + "WHERE e.employeeId = ? AND a.password = ?";
+
         try {
             Connection con = ConnectDB.getConnection();
             PreparedStatement pst = con.prepareStatement(sql);
             pst.setString(1, maNV);
             pst.setString(2, matKhau);
-            
+
             ResultSet rs = pst.executeQuery();
             if (rs.next()) {
                 return new Employee(
-                    rs.getString("employeeId"),
-                    rs.getString("employeeName"),
-                    rs.getBoolean("gender"),
-                    rs.getString("phoneNumber"),
-                    rs.getString("email"), 
-                    rs.getString("position")
-                );
+                        rs.getString("employeeId"),
+                        rs.getString("employeeName"),
+                        rs.getBoolean("gender"),
+                        rs.getString("phoneNumber"),
+                        rs.getString("email"),
+                        rs.getString("position"));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -116,25 +116,24 @@ public class EmployeeDao {
         return null;
     }
 
-
     public ArrayList<Object[]> getAllEmployee() {
         ArrayList<Object[]> list = new ArrayList<>();
         String sql = "SELECT employeeId, employeeName, gender, email, phoneNumber, position FROM Employee";
 
         try {
-            Connection con = ConnectDB.getConnection(); 
+            Connection con = ConnectDB.getConnection();
             PreparedStatement pst = con.prepareStatement(sql);
             ResultSet rs = pst.executeQuery();
-        
+
             while (rs.next()) {
                 String ma = rs.getString("employeeId");
                 String ten = rs.getString("employeeName");
-                String gioiTinh = rs.getBoolean("gender") ? "Nam" : "Nữ"; 
+                String gioiTinh = rs.getBoolean("gender") ? "Nam" : "Nữ";
                 String sdt = rs.getString("phoneNumber");
                 String email = rs.getString("email");
                 String chucVu = rs.getString("position");
-                
-                list.add(new Object[]{ma, ten, gioiTinh, sdt, email, chucVu});
+
+                list.add(new Object[] { ma, ten, gioiTinh, sdt, email, chucVu });
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -143,13 +142,13 @@ public class EmployeeDao {
     }
 
     public boolean xoaNhanVien(String maNV) {
-        String sql = "DELETE FROM Employee WHERE employeeId = ?"; 
-        
+        String sql = "DELETE FROM Employee WHERE employeeId = ?";
+
         try {
             Connection con = ConnectDB.getConnection();
             PreparedStatement pst = con.prepareStatement(sql);
             pst.setString(1, maNV);
-            
+
             return pst.executeUpdate() > 0;
         } catch (Exception e) {
             e.printStackTrace();
@@ -159,18 +158,18 @@ public class EmployeeDao {
 
     public boolean capNhatNhanVien(Employee nv) {
         String sql = "UPDATE Employee SET employeeName = ?, gender = ?, phoneNumber = ?, email = ?, position = ? WHERE employeeId = ?";
-        
+
         try {
             Connection con = ConnectDB.getConnection();
             PreparedStatement pst = con.prepareStatement(sql);
-            
-            pst.setString(1, nv.getEmployeeName()); 
+
+            pst.setString(1, nv.getEmployeeName());
             pst.setBoolean(2, nv.isGender());
-            pst.setString(3, nv.getPhoneNumber()); 
+            pst.setString(3, nv.getPhoneNumber());
             pst.setString(4, nv.getEmail());
-            pst.setString(5, nv.getPosition());    
+            pst.setString(5, nv.getPosition());
             pst.setString(6, nv.getEmployeeId());
-            
+
             return pst.executeUpdate() > 0;
         } catch (Exception e) {
             e.printStackTrace();
@@ -178,10 +177,10 @@ public class EmployeeDao {
         return false;
     }
 
-    public ArrayList<Object[]> getEmployeeByPosition(String position)
+    public ArrayList<Employee> getEmployeeByPosition(String position)
     {
         String sql = "select * from Employee where position = ?";
-        ArrayList<Object[]> list = new ArrayList<Object[]>();
+        ArrayList<Employee> list = new ArrayList<Employee>();
         Connection con = ConnectDB.getConnection();
         try {
             PreparedStatement pst = con.prepareStatement(sql);
@@ -190,9 +189,15 @@ public class EmployeeDao {
 
             while(rs.next())
             {
-                Object[] obj = new Object[]{rs.getString("employeeId"),
-                    rs.getString("employeeName")};
-                list.add(obj);
+                Employee em = new Employee(
+                    rs.getString("employeeId"),
+                    rs.getString("employeeName"),
+                    rs.getBoolean("gender"),
+                    rs.getString("email"),
+                    rs.getString("phoneNumber"),
+                    position
+                );
+                list.add(em);
             }
 
             return list;

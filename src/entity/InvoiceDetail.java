@@ -1,11 +1,11 @@
 package entity;
 
 public class InvoiceDetail {
+	private String invoiceDetailId;
 	private Invoice invoice;
 	private ProductDetail productDetail;
 	private int quantity;
 	private double sellingPrice;
-	private String invoiceDetailId;
 	
 	public InvoiceDetail() {
 		// TODO Auto-generated constructor stub
@@ -15,13 +15,23 @@ public class InvoiceDetail {
 		setInvoiceDetailId(invoiceDetailId);
 	}
 
-	public InvoiceDetail(Invoice invoice, ProductDetail productDetail, int quantity, double sellingPrice,
-			String invoiceDetailId) {
-		setInvoice(invoice);
-		setProductDetail(productDetail);
-		setQuantity(quantity);
-		setSellingPrice(sellingPrice);
-		setInvoiceDetailId(invoiceDetailId);
+	
+
+	public InvoiceDetail(String invoiceDetailId, Invoice invoice, ProductDetail productDetail, int quantity,
+			double sellingPrice) {
+		this.invoiceDetailId = invoiceDetailId;
+		this.invoice = invoice;
+		this.productDetail = productDetail;
+		this.quantity = quantity;
+		this.sellingPrice = sellingPrice;
+	}
+
+	public String getInvoiceDetailId() {
+		return invoiceDetailId;
+	}
+
+	public void setInvoiceDetailId(String invoiceDetailId) {
+		this.invoiceDetailId = invoiceDetailId;
 	}
 
 	public Invoice getInvoice() {
@@ -54,14 +64,6 @@ public class InvoiceDetail {
 
 	public void setSellingPrice(double sellingPrice) {
 		this.sellingPrice = sellingPrice;
-	}
-
-	public String getInvoiceDetailId() {
-		return invoiceDetailId;
-	}
-
-	public void setInvoiceDetailId(String invoiceDetailId) {
-		this.invoiceDetailId = invoiceDetailId;
 	}
 
 	@Override

@@ -12,7 +12,6 @@ import entity.ProductDetail;
 import entity.Supplier;
 
 public class ProductDAO {
-	
 	public Product getProduct(String productName, String categoryName, String supplierName)
 	{
 		CategoryDAO categoryDAO = new CategoryDAO();

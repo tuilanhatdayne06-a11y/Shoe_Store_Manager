@@ -38,7 +38,7 @@ public class EmployeeUI extends JPanel implements ActionListener {
     private Color primaryColor = new Color(180, 60, 200);
     private Color bgLight = new Color(253, 240, 255);
     
-    private EmployeeDao dao = new EmployeeDao();
+    private EmployeeDao employeeDao = new EmployeeDao();
 
     public EmployeeUI() {
         setLayout(new BorderLayout(10, 15));
@@ -113,7 +113,7 @@ public class EmployeeUI extends JPanel implements ActionListener {
         pnlForm.add(pnlGender);
 
         pnlForm.add(new JLabel("Chức Vụ:"));
-        String[] chucVu = {"Nhân viên bán hàng", "Quản lý cửa hàng", "Nhân viên kho", "Kế toán"};
+        String[] chucVu = {"Quan ly", "Nhan vien kho", "Nhan vien ban hang"};
         cmbChucVu = new JComboBox<>(chucVu);
         cmbChucVu.setBackground(Color.WHITE);
         pnlForm.add(cmbChucVu);
@@ -140,7 +140,7 @@ public class EmployeeUI extends JPanel implements ActionListener {
 
         JPanel pnlSearch = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         pnlSearch.setBackground(Color.WHITE);
-        pnlSearch.add(new JLabel("Tìm kiếm:"));
+        pnlSearch.add(new JLabel("Tìm kiếm theo chức vụ:"));
         txtTimKiem = new JTextField(15);
         txtTimKiem.setPreferredSize(new Dimension(150, 28));
         btnTimKiem = createButton("Tìm");
@@ -202,7 +202,7 @@ public class EmployeeUI extends JPanel implements ActionListener {
 
     private void loadDataToTable() {
         modelNhanVien.setRowCount(0);
-        ArrayList<Object[]> list = dao.getAllEmployee();
+        ArrayList<Object[]> list = employeeDao.getAllEmployee();
         for (Object[] row : list) {
             modelNhanVien.addRow(row);
         }
@@ -263,13 +263,54 @@ public class EmployeeUI extends JPanel implements ActionListener {
 
             if (ten.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Vui lòng nhập họ tên!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                txtHoTen.requestFocus();
+                return;
+            }
+
+            if (sdt.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Vui lòng nhập số điện thoại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                txtSDT.requestFocus();
+                return;
+            }
+
+            String[] fieldName = {"Họ Tên", "Số điện thoại", "Email"};
+            String[] checkLen = {txtHoTen.getText(), txtSDT.getText(), txtEmail.getText()};
+            int[] maxLen = {100, 15, 100};
+
+            for(int i = 0;i < maxLen.length;i++)
+            {
+                if(checkLen[i].length() > maxLen[i])
+                {
+                    JOptionPane.showMessageDialog(this,
+                        fieldName[i] + " không được vượt quá " + maxLen[i] + " ký tự"
+                    );
+                }
+            }
+
+            if (email.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Vui lòng nhập email!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                txtEmail.requestFocus();
+                return;
+            }
+
+            if(!txtSDT.getText().matches("0\\d{9}"))
+            {
+                JOptionPane.showMessageDialog(this, "Số điện thoại phải gồm 10 số, bắt đầu bằng 0!", "Lỗi",JOptionPane.ERROR_MESSAGE);
+                txtSDT.requestFocus();
+                return;
+            }
+
+
+            if (!email.matches("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")) {
+                JOptionPane.showMessageDialog(this, "Email không đúng định dạng", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                txtEmail.requestFocus();
                 return;
             }
             
             Employee nv = new Employee(ma, ten, isGender, sdt, email, chucVu);
             String matKhauMacDinh = "123456"; 
             
-            if (dao.themNhanVien(nv, matKhauMacDinh)) {
+            if (employeeDao.themNhanVien(nv, matKhauMacDinh)) {
                 modelNhanVien.addRow(new Object[]{ma, ten, gioiTinh, sdt, email, chucVu});
                 JOptionPane.showMessageDialog(this, "Thêm nhân viên thành công vào CSDL!");
                 btnXoaTrang.doClick(); 
@@ -291,7 +332,7 @@ public class EmployeeUI extends JPanel implements ActionListener {
             if (row >= 0) {
                 if (JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn xóa nhân viên này khỏi cơ sở dữ liệu?", "Xác nhận", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                     String maNV = modelNhanVien.getValueAt(row, 0).toString();
-                    if (dao.xoaNhanVien(maNV)) {
+                    if (employeeDao.xoaNhanVien(maNV)) {
                         modelNhanVien.removeRow(row);
                         JOptionPane.showMessageDialog(this, "Xóa thành công!");
                         btnXoaTrang.doClick();
@@ -321,7 +362,7 @@ public class EmployeeUI extends JPanel implements ActionListener {
                 
                 Employee nv = new Employee(ma, ten, isGender, sdt, email, chucVu);
                 
-                if (dao.capNhatNhanVien(nv)) {
+                if (employeeDao.capNhatNhanVien(nv)) {
                     modelNhanVien.setValueAt(ten, row, 1);
                     modelNhanVien.setValueAt(gioiTinh, row, 2);
                     modelNhanVien.setValueAt(sdt, row, 3);
@@ -338,7 +379,34 @@ public class EmployeeUI extends JPanel implements ActionListener {
         }
         else if (o == btnLamMoi) {
             loadDataToTable();
+            txtTimKiem.setText("");
             btnXoaTrang.doClick();
+        }
+        else if(o == btnTimKiem)
+        {
+            if(txtTimKiem.getText().isBlank())
+            {
+                JOptionPane.showMessageDialog(this, "Chưa nhập chức vụ cần tìm");
+                return;
+            }
+            else
+            {
+                modelNhanVien.setRowCount(0);
+                ArrayList<Employee> listEm = employeeDao.getEmployeeByPosition(txtTimKiem.getText());
+                for(Employee em : listEm)
+                {
+                    modelNhanVien.addRow(
+                        new Object[]{
+                            em.getEmployeeId(),
+                            em.getEmployeeName(),
+                            em.isGender()? "Nam" : "Nữ",
+                            em.getPhoneNumber(),
+                            em.getEmail(),
+                            em.getPosition()
+                        }
+                    );
+                }
+            }
         }
     }
 }
