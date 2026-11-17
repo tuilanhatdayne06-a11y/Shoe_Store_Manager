@@ -70,7 +70,6 @@ public class CustomerDAO {
         return list;
     }
 
-// <<<<<<< HEAD
     public Customer findByName(String customerName)
     {
         String sql = "select * from Customer where customerName = ?";
@@ -129,33 +128,7 @@ public class CustomerDAO {
 		}
     	
     	return null;
-// =======
-//     // Tim khach hang theo ma
-//     public Customer findById(String customerId) throws SQLException {
-//         String sql = "SELECT customerId, customerName, address, phoneNumber, loyaltyPoints, gender "
-//                    + "FROM dbo.Customer WHERE customerId = ?";
-        
-//         Connection con = ConnectDB.getConnection();
-//         if (con == null || con.isClosed()) {
-//             throw new SQLException("Khong ket noi duoc database ShoeStore");
-//         }
 
-//         try (PreparedStatement pst = con.prepareStatement(sql)) {
-//             pst.setString(1, customerId);
-//             try (ResultSet rs = pst.executeQuery()) {
-//                 if (rs.next()) {
-//                     return new Customer(
-//                             rs.getString("customerId"),
-//                             rs.getString("customerName"),
-//                             rs.getString("address"),
-//                             rs.getString("phoneNumber"),
-//                             rs.getInt("loyaltyPoints"),
-//                             rs.getBoolean("gender"));
-//                 }
-//             }
-//         }
-//         return null;
-// >>>>>>> main
     }
 
     // Kiem tra SDT da duoc su dung boi khach hang khac
