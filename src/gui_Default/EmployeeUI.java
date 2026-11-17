@@ -263,6 +263,47 @@ public class EmployeeUI extends JPanel implements ActionListener {
 
             if (ten.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Vui lòng nhập họ tên!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                txtHoTen.requestFocus();
+                return;
+            }
+
+            if (sdt.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Vui lòng nhập số điện thoại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                txtSDT.requestFocus();
+                return;
+            }
+
+            String[] fieldName = {"Họ Tên", "Số điện thoại", "Email"};
+            String[] checkLen = {txtHoTen.getText(), txtSDT.getText(), txtEmail.getText()};
+            int[] maxLen = {100, 15, 100};
+
+            for(int i = 0;i < maxLen.length;i++)
+            {
+                if(checkLen[i].length() > maxLen[i])
+                {
+                    JOptionPane.showMessageDialog(this,
+                        fieldName[i] + " không được vượt quá " + maxLen[i] + " ký tự"
+                    );
+                }
+            }
+
+            if (email.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Vui lòng nhập email!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                txtEmail.requestFocus();
+                return;
+            }
+
+            if(!txtSDT.getText().matches("0\\d{9}"))
+            {
+                JOptionPane.showMessageDialog(this, "Số điện thoại phải gồm 10 số, bắt đầu bằng 0!", "Lỗi",JOptionPane.ERROR_MESSAGE);
+                txtSDT.requestFocus();
+                return;
+            }
+
+
+            if (!email.matches("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")) {
+                JOptionPane.showMessageDialog(this, "Email không đúng định dạng", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                txtEmail.requestFocus();
                 return;
             }
             

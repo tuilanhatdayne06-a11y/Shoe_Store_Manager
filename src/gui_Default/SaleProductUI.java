@@ -394,12 +394,12 @@ public class SaleProductUI extends JPanel{
 
 	private boolean validDataPayment()
 	{
-		if(radUsePoint.isSelected() && txtIsUsePoint.getText().isBlank())
-		{
-			JOptionPane.showMessageDialog(this, "Chưa nhập điểm tích lũy cần dùng");
-			txtIsUsePoint.requestFocus();
-			return false;
-		}
+		// if(radUsePoint.isSelected() && txtIsUsePoint.getText().isBlank())
+		// {
+		// 	JOptionPane.showMessageDialog(this, "Chưa nhập điểm tích lũy cần dùng");
+		// 	txtIsUsePoint.requestFocus();
+		// 	return false;
+		// }
 
 		if(txtTake.getText().isBlank())
 		{
@@ -982,7 +982,7 @@ public class SaleProductUI extends JPanel{
 		
 		
 		gbc.gridx = 1;gbc.gridy=0;gbc.weightx = 0.2;gbc.weighty = 1.0;
-		gbc.fill = GridBagConstraints.BOTH;
+		// gbc.fill = GridBagConstraints.BOTH;
 		pnlManager.add(pnlRight, gbc);
 		this.add(pnlHeader, BorderLayout.NORTH);
 		this.add(pnlManager, BorderLayout.CENTER);

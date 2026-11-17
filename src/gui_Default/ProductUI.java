@@ -60,7 +60,6 @@ public class ProductUI extends JPanel {
 	private DefaultTableModel modelTable;
 	private JTable table;
 	private JScrollPane pane;
-	private boolean isSelectedEdit = false; //biến này có thể bỏ qua nếu thay đổi thiết kế
 
 	private JScrollPane paneProductCard;
 	private Box bCard;
@@ -77,7 +76,6 @@ public class ProductUI extends JPanel {
 	private ProductDAO productDAO = new ProductDAO();
 	private ProductDetailDAO productDetailDAO = new ProductDetailDAO();
 	private ImageUtil imgUtil = new ImageUtil();
-	private Home home = new Home();
 
 	private JButton btnResetTable;
 	private JButton btnClearForm;
@@ -215,6 +213,21 @@ public class ProductUI extends JPanel {
 	{
 		String name = txtProductName.getText().trim();
 		String color = txtProductColor.getText().trim();
+
+		int[] checkLen = {100, 50};
+		String[] field = {"Tên giày", "Màu sắc"};
+		String[] checkMax = {txtProductName.getText(), txtProductColor.getText()};
+
+		for(int i = 0; i < checkLen.length;i++)
+		{
+			if(checkMax[i].length() > checkLen[i])
+			{
+				JOptionPane.showMessageDialog(this, field[i] + " không được vượt quá " + checkLen[i]
+				+ " ký tự"
+				, "Lỗi nhập liệu", JOptionPane.ERROR_MESSAGE);
+				return false;
+			}
+		}
 		
 		if(name.length() <= 0)
 		{
@@ -383,85 +396,81 @@ public class ProductUI extends JPanel {
 				JOptionPane.showMessageDialog(this, "Chưa có sản phẩm nào được chọn!");
 				return;
 			}
-			if(!isSelectedEdit)
-			{
-				if(JOptionPane.showConfirmDialog(this, "Thông Báo", "Có muốn cập nhập sản phẩm này?"
+			if(JOptionPane.showConfirmDialog(this, "Thông Báo", "Có muốn cập nhập sản phẩm này?"
 
-						,JOptionPane.YES_NO_OPTION
-				) == JOptionPane.YES_OPTION)
+					,JOptionPane.YES_NO_OPTION
+			) == JOptionPane.YES_OPTION)
+			{
+				txtProductCost.setEnabled(true);
+				for(Component cpm : setEditFalse)
 				{
-					isSelectedEdit = true;
-					txtProductCost.setEnabled(true);
-					for(Component cpm : setEditFalse)
+					cpm.setEnabled(false);
+				}
+				String productDetailId = txtProductCode.getText().trim(); 
+				String newName = txtProductName.getText().trim();
+				String newSize = txtProductSize.getText().trim();
+				String newColor = txtProductColor.getText().trim();
+				String newCategory = cboProductCategory.getSelectedItem().toString();
+				int newStock = Integer.parseInt(txtProductStock.getText().trim());
+				double newCost = Double.parseDouble(txtProductCost.getText().trim());
+				String newSupplier = cboProductSupplier.getSelectedItem().toString();
+				String imgName = table.getValueAt(sltR, 8).toString(); 
+				if (selectedImg != null) {
+					imgName = selectedImg.getName();
+					ImageUtil util = new ImageUtil();
+					util.saveImg(selectedImg);
+				}
+				Category category = categoryDAO
+						.getCategoryByName(cboProductCategory.getSelectedItem().toString());
+				Supplier supplier = supplierDAO
+						.getSupplierByName(cboProductSupplier.getSelectedItem().toString());
+
+
+				table.setValueAt(newName, sltR, 1);
+				table.setValueAt(newSize, sltR, 2);
+				table.setValueAt(newColor, sltR, 3);
+				table.setValueAt(newCategory, sltR, 4);
+				table.setValueAt(newStock, sltR, 5);
+				table.setValueAt(newCost, sltR, 6);
+				table.setValueAt(newSupplier, sltR, 7);
+
+				String productName = txtProductName.getText().trim();
+				double price = Double.parseDouble(txtProductCost.getText().trim());
+				for(int i = 0;i < modelTable.getRowCount();i++)
+				{
+					if(table.getValueAt(i, 4).toString().equals(category.getCategoryName())
+						&& table.getValueAt(i, 7).toString().equals(supplier.getSupplierName())
+					)
 					{
-						cpm.setEnabled(false);
+						table.setValueAt(price, i, 6);
+						table.setValueAt(productName, i, 1);
 					}
 				}
+
+				table.setValueAt(newName, sltR, 1);
+				table.setValueAt(newSize, sltR, 2);
+				table.setValueAt(newColor, sltR, 3);
+				table.setValueAt(newCategory, sltR, 4);
+				table.setValueAt(newStock, sltR, 5);
+				table.setValueAt(newCost, sltR, 6);
+				table.setValueAt(newSupplier, sltR, 7);
+				table.setValueAt(imgName, sltR, 8);
+
+				bCard.removeAll();
+				displayProductCardList();
+				
+				bCard.revalidate();
+				bCard.repaint();
+
+				JOptionPane.showMessageDialog(this, "Cập nhật thông tin sản phẩm thành công!");
+				resetForm();
+				table.clearSelection();
+
+				
+				productDAO.updateProduct(newStock, productName,  
+						category.getCategoryId(), supplier.getSupplierId(), price);
 			}
-			
-			String productDetailId = txtProductCode.getText().trim(); 
-		    String newName = txtProductName.getText().trim();
-		    String newSize = txtProductSize.getText().trim();
-		    String newColor = txtProductColor.getText().trim();
-		    String newCategory = cboProductCategory.getSelectedItem().toString();
-		    int newStock = Integer.parseInt(txtProductStock.getText().trim());
-		    double newCost = Double.parseDouble(txtProductCost.getText().trim());
-		    String newSupplier = cboProductSupplier.getSelectedItem().toString();
-		    String imgName = table.getValueAt(sltR, 8).toString(); 
-		    if (selectedImg != null) {
-		        imgName = selectedImg.getName();
-		        ImageUtil util = new ImageUtil();
-		        util.saveImg(selectedImg);
-		    }
-			Category category = categoryDAO
-					.getCategoryByName(cboProductCategory.getSelectedItem().toString());
-			Supplier supplier = supplierDAO
-					.getSupplierByName(cboProductSupplier.getSelectedItem().toString());
-
-
-			table.setValueAt(newName, sltR, 1);
-		    table.setValueAt(newSize, sltR, 2);
-		    table.setValueAt(newColor, sltR, 3);
-		    table.setValueAt(newCategory, sltR, 4);
-		    table.setValueAt(newStock, sltR, 5);
-		    table.setValueAt(newCost, sltR, 6);
-		    table.setValueAt(newSupplier, sltR, 7);
-
-		    String productName = txtProductName.getText().trim();
-			double price = Double.parseDouble(txtProductCost.getText().trim());
-			for(int i = 0;i < modelTable.getRowCount();i++)
-			{
-				if(table.getValueAt(i, 4).toString().equals(category.getCategoryName())
-					&& table.getValueAt(i, 7).toString().equals(supplier.getSupplierName())
-				)
-				{
-					table.setValueAt(price, i, 6);
-					table.setValueAt(productName, i, 1);
-				}
-			}
-
-			table.setValueAt(newName, sltR, 1);
-		    table.setValueAt(newSize, sltR, 2);
-		    table.setValueAt(newColor, sltR, 3);
-		    table.setValueAt(newCategory, sltR, 4);
-		    table.setValueAt(newStock, sltR, 5);
-		    table.setValueAt(newCost, sltR, 6);
-		    table.setValueAt(newSupplier, sltR, 7);
-		    table.setValueAt(imgName, sltR, 8);
-
-			bCard.removeAll();
-			displayProductCardList();
-			
-			bCard.revalidate();
-			bCard.repaint();
-
-			JOptionPane.showMessageDialog(this, "Cập nhật thông tin sản phẩm thành công!");
-		    resetForm();
-		    table.clearSelection();
-
-		    
-			productDAO.updateProduct(newStock, productName,  
-					category.getCategoryId(), supplier.getSupplierId(), price);
+		
 		});
 
 		btnRemoveProduct.addActionListener(e -> {

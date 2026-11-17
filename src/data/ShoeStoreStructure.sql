@@ -7,9 +7,28 @@ CREATE TABLE Employee (
     employeeId VARCHAR(20) PRIMARY KEY,
     employeeName NVARCHAR(100) NOT NULL,
     gender BIT NOT NULL,
-    phoneNumber VARCHAR(15),
-    position NVARCHAR(50),
-    email VARCHAR(100)
+    phoneNumber VARCHAR(15) NOT NULL,
+    position NVARCHAR(50) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+
+    CONSTRAINT CK_Employee_Phone
+    CHECK (
+        phoneNumber LIKE '0[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]'
+    ),
+
+    CONSTRAINT CK_Employee_Position
+    CHECK (
+        position IN (N'Quan ly', N'Nhan vien ban hang', N'Nhan vien kho')
+    ),
+    CONSTRAINT CK_Employee_Email
+    CHECK (
+        email <> ''
+        AND email NOT LIKE '% %'
+        AND email NOT LIKE '%@%@%'
+        AND email LIKE '%_@_%._%'
+        AND email NOT LIKE '%@.%'
+        AND email NOT LIKE '%..%'
+    )
 );
 GO
 
@@ -27,23 +46,41 @@ GO
 CREATE TABLE Customer (
     customerId VARCHAR(20) PRIMARY KEY,
     customerName NVARCHAR(100) NOT NULL,
-    address NVARCHAR(255),
-    phoneNumber VARCHAR(15),
+    address NVARCHAR(255) NOT NULL,
+    phoneNumber VARCHAR(15) NOT NULL,
     loyaltyPoints INT NOT NULL DEFAULT 0,
     gender BIT NOT NULL,
 
     CONSTRAINT CK_Customer_LoyaltyPoints
-        CHECK (loyaltyPoints >= 0)
+        CHECK (loyaltyPoints >= 0),
+
+    CONSTRAINT CK_Customer_Phone
+    CHECK (
+        phoneNumber LIKE '0[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]'
+    )
 );
 GO
 
 CREATE TABLE Supplier (
     supplierId VARCHAR(20) PRIMARY KEY,
     supplierName NVARCHAR(100) NOT NULL,
-    address NVARCHAR(255),
-    phoneNumber VARCHAR(15),
-    email VARCHAR(100),
-    logo NVARCHAR(255)
+    address NVARCHAR(255) NOT NULL,
+    phoneNumber VARCHAR(15) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    logo NVARCHAR(255) NOT NULL,
+
+    CONSTRAINT CK_Supplier_Phone
+        CHECK (phoneNumber LIKE '0[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]'),
+
+    CONSTRAINT CK_Supplier_Email
+    CHECK (
+        email <> ''
+        AND email NOT LIKE '% %'
+        AND email NOT LIKE '%@%@%'
+        AND email LIKE '%_@_%._%'
+        AND email NOT LIKE '%@.%'
+        AND email NOT LIKE '%..%'
+    )
 );
 GO
 
@@ -69,7 +106,7 @@ CREATE TABLE Product (
         REFERENCES Supplier(supplierId),
 
     CONSTRAINT CK_Product_UnitPrice
-        CHECK (unitPrice >= 0)
+        CHECK (unitPrice > 0)
 );
 GO
 
@@ -79,7 +116,7 @@ CREATE TABLE ProductDetail (
     color NVARCHAR(50) NOT NULL,
     stockQuantity INT NOT NULL DEFAULT 0,
     productId VARCHAR(20) NOT NULL,
-    imgProductColor NVARCHAR(255),
+    imgProductColor NVARCHAR(255) NOT NULL,
 
     CONSTRAINT FK_ProductDetail_Product
         FOREIGN KEY (productId)
@@ -89,7 +126,7 @@ CREATE TABLE ProductDetail (
         CHECK (stockQuantity >= 0),
 
     CONSTRAINT CK_ProductDetail_Size
-        CHECK (size > 0)
+        CHECK (size >= 36 and size <= 46)
 );
 GO
 
@@ -132,7 +169,7 @@ CREATE TABLE PurchaseOrderDetail (
         CHECK (quantity > 0),
 
     CONSTRAINT CK_PurchaseOrderDetail_ImportPrice
-        CHECK (importPrice >= 0)
+        CHECK (importPrice > 0)
 );
 GO
 
@@ -152,7 +189,7 @@ CREATE TABLE Invoice (
         REFERENCES Customer(customerId),
 
     CONSTRAINT CK_Invoice_TotalAmount
-        CHECK (totalAmount >= 0)
+        CHECK (totalAmount > 0)
 );
 GO
 
@@ -175,7 +212,7 @@ CREATE TABLE InvoiceDetail (
         CHECK (quantity > 0),
 
     CONSTRAINT CK_InvoiceDetail_SellingPrice
-        CHECK (sellingPrice >= 0)
+        CHECK (sellingPrice > 0)
 );
 
 GO

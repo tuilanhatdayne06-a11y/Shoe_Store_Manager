@@ -456,33 +456,39 @@ public class ImportProductUI extends JPanel {
             return;
         }
 
-        try {
-            double importPrice = Double.parseDouble(
-                    txtUnitPrice.getText().trim().replace(",", ""));
-            int quantity = Integer.parseInt(txtQuantity.getText().trim());
-            if (Double.isNaN(importPrice) || Double.isInfinite(importPrice)
-                    || importPrice <= 0 || quantity <= 0) {
-                throw new IllegalArgumentException("Đơn giá và số lượng phải lớn hơn 0.");
-            }
+        if(JOptionPane.showConfirmDialog(this, "Có chắc chắn muốn nhập kho sản phẩm này?",
+            "Thông báo xác nhận", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
+        {
+            try {
+                double importPrice = Double.parseDouble(
+                        txtUnitPrice.getText().trim().replace(",", ""));
+                int quantity = Integer.parseInt(txtQuantity.getText().trim());
+                if (Double.isNaN(importPrice) || Double.isInfinite(importPrice)
+                        || importPrice <= 0 || quantity <= 0) {
+                    throw new IllegalArgumentException("Đơn giá và số lượng phải lớn hơn 0.");
+                }
 
-            PurchaseOrder order = new PurchaseOrder(
-                    null, null, new Employee(employee.employeeId),
-                    new Supplier(supplier.supplierId), "Da nhap");
-            PurchaseOrderDetail detail = new PurchaseOrderDetail(
-                    order, new ProductDetail(product.getProductDetailId()),
-                    quantity, importPrice);
-            String purchaseOrderId = purchaseOrderDAO.createImportOrder(order, detail);
-            refreshHistory();
-            resetForm();
-            JOptionPane.showMessageDialog(this,
-                    "Đã nhập kho thành công. Mã phiếu: " + purchaseOrderId);
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Đơn giá và số lượng phải là số hợp lệ.");
-        } catch (IllegalArgumentException e) {
-            JOptionPane.showMessageDialog(this, e.getMessage());
-        } catch (SQLException e) {
-            showError("Không thể tạo phiếu nhập.", e);
+                PurchaseOrder order = new PurchaseOrder(
+                        null, null, new Employee(employee.employeeId),
+                        new Supplier(supplier.supplierId), "Da nhap");
+                PurchaseOrderDetail detail = new PurchaseOrderDetail(
+                        order, new ProductDetail(product.getProductDetailId()),
+                        quantity, importPrice);
+                String purchaseOrderId = purchaseOrderDAO.createImportOrder(order, detail);
+                refreshHistory();
+                resetForm();
+                JOptionPane.showMessageDialog(this,
+                        "Đã nhập kho thành công. Mã phiếu: " + purchaseOrderId);
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Đơn giá và số lượng phải là số hợp lệ.");
+            } catch (IllegalArgumentException e) {
+                JOptionPane.showMessageDialog(this, e.getMessage());
+            } catch (SQLException e) {
+                showError("Không thể tạo phiếu nhập.", e);
+            }
         }
+
+        
     }
 
     private void resetForm() {
