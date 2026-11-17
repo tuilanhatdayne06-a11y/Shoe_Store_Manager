@@ -8,7 +8,7 @@ CREATE TABLE Employee (
     employeeName NVARCHAR(100) NOT NULL,
     gender BIT NOT NULL,
     phoneNumber VARCHAR(15) NOT NULL,
-    position NVARCHAR(50) NOT NULL,
+    position VARCHAR(50) NOT NULL,
     email VARCHAR(100) NOT NULL,
 
     CONSTRAINT CK_Employee_Phone
@@ -57,7 +57,9 @@ CREATE TABLE Customer (
     CONSTRAINT CK_Customer_Phone
     CHECK (
         phoneNumber LIKE '0[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]'
-    )
+    ),
+    CONSTRAINT UQ_Customer_Phone
+    UNIQUE (phoneNumber)
 );
 GO
 
@@ -135,7 +137,7 @@ CREATE TABLE PurchaseOrder (
     orderDate DATETIME2 NOT NULL,
     employeeId VARCHAR(20) NOT NULL,
     supplierId VARCHAR(20) NOT NULL,
-    status NVARCHAR(30) NOT NULL,
+    status VARCHAR(30) NOT NULL,
 
     CONSTRAINT FK_PurchaseOrder_Employee
         FOREIGN KEY (employeeId)
