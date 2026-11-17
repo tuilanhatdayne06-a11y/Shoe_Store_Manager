@@ -38,7 +38,7 @@ public class EmployeeUI extends JPanel implements ActionListener {
     private Color primaryColor = new Color(180, 60, 200);
     private Color bgLight = new Color(253, 240, 255);
     
-    private EmployeeDao dao = new EmployeeDao();
+    private EmployeeDao employeeDao = new EmployeeDao();
 
     public EmployeeUI() {
         setLayout(new BorderLayout(10, 15));
@@ -202,7 +202,7 @@ public class EmployeeUI extends JPanel implements ActionListener {
 
     private void loadDataToTable() {
         modelNhanVien.setRowCount(0);
-        ArrayList<Object[]> list = dao.getAllEmployee();
+        ArrayList<Object[]> list = employeeDao.getAllEmployee();
         for (Object[] row : list) {
             modelNhanVien.addRow(row);
         }
@@ -310,7 +310,7 @@ public class EmployeeUI extends JPanel implements ActionListener {
             Employee nv = new Employee(ma, ten, isGender, sdt, email, chucVu);
             String matKhauMacDinh = "123456"; 
             
-            if (dao.themNhanVien(nv, matKhauMacDinh)) {
+            if (employeeDao.themNhanVien(nv, matKhauMacDinh)) {
                 modelNhanVien.addRow(new Object[]{ma, ten, gioiTinh, sdt, email, chucVu});
                 JOptionPane.showMessageDialog(this, "Thêm nhân viên thành công vào CSDL!");
                 btnXoaTrang.doClick(); 
@@ -332,7 +332,7 @@ public class EmployeeUI extends JPanel implements ActionListener {
             if (row >= 0) {
                 if (JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn xóa nhân viên này khỏi cơ sở dữ liệu?", "Xác nhận", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                     String maNV = modelNhanVien.getValueAt(row, 0).toString();
-                    if (dao.xoaNhanVien(maNV)) {
+                    if (employeeDao.xoaNhanVien(maNV)) {
                         modelNhanVien.removeRow(row);
                         JOptionPane.showMessageDialog(this, "Xóa thành công!");
                         btnXoaTrang.doClick();
@@ -362,7 +362,7 @@ public class EmployeeUI extends JPanel implements ActionListener {
                 
                 Employee nv = new Employee(ma, ten, isGender, sdt, email, chucVu);
                 
-                if (dao.capNhatNhanVien(nv)) {
+                if (employeeDao.capNhatNhanVien(nv)) {
                     modelNhanVien.setValueAt(ten, row, 1);
                     modelNhanVien.setValueAt(gioiTinh, row, 2);
                     modelNhanVien.setValueAt(sdt, row, 3);
@@ -379,19 +379,34 @@ public class EmployeeUI extends JPanel implements ActionListener {
         }
         else if (o == btnLamMoi) {
             loadDataToTable();
+            txtTimKiem.setText("");
             btnXoaTrang.doClick();
         }
         else if(o == btnTimKiem)
         {
-            for(int i = 0;i < modelNhanVien.getRowCount();i++)
+            if(txtTimKiem.getText().isBlank())
             {
-                if(modelNhanVien.getValueAt(i, 5).toString().equals("Nhan vien ban hang"))
+                JOptionPane.showMessageDialog(this, "Chưa nhập chức vụ cần tìm");
+                return;
+            }
+            else
+            {
+                modelNhanVien.setRowCount(0);
+                ArrayList<Employee> listEm = employeeDao.getEmployeeByPosition(txtTimKiem.getText());
+                for(Employee em : listEm)
                 {
-                    tblNhanVien.removeAll();
-                    
+                    modelNhanVien.addRow(
+                        new Object[]{
+                            em.getEmployeeId(),
+                            em.getEmployeeName(),
+                            em.isGender()? "Nam" : "Nữ",
+                            em.getPhoneNumber(),
+                            em.getEmail(),
+                            em.getPosition()
+                        }
+                    );
                 }
             }
-
         }
     }
 }

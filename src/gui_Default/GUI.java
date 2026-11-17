@@ -41,6 +41,7 @@ public class GUI extends JFrame implements ActionListener {
         setSize(1250, 800);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setResizable(false);
         setLayout(new BorderLayout());
 
         JPanel pnlNorth = new JPanel();
@@ -169,6 +170,7 @@ public class GUI extends JFrame implements ActionListener {
         pnlCenter = new JPanel(mainCardLayout);
 
         home = new Home(mainCardLayout, pnlCenter);
+        home.setLogin(false);
         pnlCenter.add(home, "HOME");
         pnlCenter.add(new SupplierUI(), "SUPPLIER");
         pnlCenter.add(new ProductUI(), "PRODUCT");
@@ -319,6 +321,7 @@ public class GUI extends JFrame implements ActionListener {
             if (confirm == JOptionPane.YES_OPTION) {
                 loginCardLayout.show(pnlRight, "ChuaDangNhap");
                 mainCardLayout.show(pnlCenter, "HOME");
+                home.setLogin(false);
                 phanQuyenMenu(false, "");
                 currentNhanVienInfo = ""; 
             }
