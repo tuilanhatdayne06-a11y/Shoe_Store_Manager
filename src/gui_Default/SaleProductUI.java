@@ -10,6 +10,8 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Insets;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -33,6 +35,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
 import dao.CustomerDAO;
@@ -95,7 +98,15 @@ public class SaleProductUI extends JPanel{
 		btnPhone.addActionListener(e -> {
 			String input = txtPhone.getText().trim();
 			if(input == null || input.isEmpty())
+			{
 				JOptionPane.showMessageDialog(this, "Chưa điền số điện thoại");
+				return;
+			}
+			else if(!input.matches("0\\d{9}"))
+			{
+				JOptionPane.showMessageDialog(this, "Số điện thoại phải bắt đầu bằng số 0 và giới hạn 10 chữ số");
+				return;
+			}
 			else
 			{
 				Customer customer = findByPhone(input);
@@ -237,6 +248,8 @@ public class SaleProductUI extends JPanel{
 		};
 		for(JTextField jtf : listJTF)
 			jtf.setText("");
+
+		radUsePoint.setSelected(false);
 	}
 
 	private void showCreateInvoiceNotice()
@@ -393,12 +406,6 @@ public class SaleProductUI extends JPanel{
 
 	private boolean validDataPayment()
 	{
-		if(radUsePoint.isSelected() && txtIsUsePoint.getText().isBlank())
-		{
-			JOptionPane.showMessageDialog(this, "Chưa nhập điểm tích lũy cần dùng");
-			txtIsUsePoint.requestFocus();
-			return false;
-		}
 
 		if(txtTake.getText().isBlank())
 		{
@@ -740,13 +747,12 @@ public class SaleProductUI extends JPanel{
 		gbc.insets = new Insets(10, 10, 10, 10);
 		pnlHeader.add(lblTitle, gbc);
 		
-		JPanel pnlManager = new JPanel(new GridBagLayout());
+		JPanel pnlManager = new JPanel(new BorderLayout());
 		pnlManager.setBackground(Color.white);
 		
 		JPanel pnlLeft = new JPanel(new BorderLayout());
-		
 		JPanel pnlFind = new JPanel();
-		txtFind = new JTextField(40);
+		txtFind = new JTextField(30);
 		btnFind = new JButton("Tìm theo tên");
 		btnFind.setFont(new Font(btnFind.getFont().getFontName(), Font.BOLD, 12));
 		btnResetFilter = new JButton("Làm mới toàn bộ");
@@ -759,12 +765,9 @@ public class SaleProductUI extends JPanel{
 		pnlDisplayCard = new JPanel(new GridBagLayout());
 		
 		JScrollPane pane = new JScrollPane(pnlDisplayCard);
-		gbc.gridx = 0;gbc.gridy= 0;gbc.weightx = 0.8;gbc.weighty = 1.0;
-		gbc.fill = GridBagConstraints.BOTH;
 		pane.getVerticalScrollBar().setUnitIncrement(25);
 		
 		pnlLeft.add(pane, BorderLayout.CENTER);
-		pnlManager.add(pnlLeft, gbc);
 		
 		JPanel pnlRight = new JPanel(new GridBagLayout());
 		GridBagConstraints gbcRight = new GridBagConstraints();
@@ -798,6 +801,7 @@ public class SaleProductUI extends JPanel{
 		pnlEmployee.add(lblEmployee);
 		cboEmployee = new JComboBox<String>();
 		cboEmployee.setMaximumRowCount(3);
+		cboEmployee.setPreferredSize(new Dimension(30, 5));
 		addToEmployeeCombobox();
 		
 		pnlEmployee.add(cboEmployee);
@@ -974,16 +978,22 @@ public class SaleProductUI extends JPanel{
 		gbcRight.weightx = 1.0;
 		gbcRight.weighty = 0.5;
 		gbcRight.insets = new Insets(10, 0, 0, 0);
+
+		pnlManager.setBorder(BorderFactory.createEmptyBorder(
+			10, 10, 10, 10));
+
+		pnlLeft.setPreferredSize(new Dimension(750, 809));
+		pnlManager.add(pnlLeft, BorderLayout.WEST);
 		
 		pnlRight.add(pnlBottom, gbcRight);
-		
-		
-		gbc.gridx = 1;gbc.gridy=0;gbc.weightx = 0.2;gbc.weighty = 1.0;
-		gbc.fill = GridBagConstraints.BOTH;
-		pnlManager.add(pnlRight, gbc);
+		pnlRight.setPreferredSize(new Dimension(400, 35));
+		pnlManager.add(pnlRight, BorderLayout.EAST);
+
+
 		this.add(pnlHeader, BorderLayout.NORTH);
 		this.add(pnlManager, BorderLayout.CENTER);
 		displayListProduct(null);
+		
 		triggerEvent();
 	}
 }

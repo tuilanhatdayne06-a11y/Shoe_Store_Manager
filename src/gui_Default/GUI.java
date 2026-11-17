@@ -40,6 +40,7 @@ public class GUI extends JFrame implements ActionListener {
         setSize(1200, 800);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setResizable(false);
         setLayout(new BorderLayout());
 
         JPanel pnlNorth = new JPanel();
