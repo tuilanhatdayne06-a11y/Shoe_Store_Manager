@@ -2,7 +2,8 @@ package gui_Default;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
- 
+
+import utils.SessionManager;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -11,6 +12,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
+
 
 public class Home extends JScrollPane implements ActionListener, MouseListener {
     
@@ -25,6 +27,7 @@ public class Home extends JScrollPane implements ActionListener, MouseListener {
 
 	private CardLayout mainCardLayout;
 	private JPanel pnlProductVisible;
+    private SessionManager ssm = new SessionManager();
 
     public Home() {}
 
@@ -278,7 +281,9 @@ public class Home extends JScrollPane implements ActionListener, MouseListener {
                 }
                 else
                 {
-                    mainCardLayout.show(pnlProductVisible, "PRODUCT");
+                    String role = ssm.nhanVienDangNhap.getPosition();
+                    if(role.equalsIgnoreCase("Nhan vien kho")) return;
+                    else mainCardLayout.show(pnlProductVisible, "PRODUCT");
                 }
             }
         });

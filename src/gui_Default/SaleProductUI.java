@@ -913,7 +913,7 @@ public class SaleProductUI extends JPanel{
 		lblDetailCheckout.setBorder(BorderFactory.createEmptyBorder(0, 0, 3, 0));
 		
 		pnlTitle.add(lblDetailCheckout, BorderLayout.WEST);
-		pnlTitle.add(radUsePoint, BorderLayout.EAST);
+		pnlTitle.add(radUsePoint, BorderLayout.EAST);	
 		
 		pnlBottom.add(pnlTitle, BorderLayout.NORTH);
 		

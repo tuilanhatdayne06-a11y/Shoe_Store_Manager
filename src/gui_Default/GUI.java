@@ -182,7 +182,7 @@ public class GUI extends JFrame implements ActionListener {
 
         add(pnlCenter, BorderLayout.CENTER);
     }
-    public void phanQuyenMenu(boolean isLogin, String role) {
+    public boolean phanQuyenMenu(boolean isLogin, String role) {
         if(isLogin)
         {
             if(role.equals("Quan ly"))
@@ -216,7 +216,7 @@ public class GUI extends JFrame implements ActionListener {
                 btnImport.setEnabled(isLogin);
                 btnPOS.setEnabled(!isLogin);
                 btnReport.setEnabled(!isLogin);
-                btnProduct.setEnabled(isLogin);
+                btnProduct.setEnabled(!isLogin);
                 btnSupplier.setEnabled(isLogin);
                 btnHome.setEnabled(true); 
             }  
@@ -232,7 +232,7 @@ public class GUI extends JFrame implements ActionListener {
             btnSupplier.setEnabled(isLogin);
             btnHome.setEnabled(true); 
         }
-
+        return (role.equals("Nhan vien ban hang") || role.equals("Quan ly"));
     }
     private JButton createMenuButton(String text, String iconFileName) {
         JButton btn = new JButton(text);
